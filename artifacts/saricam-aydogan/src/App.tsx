@@ -1,8 +1,9 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation, Redirect } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { HelmetProvider } from "react-helmet-async";
+import { ReactNode } from "react";
 
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -14,9 +15,47 @@ import ProductDetail from "@/pages/ProductDetail";
 import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
 
+import { AdminAuthProvider, useAdminAuth } from "@/admin/context/AdminAuthContext";
+import { AdminLayout } from "@/admin/components/AdminLayout";
+import AdminLogin from "@/admin/pages/AdminLogin";
+import AdminProducts from "@/admin/pages/AdminProducts";
+import AdminProductForm from "@/admin/pages/AdminProductForm";
+import AdminCategories from "@/admin/pages/AdminCategories";
+
 const queryClient = new QueryClient();
 
-function Router() {
+function PrivateRoute({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAdminAuth();
+  if (!isAuthenticated) return <Redirect to="/admin/login" />;
+  return <AdminLayout>{children}</AdminLayout>;
+}
+
+function AdminRouter() {
+  return (
+    <AdminAuthProvider>
+      <Switch>
+        <Route path="/admin/login" component={AdminLogin} />
+        <Route path="/admin/urunler/yeni">
+          <PrivateRoute><AdminProductForm /></PrivateRoute>
+        </Route>
+        <Route path="/admin/urunler/:id/duzenle">
+          <PrivateRoute><AdminProductForm /></PrivateRoute>
+        </Route>
+        <Route path="/admin/urunler">
+          <PrivateRoute><AdminProducts /></PrivateRoute>
+        </Route>
+        <Route path="/admin/kategoriler">
+          <PrivateRoute><AdminCategories /></PrivateRoute>
+        </Route>
+        <Route path="/admin">
+          <Redirect to="/admin/urunler" />
+        </Route>
+      </Switch>
+    </AdminAuthProvider>
+  );
+}
+
+function StoreFront() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -34,6 +73,12 @@ function Router() {
       <WhatsAppFab />
     </div>
   );
+}
+
+function Router() {
+  const [location] = useLocation();
+  const isAdmin = location.startsWith("/admin");
+  return isAdmin ? <AdminRouter /> : <StoreFront />;
 }
 
 function App() {
