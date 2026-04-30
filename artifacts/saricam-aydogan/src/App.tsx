@@ -50,6 +50,9 @@ function AdminRouter() {
         <Route path="/admin">
           <Redirect to="/admin/urunler" />
         </Route>
+        <Route>
+          <Redirect to="/admin/urunler" />
+        </Route>
       </Switch>
     </AdminAuthProvider>
   );

@@ -42,7 +42,7 @@ Turkish e-commerce storefront for camping & fishing equipment. No online checkou
 - `*` — 404 fallback
 
 **Admin panel routes:**
-- `/admin/login` — Password-protected login (default: `admin123`, override with `VITE_ADMIN_PASSWORD`)
+- `/admin/login` — Password-protected login (requires `VITE_ADMIN_PASSWORD` env var; shows config error if not set)
 - `/admin/urunler` — Product list (search, category filter, featured toggle, inline sort, edit/delete)
 - `/admin/urunler/yeni` — New product form
 - `/admin/urunler/:id/duzenle` — Edit product form
