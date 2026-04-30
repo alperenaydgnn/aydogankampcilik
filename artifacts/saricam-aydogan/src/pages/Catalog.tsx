@@ -22,7 +22,15 @@ function readParams(searchString: string) {
   return { view, page, q };
 }
 
-function ProductRow({ product, index }: { product: Product; index: number }) {
+function ProductRow({
+  product,
+  index,
+  categoryName,
+}: {
+  product: Product;
+  index: number;
+  categoryName?: string;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -31,9 +39,14 @@ function ProductRow({ product, index }: { product: Product; index: number }) {
     >
       <Link
         href={`/urun/${product.slug}`}
-        className="group flex gap-4 sm:gap-6 bg-card rounded-2xl overflow-hidden border border-border transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+        className="group flex gap-4 sm:gap-6 bg-card rounded-2xl overflow-hidden border border-border transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 relative"
       >
-        <div className="w-32 sm:w-48 shrink-0 bg-muted">
+        <div className="w-32 sm:w-48 shrink-0 bg-muted relative">
+          {categoryName && (
+            <span className="absolute top-2 left-2 z-10 inline-flex items-center rounded-full bg-secondary/95 text-white text-[10px] sm:text-xs font-semibold uppercase tracking-wide px-2.5 py-1 shadow">
+              {categoryName}
+            </span>
+          )}
           <AspectRatio ratio={1}>
             <img
               src={product.images[0]}
@@ -261,7 +274,12 @@ export default function Catalog() {
                   <div className="flex flex-col gap-4">
                     <AnimatePresence mode="popLayout">
                       {pagedProducts.map((product, idx) => (
-                        <ProductRow key={product.id} product={product} index={idx} />
+                        <ProductRow
+                          key={product.id}
+                          product={product}
+                          index={idx}
+                          categoryName={categories.find((c) => c.id === product.category_id)?.name}
+                        />
                       ))}
                     </AnimatePresence>
                   </div>

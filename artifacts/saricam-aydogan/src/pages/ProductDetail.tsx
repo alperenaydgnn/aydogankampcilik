@@ -37,8 +37,11 @@ export default function ProductDetail() {
   const { product, category } = data;
 
   const handleOrder = () => {
-    const defaultMessage = `Merhaba! '${product.name}' (${category.name}) ürünü hakkında bilgi almak istiyorum.`;
-    const message = product.whatsapp_message || defaultMessage;
+    const productLine = `Ürün: ${product.name} • Kategori: ${category.name}`;
+    const customNote = product.whatsapp_message?.trim();
+    const message = customNote
+      ? `${productLine}\n\n${customNote}`
+      : `Merhaba! '${product.name}' (${category.name}) ürünü hakkında bilgi almak istiyorum.`;
     window.open(buildWhatsAppLink(message), "_blank");
   };
 
