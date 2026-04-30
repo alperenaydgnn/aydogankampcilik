@@ -1,124 +1,142 @@
 import { Link } from "wouter";
-import { Trees, MapPin, Phone, Mail, Instagram, Facebook, MessageCircle } from "lucide-react";
+import { Trees, MapPin, Phone, Mail, Instagram, Facebook, MessageCircle, Clock } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 export function Footer() {
   return (
-    <footer className="bg-primary text-primary-foreground pt-16 pb-8 border-t border-primary-border/20">
+    <footer className="footer-surface text-primary-foreground pt-16 pb-8">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-          
-          <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2 mb-6">
-              <Trees className="w-8 h-8 text-secondary" />
+
+        {/* Top grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
+
+          {/* Brand column */}
+          <div className="space-y-5 lg:col-span-1">
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="p-2 rounded-xl bg-white/8 group-hover:bg-secondary/20 transition-colors">
+                <Trees className="w-6 h-6 text-secondary" />
+              </div>
               <span className="font-serif text-xl font-bold tracking-tight">Sarıçam Aydoğan</span>
             </Link>
-            <p className="text-primary-foreground/70 text-sm leading-relaxed max-w-xs">
-              Karadeniz'in zorlu doğa koşullarına dayanıklı, uzun ömürlü kamp ve balıkçılık ekipmanları. Doğayla iç içe geçen yılların tecrübesiyle seçilmiş ürünler.
+            <p className="text-primary-foreground/60 text-sm leading-relaxed">
+              Karadeniz'in zorlu doğa koşullarına dayanıklı, uzun ömürlü kamp ve balıkçılık ekipmanları. Yılların tecrübesiyle özenle seçilmiş ürünler.
             </p>
-            <div className="flex items-center gap-4 pt-2">
-              <a href="#" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-secondary hover:text-white transition-colors">
-                <Instagram className="w-5 h-5" />
+            <div className="flex items-center gap-3 pt-1">
+              <a
+                href="#"
+                aria-label="Instagram"
+                className="w-9 h-9 rounded-xl bg-white/8 flex items-center justify-center hover:bg-secondary hover:text-white transition-all duration-200 hover:scale-105"
+              >
+                <Instagram className="w-4 h-4" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-secondary hover:text-white transition-colors">
-                <Facebook className="w-5 h-5" />
+              <a
+                href="#"
+                aria-label="Facebook"
+                className="w-9 h-9 rounded-xl bg-white/8 flex items-center justify-center hover:bg-secondary hover:text-white transition-all duration-200 hover:scale-105"
+              >
+                <Facebook className="w-4 h-4" />
+              </a>
+              <a
+                href={buildWhatsAppLink("Merhaba, yardım almak istiyorum.")}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                className="w-9 h-9 rounded-xl bg-white/8 flex items-center justify-center hover:bg-[#25D366] hover:text-white transition-all duration-200 hover:scale-105"
+              >
+                <MessageCircle className="w-4 h-4" />
               </a>
             </div>
           </div>
 
+          {/* Quick Links */}
           <div>
-            <h3 className="font-serif text-lg font-semibold mb-6">Hızlı Bağlantılar</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/" className="text-primary-foreground/70 hover:text-secondary transition-colors inline-flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary/50"></span>
-                  Anasayfa
-                </Link>
-              </li>
-              <li>
-                <Link href="/urunler" className="text-primary-foreground/70 hover:text-secondary transition-colors inline-flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary/50"></span>
-                  Tüm Ürünler
-                </Link>
-              </li>
-              <li>
-                <Link href="/hakkimizda" className="text-primary-foreground/70 hover:text-secondary transition-colors inline-flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary/50"></span>
-                  Hakkımızda
-                </Link>
-              </li>
+            <h3 className="font-serif text-base font-semibold mb-5 text-primary-foreground/90">Hızlı Bağlantılar</h3>
+            <ul className="space-y-2.5">
+              {[
+                { name: "Anasayfa", href: "/" },
+                { name: "Tüm Ürünler", href: "/urunler" },
+                { name: "Hakkımızda", href: "/hakkimizda" },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="text-primary-foreground/55 hover:text-secondary text-sm transition-colors duration-150 inline-flex items-center gap-2 group"
+                  >
+                    <span className="w-1 h-1 rounded-full bg-secondary/40 group-hover:bg-secondary transition-colors" />
+                    {l.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
+          {/* Categories */}
           <div>
-            <h3 className="font-serif text-lg font-semibold mb-6">Kategoriler</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/urunler/cadirlar" className="text-primary-foreground/70 hover:text-secondary transition-colors inline-flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary/50"></span>
-                  Çadırlar
-                </Link>
-              </li>
-              <li>
-                <Link href="/urunler/olta-ve-makine" className="text-primary-foreground/70 hover:text-secondary transition-colors inline-flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary/50"></span>
-                  Olta & Makine
-                </Link>
-              </li>
-              <li>
-                <Link href="/urunler/kamp-aksesuarlari" className="text-primary-foreground/70 hover:text-secondary transition-colors inline-flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary/50"></span>
-                  Kamp Aksesuarları
-                </Link>
-              </li>
-              <li>
-                <Link href="/urunler/aydinlatma" className="text-primary-foreground/70 hover:text-secondary transition-colors inline-flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary/50"></span>
-                  Aydınlatma
-                </Link>
-              </li>
+            <h3 className="font-serif text-base font-semibold mb-5 text-primary-foreground/90">Kategoriler</h3>
+            <ul className="space-y-2.5">
+              {[
+                { name: "Çadırlar", href: "/urunler/cadirlar" },
+                { name: "Olta & Makine", href: "/urunler/olta-ve-makine" },
+                { name: "Kamp Aksesuarları", href: "/urunler/kamp-aksesuarlari" },
+                { name: "Aydınlatma", href: "/urunler/aydinlatma" },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="text-primary-foreground/55 hover:text-secondary text-sm transition-colors duration-150 inline-flex items-center gap-2 group"
+                  >
+                    <span className="w-1 h-1 rounded-full bg-secondary/40 group-hover:bg-secondary transition-colors" />
+                    {l.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
+          {/* Contact */}
           <div>
-            <h3 className="font-serif text-lg font-semibold mb-6">İletişim</h3>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3 text-primary-foreground/70">
-                <MapPin className="w-5 h-5 text-secondary shrink-0 mt-0.5" />
-                <span className="text-sm">Atatürk Cad. No:123 Merkez / Trabzon</span>
+            <h3 className="font-serif text-base font-semibold mb-5 text-primary-foreground/90">İletişim</h3>
+            <ul className="space-y-3.5">
+              <li className="flex items-start gap-3">
+                <MapPin className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
+                <span className="text-primary-foreground/60 text-sm leading-relaxed">Atatürk Cad. No:123 Merkez / Trabzon</span>
               </li>
-              <li className="flex items-center gap-3 text-primary-foreground/70">
-                <Phone className="w-5 h-5 text-secondary shrink-0" />
-                <span className="text-sm">+90 555 111 22 33</span>
+              <li className="flex items-center gap-3">
+                <Phone className="w-4 h-4 text-secondary shrink-0" />
+                <a href="tel:+905551112233" className="text-primary-foreground/60 text-sm hover:text-secondary transition-colors">+90 555 111 22 33</a>
               </li>
-              <li className="flex items-center gap-3 text-primary-foreground/70">
-                <Mail className="w-5 h-5 text-secondary shrink-0" />
-                <span className="text-sm">bilgi@saricamaydogan.com</span>
+              <li className="flex items-center gap-3">
+                <Mail className="w-4 h-4 text-secondary shrink-0" />
+                <a href="mailto:bilgi@saricamaydogan.com" className="text-primary-foreground/60 text-sm hover:text-secondary transition-colors">bilgi@saricamaydogan.com</a>
               </li>
-              <li>
-                <a
-                  href={buildWhatsAppLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-medium transition-colors"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  WhatsApp'tan Yaz
-                </a>
+              <li className="flex items-center gap-3">
+                <Clock className="w-4 h-4 text-secondary shrink-0" />
+                <div>
+                  <p className="text-primary-foreground/60 text-sm">Pzt – Cmt: 09:00 – 19:30</p>
+                  <p className="text-primary-foreground/40 text-xs mt-0.5">Pazar: Kapalı</p>
+                </div>
               </li>
             </ul>
-            <div className="mt-6 p-4 bg-primary-foreground/5 rounded-lg border border-primary-foreground/10">
-              <p className="text-sm font-medium mb-1">Çalışma Saatleri</p>
-              <p className="text-xs text-primary-foreground/70">Pzt - Cmt: 09:00 - 19:30</p>
-              <p className="text-xs text-primary-foreground/70">Pazar: Kapalı</p>
-            </div>
+
+            <a
+              href={buildWhatsAppLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] text-sm font-semibold transition-all duration-200 border border-[#25D366]/20"
+            >
+              <MessageCircle className="w-4 h-4" />
+              WhatsApp'tan Yaz
+            </a>
           </div>
-          
         </div>
-        
-        <div className="pt-8 border-t border-primary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-primary-foreground/50 text-sm">
-            © {new Date().getFullYear()} Sarıçam Aydoğan Kamp ve Balık. Tüm hakları saklıdır.
+
+        {/* Divider */}
+        <div className="border-t border-primary-foreground/10 pt-7 flex flex-col md:flex-row items-center justify-between gap-3">
+          <p className="text-primary-foreground/35 text-xs">
+            © {new Date().getFullYear()} Sarıçam Aydoğan Kamp ve Balık Malzemeleri. Tüm hakları saklıdır.
+          </p>
+          <p className="text-primary-foreground/25 text-xs">
+            Trabzon — Doğanın Kalbinde
           </p>
         </div>
       </div>

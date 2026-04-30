@@ -33,6 +33,15 @@ Turkish e-commerce storefront for camping & fishing equipment. No online checkou
 
 **Stack:** React + Vite + TypeScript + Wouter + Supabase + react-helmet-async + Framer Motion + Tailwind v4
 
+**Design System:**
+- Fonts: Fraunces (serif, headings) + Plus Jakarta Sans (sans, body)
+- Primary: Deep Pine Green `hsl(149 43% 17%)`, Secondary: Warm Ember `hsl(38 94% 45%)`
+- Background: Warm Parchment `hsl(38 30% 93%)`, Foreground: Slate Charcoal `hsl(213 30% 17%)`
+- Base radius: `0.75rem` (scaled up to `rounded-2xl`/`rounded-3xl` for cards & CTAs)
+- Shadow system: `shadow-card` + `shadow-card-hover` CSS vars for elevation
+- Utilities: `.glass`, `.glass-dark`, `.glass-primary`, `.gradient-outdoor`, `.gradient-ember`, `.eyebrow`, `.btn-cta`, `.btn-cta-amber`, `.btn-ghost-white`, `.badge-category`, `.product-card`, `.hover-lift`, `.footer-surface`, `.skeleton`
+- Animation: Framer Motion `whileInView` fade-up, parallax hero, hover lift (-5px + shadow), micro-interactions on icons, scroll indicator pulse, WhatsApp FAB pulse ring
+
 **Storefront routes (Turkish):**
 - `/` — Anasayfa (hero, featured products, categories, brand values)
 - `/urunler` — Ürün kataloğu (search, grid/list toggle, pagination, URL query-param sync)
