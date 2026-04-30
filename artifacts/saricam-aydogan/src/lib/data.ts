@@ -38,7 +38,8 @@ export async function getProducts(options?: { categorySlug?: string; search?: st
       }
       
       if (options?.search) {
-        query = query.ilike('name', `%${options.search}%`);
+        const term = options.search.replace(/[,()]/g, ' ');
+        query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
       }
       
       if (options?.limit) {

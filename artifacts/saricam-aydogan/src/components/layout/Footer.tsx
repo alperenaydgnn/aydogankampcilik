@@ -1,5 +1,6 @@
 import { Link } from "wouter";
-import { Trees, MapPin, Phone, Mail, Instagram, Facebook } from "lucide-react";
+import { Trees, MapPin, Phone, Mail, Instagram, Facebook, MessageCircle } from "lucide-react";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 export function Footer() {
   return (
@@ -93,6 +94,17 @@ export function Footer() {
               <li className="flex items-center gap-3 text-primary-foreground/70">
                 <Mail className="w-5 h-5 text-secondary shrink-0" />
                 <span className="text-sm">bilgi@saricamaydogan.com</span>
+              </li>
+              <li>
+                <a
+                  href={buildWhatsAppLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-medium transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  WhatsApp'tan Yaz
+                </a>
               </li>
             </ul>
             <div className="mt-6 p-4 bg-primary-foreground/5 rounded-lg border border-primary-foreground/10">
