@@ -3,6 +3,7 @@ import { Trees, Menu, X, Phone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 export function Header() {
   const [location] = useLocation();
@@ -65,7 +66,7 @@ export function Header() {
           
           <Button 
             className="rounded-full gap-2 font-medium bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-lg shadow-[#25D366]/20 transition-all hover:scale-105"
-            onClick={() => window.open('https://wa.me/905551112233', '_blank')}
+            onClick={() => window.open(buildWhatsAppLink('Merhaba, ürünleriniz hakkında bilgi almak istiyorum.'), '_blank')}
           >
             <Phone className="w-4 h-4" />
             <span>Bize Ulaşın</span>
@@ -113,7 +114,7 @@ export function Header() {
                 <Button 
                   className="w-full rounded-full gap-2 py-6 text-lg bg-[#25D366] hover:bg-[#20bd5a] text-white"
                   onClick={() => {
-                    window.open('https://wa.me/905551112233', '_blank');
+                    window.open(buildWhatsAppLink('Merhaba, ürünleriniz hakkında bilgi almak istiyorum.'), '_blank');
                     setIsMobileMenuOpen(false);
                   }}
                 >
