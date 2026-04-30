@@ -1,0 +1,68 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "F3-XJp_TzR0hiqyw5mu9h"
+uri = "file://artifacts/saricam-aydogan/public/mock/hero.jpg"
+type = "image"
+title = "camping tent by a peaceful lake in a pine forest at dawn with warm sunrise lighting"
+
+[[outputs]]
+id = "kswAdPtbUKIXo7xqcrw2o"
+uri = "file://artifacts/saricam-aydogan/public/mock/category-cadir.jpg"
+type = "image"
+title = "camping tent in a forest"
+
+[[outputs]]
+id = "rBF4XTQKBQuNXFuD8Z6kC"
+uri = "file://artifacts/saricam-aydogan/public/mock/category-olta.jpg"
+type = "image"
+title = "fishing rod by a lake"
+
+[[outputs]]
+id = "Z-l6PF5NgxqcAJ9LuysX4"
+uri = "file://artifacts/saricam-aydogan/public/mock/category-aksesuar.jpg"
+type = "image"
+title = "camping accessories on a table"
+
+[[outputs]]
+id = "Q5Os8N0f8PxnfIBmQnsHm"
+uri = "file://artifacts/saricam-aydogan/public/mock/category-aydinlatma.jpg"
+type = "image"
+title = "camping lantern glowing in the dark"
+
+[[outputs]]
+id = "b0eEErbR0A4l6iXdQebIz"
+uri = "file://artifacts/saricam-aydogan/public/mock/product-1.jpg"
+type = "image"
+title = "camping sleeping bag in a tent"
+
+[[outputs]]
+id = "nOt0ua5_KVmJC9e3Zg737"
+uri = "file://artifacts/saricam-aydogan/public/mock/product-2.jpg"
+type = "image"
+title = "camping stove"
+
+[[outputs]]
+id = "vP7K-dyEH26OkOuBmphc7"
+uri = "file://artifacts/saricam-aydogan/public/mock/product-3.jpg"
+type = "image"
+title = "fishing reel"
+
+[[outputs]]
+id = "4xQo5clw457pbZJAcjk2e"
+uri = "file://artifacts/saricam-aydogan/public/mock/product-4.jpg"
+type = "image"
+title = "fishing lure"
+
+[[outputs]]
+id = "yoxeAIi75iOTGZvhvXs3T"
+uri = "file://artifacts/saricam-aydogan/public/mock/product-5.jpg"
+type = "image"
+title = "camping cooler"
+
+[[outputs]]
+id = "zroJKma91UElGTNZW88yX"
+uri = "file://artifacts/saricam-aydogan/public/mock/product-6.jpg"
+type = "image"
+title = "hiking backpack"
