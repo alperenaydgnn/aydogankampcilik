@@ -25,9 +25,8 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const login = (password: string): boolean => {
     const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
-    const fallback = "admin123";
-    const correct = adminPassword || fallback;
-    if (password === correct) {
+    if (!adminPassword) return false;
+    if (password === adminPassword) {
       setIsAuthenticated(true);
       return true;
     }

@@ -15,8 +15,11 @@ export default function AdminLogin() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const isConfigured = !!import.meta.env.VITE_ADMIN_PASSWORD;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isConfigured) return;
     setError("");
     setLoading(true);
     await new Promise((r) => setTimeout(r, 300));
@@ -49,49 +52,54 @@ export default function AdminLogin() {
             <CardDescription>Devam etmek için admin şifresini girin.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="password">Şifre</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={show ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Admin şifrenizi girin"
-                    autoComplete="current-password"
-                    autoFocus
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShow(!show)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
+            {!isConfigured ? (
+              <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive space-y-1">
+                <p className="font-semibold">Admin şifresi yapılandırılmamış</p>
+                <p className="text-destructive/80">
+                  Giriş yapabilmek için{" "}
+                  <code className="font-mono bg-destructive/10 px-1 rounded">VITE_ADMIN_PASSWORD</code>{" "}
+                  ortam değişkenini ayarlayın, ardından sunucuyu yeniden başlatın.
+                </p>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password">Şifre</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={show ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Admin şifrenizi girin"
+                      autoComplete="current-password"
+                      autoFocus
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShow(!show)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
 
-              {error && (
-                <p className="text-sm text-destructive font-medium">{error}</p>
-              )}
+                {error && (
+                  <p className="text-sm text-destructive font-medium">{error}</p>
+                )}
 
-              <Button type="submit" className="w-full" disabled={loading || !password}>
-                {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
-              </Button>
-            </form>
-
-            {!import.meta.env.VITE_ADMIN_PASSWORD && (
-              <p className="text-xs text-muted-foreground mt-4 text-center border-t border-border pt-4">
-                Varsayılan şifre: <code className="font-mono bg-muted px-1 rounded">admin123</code>
-              </p>
+                <Button type="submit" className="w-full" disabled={loading || !password}>
+                  {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
+                </Button>
+              </form>
             )}
           </CardContent>
         </Card>
 
         <p className="text-center text-sm text-muted-foreground">
-          VITE_ADMIN_PASSWORD ortam değişkeniyle özel şifre belirleyebilirsiniz.
+          Şifrenizi <code className="font-mono bg-muted px-1 rounded">VITE_ADMIN_PASSWORD</code> ortam değişkeniyle ayarlayın.
         </p>
       </div>
     </div>

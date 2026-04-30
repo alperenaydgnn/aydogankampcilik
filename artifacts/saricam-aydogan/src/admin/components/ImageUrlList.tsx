@@ -1,4 +1,4 @@
-import { Plus, Trash2, GripVertical } from "lucide-react";
+import { Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -38,14 +38,26 @@ export function ImageUrlList({ value, onChange }: ImageUrlListProps) {
     <div className="space-y-2">
       {value.map((url, i) => (
         <div key={i} className="flex gap-2 items-center">
-          <button
-            type="button"
-            title="Sırayı değiştir"
-            className="text-muted-foreground hover:text-foreground cursor-grab"
-            onClick={() => moveUp(i)}
-          >
-            <GripVertical className="w-4 h-4" />
-          </button>
+          <div className="flex flex-col shrink-0">
+            <button
+              type="button"
+              title="Yukarı taşı"
+              disabled={i === 0}
+              className="text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
+              onClick={() => moveUp(i)}
+            >
+              <ChevronUp className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              title="Aşağı taşı"
+              disabled={i === value.length - 1}
+              className="text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
+              onClick={() => moveDown(i)}
+            >
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+          </div>
           {url && (
             <div className="w-10 h-10 rounded-md overflow-hidden border border-border shrink-0 bg-muted">
               <img
