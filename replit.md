@@ -42,6 +42,21 @@ Turkish e-commerce storefront for camping & fishing equipment. No online checkou
 - Utilities: `.glass`, `.glass-dark`, `.glass-primary`, `.gradient-outdoor`, `.gradient-ember`, `.eyebrow`, `.btn-cta`, `.btn-cta-amber`, `.btn-ghost-white`, `.badge-category`, `.product-card`, `.hover-lift`, `.footer-surface`, `.skeleton`
 - Animation: Framer Motion `whileInView` fade-up, parallax hero, hover lift (-5px + shadow), micro-interactions on icons, scroll indicator pulse, WhatsApp FAB pulse ring
 
+**Category system:**
+- 7 categories: Kamp Çadırları, Olta & Balık Malzemeleri, Kamp Ekipmanları, Aydınlatma, Termos & Soğutucu, Olta Aksesuarları, Outdoor & Trekking
+- Category metadata in `src/lib/categoryMeta.ts`: per-slug SEO title, description, hero title/subtitle, info text, WhatsApp message, icon, keyword tags
+- `getCategoryMeta(slug?)` helper returns full metadata or fallback for "all products" view
+- 25 mock products across 7 categories in `src/lib/mockData.ts`
+
+**Catalog page (`/urunler`, `/urunler/:kategori`):**
+- Category hero: image background with dark gradient overlay, breadcrumb, title, subtitle, SEO keyword chips
+- Desktop: sticky left sidebar (search, category pills with emoji+count, WhatsApp CTA box)
+- Mobile: sticky horizontal scroll category pills + collapsible filter drawer
+- Grid/List view toggle, URL-synced pagination (9 per page), debounced search
+- SkeletonCard loading state, EmptyState with WhatsApp link
+- WhatsApp CTA strip below product grid (category-specific message)
+- Category info section with natural-language SEO text + keyword tags
+
 **Storefront routes (Turkish):**
 - `/` — Anasayfa (hero, featured products, categories, brand values)
 - `/urunler` — Ürün kataloğu (search, grid/list toggle, pagination, URL query-param sync)
