@@ -98,6 +98,26 @@ export async function getFeaturedProducts(limit: number = 6): Promise<Product[]>
   return mockProducts.filter(p => p.featured).slice(0, limit);
 }
 
+export async function getRelatedProducts(product: Product, limit: number = 4): Promise<Product[]> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category_id', product.category_id)
+        .neq('id', product.id)
+        .limit(limit);
+      if (!error && data) return data as Product[];
+    } catch (e) {
+      console.warn('Supabase fetch failed, using mock data');
+    }
+  }
+  return mockProducts
+    .filter(p => p.category_id === product.category_id && p.id !== product.id)
+    .slice(0, limit);
+}
+
 export async function getProductBySlug(slug: string): Promise<{ product: Product; category: Category } | null> {
   const supabase = getSupabase();
   if (supabase) {
