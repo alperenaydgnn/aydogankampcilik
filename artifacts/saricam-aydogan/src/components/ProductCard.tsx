@@ -1,11 +1,12 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { MessageCircle, ArrowRight, AlertTriangle, XCircle, Sparkles } from "lucide-react";
+import { ArrowRight, AlertTriangle, XCircle, Sparkles } from "lucide-react";
 import { Product, Category, StockStatus } from "@/lib/mockData";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { getCategories } from "@/lib/data";
-import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { buildProductMessage } from "@/lib/whatsapp";
+import { WhatsAppButton, OutOfStockButton } from "@/components/WhatsAppButton";
 import { cn } from "@/lib/utils";
 
 /* ── Shared category cache ────────────────────────────── */
@@ -37,7 +38,7 @@ const stockConfig: Record<StockStatus, { label: string; cls: string; icon: typeo
 
 function StockBadge({ status }: { status: StockStatus }) {
   const cfg = stockConfig[status];
-  if (status === 'in_stock') return null;
+  if (status === "in_stock") return null;
   const Icon = cfg.icon;
   return (
     <span className={cn("inline-flex items-center gap-1 text-[0.65rem] font-semibold px-2 py-0.5 rounded-full border", cfg.cls)}>
@@ -51,12 +52,11 @@ function StockBadge({ status }: { status: StockStatus }) {
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const categories = useCategories();
   const category = categories.find(c => c.id === product.category_id);
-  const isOOS = product.stock_status === 'out_of_stock';
+  const isOOS = product.stock_status === "out_of_stock";
 
-  const waLink = buildWhatsAppLink(
-    product.whatsapp_message ??
-    `Merhaba! "${product.name}" ürünü hakkında bilgi almak istiyorum.`
-  );
+  const waMessage = category
+    ? buildProductMessage(product, category)
+    : `Merhaba! 👋\n\n📦 *${product.name}* ürünü hakkında bilgi almak istiyorum.\n\nStok teyidi alabilir miyim?`;
 
   return (
     <motion.article
@@ -106,12 +106,12 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
 
       {/* Body */}
       <div className="flex flex-col flex-1 p-4 gap-3">
-        {/* Category + stock row */}
+        {/* Stock row */}
         <div className="flex items-center gap-2 flex-wrap">
-          {product.stock_status && product.stock_status !== 'in_stock' && (
+          {product.stock_status && product.stock_status !== "in_stock" && (
             <StockBadge status={product.stock_status} />
           )}
-          {product.stock_status === 'in_stock' && (
+          {product.stock_status === "in_stock" && (
             <span className="inline-flex items-center gap-1 text-[0.65rem] font-semibold text-emerald-700">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               Stokta mevcut
@@ -148,27 +148,27 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         </div>
 
         {/* WhatsApp CTA */}
-        <a
-          href={waLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={e => e.stopPropagation()}
-          className={cn(
-            "flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-semibold text-white transition-all duration-200",
-            isOOS
-              ? "bg-muted text-muted-foreground cursor-not-allowed pointer-events-none"
-              : "hover:opacity-90 hover:-translate-y-px active:scale-95"
-          )}
-          style={!isOOS ? {
-            background: "#25D366",
-            boxShadow: "0 2px 8px rgba(37,211,102,0.22)"
-          } : {}}
-          aria-disabled={isOOS}
-          tabIndex={isOOS ? -1 : undefined}
-        >
-          <MessageCircle className="w-3.5 h-3.5" />
-          {isOOS ? "Ürün Tükendi" : "WhatsApp ile Sipariş"}
-        </a>
+        {isOOS ? (
+          <OutOfStockButton size="sm" fullWidth />
+        ) : (
+          <WhatsAppButton
+            message={waMessage}
+            tracking={{
+              event: "product_order",
+              source: "product_card",
+              product_id: product.id,
+              product_name: product.name,
+              product_slug: product.slug,
+              category_id: product.category_id,
+              category_name: category?.name,
+              price_numeric: product.price_numeric ?? undefined,
+            }}
+            size="sm"
+            fullWidth
+            label="WhatsApp ile Sipariş"
+            onClick={e => e.stopPropagation()}
+          />
+        )}
       </div>
     </motion.article>
   );

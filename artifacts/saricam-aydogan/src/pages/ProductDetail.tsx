@@ -3,16 +3,17 @@ import { useParams, Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import {
-  MessageCircle, ArrowLeft, ShieldCheck, Truck, Store,
+  ShieldCheck, Truck, Store,
   RefreshCcw, ChevronDown, ChevronRight, Tag, Star,
-  Sparkles, AlertTriangle, XCircle, Package,
+  Sparkles, AlertTriangle, XCircle,
 } from "lucide-react";
 import { getProductBySlug, getRelatedProducts } from "@/lib/data";
 import { Product, Category, StockStatus } from "@/lib/mockData";
 import { SEO } from "@/lib/seo";
 import { ImageGallery } from "@/components/ImageGallery";
 import { ProductCard } from "@/components/ProductCard";
-import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { WhatsAppButton, OutOfStockButton } from "@/components/WhatsAppButton";
+import { buildProductMessage, buildStockNotifyMessage } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 import NotFound from "./not-found";
 
@@ -187,16 +188,7 @@ export default function ProductDetail() {
   const siteUrl = "https://saricamaydogan.com";
   const productUrl = `${siteUrl}/urun/${product.slug}`;
 
-  const waMessage = [
-    `Merhaba! Aşağıdaki ürün hakkında bilgi almak istiyorum:`,
-    ``,
-    `🛒 ${product.name}`,
-    `📂 Kategori: ${category.name}`,
-    `💰 Fiyat: ${product.price_label}`,
-    `🔗 ${productUrl}`,
-    ``,
-    product.whatsapp_message || `Stok durumu ve kargo seçenekleri hakkında bilgi alabilir miyim?`,
-  ].join("\n");
+  const waMessage = buildProductMessage(product, category);
 
   /* ── JSON-LD schemas ──────────────────────────────── */
   const productSchema = {
@@ -270,16 +262,23 @@ export default function ProductDetail() {
                 </p>
               </div>
               {!isOOS ? (
-                <a
-                  href={buildWhatsAppLink(waMessage)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm text-white"
-                  style={{ background: "#25D366" }}
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  Sipariş Ver
-                </a>
+                <WhatsAppButton
+                  message={waMessage}
+                  tracking={{
+                    event: "product_order",
+                    source: "product_detail_sticky",
+                    product_id: product.id,
+                    product_name: product.name,
+                    product_slug: product.slug,
+                    category_id: product.category_id,
+                    category_name: category.name,
+                    price_numeric: product.price_numeric ?? undefined,
+                  }}
+                  size="sm"
+                  rounded="pill"
+                  label="Sipariş Ver"
+                  className="shrink-0"
+                />
               ) : (
                 <span className="text-xs font-semibold text-red-500 bg-red-50 border border-red-200 px-4 py-2.5 rounded-full">
                   Tükendi
@@ -384,38 +383,44 @@ export default function ProductDetail() {
               <div ref={mainCTARef} className="rounded-2xl border border-card-border bg-card p-5 space-y-3">
                 {!isOOS ? (
                   <>
-                    <a
-                      href={buildWhatsAppLink(waMessage)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-3 w-full py-4 rounded-xl font-bold text-base text-white transition-all duration-200 hover:opacity-92 hover:-translate-y-0.5 active:scale-[0.98]"
-                      style={{
-                        background: "linear-gradient(135deg, #25D366 0%, #1aaa57 100%)",
-                        boxShadow: "0 6px 20px rgba(37,211,102,0.28)"
+                    <WhatsAppButton
+                      message={waMessage}
+                      tracking={{
+                        event: "product_order",
+                        source: "product_detail_main",
+                        product_id: product.id,
+                        product_name: product.name,
+                        product_slug: product.slug,
+                        category_id: product.category_id,
+                        category_name: category.name,
+                        price_numeric: product.price_numeric ?? undefined,
                       }}
-                    >
-                      <MessageCircle className="w-5 h-5" />
-                      WhatsApp ile Sipariş Ver
-                    </a>
+                      size="lg"
+                      fullWidth
+                    />
                     <p className="text-center text-xs text-muted-foreground leading-relaxed">
                       Online ödeme almıyoruz — WhatsApp üzerinden stok teyidi alın,<br className="hidden sm:inline" /> güvenle sipariş verin.
                     </p>
                   </>
                 ) : (
                   <>
-                    <div className="flex items-center justify-center gap-3 w-full py-4 rounded-xl font-bold text-base text-muted-foreground bg-muted cursor-not-allowed">
-                      <Package className="w-5 h-5" />
-                      Şu an stokta yok
-                    </div>
-                    <a
-                      href={buildWhatsAppLink(`Merhaba! "${product.name}" ürünü ne zaman stoka giriyor? Stok girince haber verebilir misiniz?`)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold border border-border text-foreground hover:border-primary/30 hover:bg-muted/50 transition-all"
-                    >
-                      <MessageCircle className="w-4 h-4 text-[#25D366]" />
-                      Stok gelince haber ver
-                    </a>
+                    <OutOfStockButton size="lg" fullWidth />
+                    <WhatsAppButton
+                      message={buildStockNotifyMessage(product.name)}
+                      tracking={{
+                        event: "product_inquiry",
+                        source: "product_detail_main",
+                        product_id: product.id,
+                        product_name: product.name,
+                        product_slug: product.slug,
+                        category_id: product.category_id,
+                        category_name: category.name,
+                      }}
+                      size="md"
+                      variant="outline"
+                      fullWidth
+                      label="Stok gelince haber ver"
+                    />
                   </>
                 )}
               </div>
@@ -621,22 +626,25 @@ export default function ProductDetail() {
                       : "WhatsApp üzerinden stok teyidi alın, aynı gün kargo ile kapınıza gelsin."}
                   </p>
                 </div>
-                <a
-                  href={buildWhatsAppLink(isOOS
-                    ? `Merhaba! "${product.name}" tükenmiş, bu ürüne alternatif önerebilir misiniz?`
-                    : waMessage
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0 flex items-center gap-3 px-8 py-4 rounded-full font-bold text-white text-base transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5 active:scale-[0.98]"
-                  style={{
-                    background: "#25D366",
-                    boxShadow: "0 6px 20px rgba(37,211,102,0.30)"
+                <WhatsAppButton
+                  message={isOOS
+                    ? `Merhaba! 👋\n\n"*${product.name}*" tükenmiş — bu ürüne alternatif önerebilir misiniz?`
+                    : waMessage}
+                  tracking={{
+                    event: isOOS ? "product_inquiry" : "product_order",
+                    source: "product_detail_cta_strip",
+                    product_id: product.id,
+                    product_name: product.name,
+                    product_slug: product.slug,
+                    category_id: product.category_id,
+                    category_name: category.name,
+                    price_numeric: product.price_numeric ?? undefined,
                   }}
-                >
-                  <MessageCircle className="w-5 h-5" />
-                  {isOOS ? "Alternatif Sorun" : "WhatsApp'tan Sipariş Ver"}
-                </a>
+                  size="lg"
+                  rounded="pill"
+                  label={isOOS ? "Alternatif Sorun" : "WhatsApp'tan Sipariş Ver"}
+                  className="shrink-0"
+                />
               </div>
             </motion.section>
 

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, Link, useLocation, useSearch } from "wouter";
 import {
   Search, Filter, SlidersHorizontal, LayoutGrid, List,
-  ChevronLeft, ChevronRight, MessageCircle, ArrowRight,
+  ChevronLeft, ChevronRight, ArrowRight,
   X, ChevronDown, ChevronUp, Star, Sparkles, ArrowUpDown,
   CheckCircle2, AlertTriangle,
 } from "lucide-react";
@@ -12,7 +12,8 @@ import { Category, Product, StockStatus } from "@/lib/mockData";
 import { getCategoryMeta } from "@/lib/categoryMeta";
 import { ProductCard } from "@/components/ProductCard";
 import { SEO } from "@/lib/seo";
-import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { buildSearchMessage, buildProductMessage } from "@/lib/whatsapp";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { cn } from "@/lib/utils";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
@@ -130,9 +131,7 @@ function ProductRow({ product, index, categoryName }: {
   product: Product; index: number; categoryName?: string;
 }) {
   const isOOS = product.stock_status === "out_of_stock";
-  const waLink = buildWhatsAppLink(
-    product.whatsapp_message ?? `"${product.name}" ürünü hakkında bilgi almak istiyorum.`
-  );
+  const waMessage = buildProductMessage(product, { name: categoryName || "Kamp & Balık" });
 
   return (
     <motion.article
@@ -209,17 +208,22 @@ function ProductRow({ product, index, categoryName }: {
               İncele <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
             </Link>
             {!isOOS && (
-              <a
-                href={waLink}
-                target="_blank"
-                rel="noopener noreferrer"
+              <WhatsAppButton
+                message={waMessage}
+                tracking={{
+                  event: "product_order",
+                  source: "product_card",
+                  product_id: product.id,
+                  product_name: product.name,
+                  product_slug: product.slug,
+                  price_numeric: product.price_numeric ?? undefined,
+                  category_name: categoryName,
+                }}
+                size="sm"
+                rounded="pill"
+                label="Sipariş"
                 onClick={e => e.stopPropagation()}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-white hover:opacity-90 transition-all"
-                style={{ background: "#25D366" }}
-              >
-                <MessageCircle className="w-3 h-3" />
-                Sipariş
-              </a>
+              />
             )}
           </div>
         </div>
@@ -229,7 +233,18 @@ function ProductRow({ product, index, categoryName }: {
 }
 
 /* ── Empty state ──────────────────────────────────────── */
-function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () => void }) {
+function EmptyState({
+  hasFilters,
+  onClear,
+  query,
+  categoryName,
+}: {
+  hasFilters: boolean;
+  onClear: () => void;
+  query?: string;
+  categoryName?: string;
+}) {
+  const waMessage = buildSearchMessage(query || "", categoryName);
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -240,12 +255,16 @@ function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () 
         <SlidersHorizontal className="w-7 h-7 text-muted-foreground opacity-60" />
       </div>
       <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
-        {hasFilters ? "Filtrelerle Eşleşen Ürün Yok" : "Bu Kategoride Ürün Yok"}
+        {query
+          ? `"${query}" için sonuç bulunamadı`
+          : hasFilters ? "Filtrelerle Eşleşen Ürün Yok" : "Bu Kategoride Ürün Yok"}
       </h3>
       <p className="text-muted-foreground text-sm mb-7 max-w-xs mx-auto leading-relaxed">
-        {hasFilters
-          ? "Seçtiğiniz filtre kriterlerine uygun ürün bulunamadı. Filtreleri genişletin ya da WhatsApp'tan sorun."
-          : "Bu kategoriye yakında ürün ekleyeceğiz. WhatsApp'tan sorabilirsiniz."}
+        {query
+          ? "Arama teriminizi genişletin ya da aradığınız ürünü doğrudan WhatsApp'tan sorun — yardımcı olalım."
+          : hasFilters
+            ? "Seçtiğiniz filtre kriterlerine uygun ürün bulunamadı. Filtreleri genişletin ya da WhatsApp'tan sorun."
+            : "Bu kategoriye yakında ürün ekleyeceğiz. WhatsApp'tan sorabilirsiniz."}
       </p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <button
@@ -255,16 +274,18 @@ function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () 
           <X className="w-4 h-4" />
           {hasFilters ? "Filtreleri Temizle" : "Tüm Ürünlere Dön"}
         </button>
-        <a
-          href={buildWhatsAppLink("Merhaba! Aradığım ürünü bulamadım, yardımcı olur musunuz?")}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-all duration-200 hover:opacity-90"
-          style={{ background: "#25D366" }}
-        >
-          <MessageCircle className="w-4 h-4" />
-          WhatsApp'tan Sorun
-        </a>
+        <WhatsAppButton
+          message={waMessage}
+          tracking={{
+            event: query ? "search_inquiry" : "catalog_inquiry",
+            source: "catalog_empty",
+            category_name: categoryName,
+            search_query: query,
+          }}
+          size="md"
+          rounded="pill"
+          label="WhatsApp'tan Sorun"
+        />
       </div>
     </motion.div>
   );
@@ -602,20 +623,17 @@ export default function Catalog() {
         <p className="text-white/55 text-xs leading-relaxed mb-3">
           Ürünü seçin, mesaj atın — aynı gün yanıt alın.
         </p>
-        <a
-          href={buildWhatsAppLink(
-            activeCategory
-              ? `Merhaba! ${activeCategory.name} kategorisinde ürün arıyorum. Yardımcı olur musunuz?`
-              : "Merhaba! Kamp ve balık malzemeleri hakkında bilgi almak istiyorum."
-          )}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-semibold text-white transition-all duration-200 hover:opacity-90"
-          style={{ background: "#25D366" }}
-        >
-          <MessageCircle className="w-4 h-4" />
-          WhatsApp'tan Yaz
-        </a>
+        <WhatsAppButton
+          message={buildSearchMessage("", activeCategory?.name)}
+          tracking={{
+            event: "catalog_inquiry",
+            source: "catalog_sidebar",
+            category_name: activeCategory?.name,
+          }}
+          size="sm"
+          fullWidth
+          label="WhatsApp'tan Yaz"
+        />
       </div>
     </div>
   );
@@ -841,6 +859,37 @@ export default function Catalog() {
               </div>
             </div>
 
+            {/* Search hint — appears when user has an active query */}
+            <AnimatePresence>
+              {p.q && !loading && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                  animate={{ opacity: 1, height: "auto", marginBottom: 16 }}
+                  exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-[#25D366]/8 border border-[#25D366]/20">
+                    <p className="text-xs text-muted-foreground leading-snug">
+                      <span className="font-semibold text-foreground">"{p.q}"</span> için aradığınızı bulamadınız mı?
+                    </p>
+                    <WhatsAppButton
+                      message={buildSearchMessage(p.q, activeCategory?.name)}
+                      tracking={{
+                        event: "search_inquiry",
+                        source: "catalog_search_hint",
+                        category_name: activeCategory?.name,
+                        search_query: p.q,
+                      }}
+                      size="sm"
+                      rounded="pill"
+                      label="WhatsApp'tan Sor"
+                      className="shrink-0 whitespace-nowrap"
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Active filter chips */}
             <AnimatePresence>
               {activeFilters.length > 0 && (
@@ -885,7 +934,12 @@ export default function Catalog() {
                 )}
               </div>
             ) : paged.length === 0 ? (
-              <EmptyState hasFilters={hasActiveFilters} onClear={clearAllFilters} />
+              <EmptyState
+                hasFilters={hasActiveFilters}
+                onClear={clearAllFilters}
+                query={p.q}
+                categoryName={activeCategory?.name}
+              />
             ) : (
               <>
                 <AnimatePresence mode="popLayout">
@@ -969,20 +1023,19 @@ export default function Catalog() {
                       WhatsApp'tan yazın, size en uygun ürünü birlikte bulalım.
                     </p>
                   </div>
-                  <a
-                    href={buildWhatsAppLink(
-                      activeCategory
-                        ? `Merhaba! ${activeCategory.name} kategorisinde aradığım ürünü bulamadım. Yardımcı olur musunuz?`
-                        : "Merhaba! Aradığım ürünü bulamadım, yardımcı olur musunuz?"
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="shrink-0 inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-white text-sm transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5"
-                    style={{ background: "#25D366", boxShadow: "0 4px 16px rgba(37,211,102,0.22)" }}
-                  >
-                    <MessageCircle className="w-5 h-5" />
-                    WhatsApp'tan Yaz
-                  </a>
+                  <WhatsAppButton
+                    message={buildSearchMessage(p.q, activeCategory?.name)}
+                    tracking={{
+                      event: p.q ? "search_inquiry" : "catalog_inquiry",
+                      source: "catalog_strip",
+                      category_name: activeCategory?.name,
+                      search_query: p.q || undefined,
+                    }}
+                    size="md"
+                    rounded="pill"
+                    label="WhatsApp'tan Yaz"
+                    className="shrink-0"
+                  />
                 </div>
               </motion.div>
             )}
