@@ -7,36 +7,43 @@ export interface Database {
         Row: DBCategory;
         Insert: Partial<DBCategory> & Pick<DBCategory, "name" | "slug">;
         Update: Partial<DBCategory>;
+        Relationships: [];
       };
       products: {
         Row: DBProduct;
         Insert: Partial<DBProduct> & Pick<DBProduct, "name" | "slug" | "category_id">;
         Update: Partial<DBProduct>;
+        Relationships: [];
       };
       product_images: {
         Row: DBProductImage;
         Insert: Partial<DBProductImage> & Pick<DBProductImage, "product_id" | "url">;
         Update: Partial<DBProductImage>;
+        Relationships: [];
       };
       tags: {
         Row: DBTag;
         Insert: Partial<DBTag> & Pick<DBTag, "name" | "slug">;
         Update: Partial<DBTag>;
+        Relationships: [];
       };
       product_tags: {
         Row: { product_id: string; tag_id: string };
         Insert: { product_id: string; tag_id: string };
         Update: { product_id?: string; tag_id?: string };
+        Relationships: [];
       };
       admin_users: {
         Row: DBAdminUser;
         Insert: Partial<DBAdminUser> & Pick<DBAdminUser, "user_id" | "email">;
         Update: Partial<DBAdminUser>;
+        Relationships: [];
       };
       site_settings: {
         Row: DBSiteSetting;
         Insert: Partial<DBSiteSetting> & Pick<DBSiteSetting, "key" | "value">;
         Update: Partial<DBSiteSetting>;
+        Relationships: [];
       };
     };
     Views: Record<string, never>;
