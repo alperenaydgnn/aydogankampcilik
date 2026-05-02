@@ -1,15 +1,113 @@
+/**
+ * Data layer — single entry point for fetching catalog & site data.
+ *
+ * - Reads from Supabase when `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`
+ *   are set, otherwise falls back to local mock data so the site keeps
+ *   working in dev without backend.
+ * - Public reads always filter `active = true` (RLS enforces this too).
+ * - Joins `categories`, `product_images`, and `tags` in one query and
+ *   maps DB rows into the app-level `Product` / `Category` shapes.
+ */
+
 import { getSupabase } from './supabase';
-import { mockCategories, mockProducts, Category, Product } from './mockData';
+import {
+  mockCategories,
+  mockProducts,
+  mockSiteSettings,
+  Category,
+  Product,
+  SiteSettings,
+  Tag,
+  deriveStockStatus,
+  formatPriceLabel,
+} from './mockData';
+import type {
+  DBCategory,
+  DBProductWithRelations,
+  DBSiteSetting,
+  DBTag,
+} from './database.types';
+
+/* ------------------------------------------------------------------ */
+/*  Mappers: DB row → app-level domain object                          */
+/* ------------------------------------------------------------------ */
+
+function mapCategory(row: DBCategory): Category {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    description: row.description,
+    image_url: row.image_url,
+    sort_order: row.sort_order,
+    active: row.active,
+    created_at: row.created_at,
+  };
+}
+
+function mapTag(row: DBTag): Tag {
+  return { id: row.id, name: row.name, slug: row.slug, color: row.color };
+}
+
+function mapProduct(row: DBProductWithRelations): Product {
+  const images = (row.product_images ?? [])
+    .slice()
+    .sort((a, b) => {
+      if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+      return a.sort_order - b.sort_order;
+    })
+    .map((img) => img.url);
+
+  const tags = (row.product_tags ?? [])
+    .map((pt) => pt.tag)
+    .filter(Boolean)
+    .map(mapTag);
+
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    category_id: row.category_id,
+    description: row.description,
+    short_description: row.short_description,
+    specs: (row.specs as Record<string, string>) ?? {},
+    price_label: formatPriceLabel(row.price, row.price_label),
+    price_numeric: row.price ?? undefined,
+    old_price: row.old_price,
+    stock: row.stock,
+    images,
+    featured: row.featured,
+    is_new: row.is_new,
+    active: row.active,
+    stock_status: deriveStockStatus(row.stock),
+    whatsapp_message: row.whatsapp_message ?? undefined,
+    meta_title: row.meta_title,
+    meta_description: row.meta_description,
+    tags,
+    created_at: row.created_at,
+  };
+}
+
+const PRODUCT_SELECT =
+  '*, category:categories(*), product_images(*), product_tags(tag:tags(*))';
+
+/* ------------------------------------------------------------------ */
+/*  Categories                                                         */
+/* ------------------------------------------------------------------ */
 
 export async function getCategories(): Promise<Category[]> {
   const supabase = getSupabase();
   if (supabase) {
-    try {
-      const { data, error } = await supabase.from('categories').select('*').order('name');
-      if (!error && data && data.length > 0) return data as Category[];
-    } catch (e) {
-      console.warn('Supabase fetch failed, using mock data');
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('active', true)
+      .order('sort_order', { ascending: true })
+      .order('name', { ascending: true });
+    if (!error && data && data.length > 0) {
+      return (data as DBCategory[]).map(mapCategory);
     }
+    if (error) console.warn('Supabase getCategories failed:', error.message);
   }
   return mockCategories;
 }
@@ -17,133 +115,179 @@ export async function getCategories(): Promise<Category[]> {
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const supabase = getSupabase();
   if (supabase) {
-    try {
-      const { data, error } = await supabase.from('categories').select('*').eq('slug', slug).single();
-      if (!error && data) return data as Category;
-    } catch (e) {
-      console.warn('Supabase fetch failed, using mock data');
-    }
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('slug', slug)
+      .eq('active', true)
+      .maybeSingle();
+    if (!error && data) return mapCategory(data as DBCategory);
+    if (error) console.warn('Supabase getCategoryBySlug failed:', error.message);
   }
-  return mockCategories.find(c => c.slug === slug) || null;
+  return mockCategories.find((c) => c.slug === slug) ?? null;
 }
 
-export async function getProducts(options?: { categorySlug?: string; search?: string; limit?: number; offset?: number }): Promise<Product[]> {
+/* ------------------------------------------------------------------ */
+/*  Products                                                           */
+/* ------------------------------------------------------------------ */
+
+interface ProductQuery {
+  categorySlug?: string;
+  search?: string;
+  featuredOnly?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+export async function getProducts(options: ProductQuery = {}): Promise<Product[]> {
   const supabase = getSupabase();
   if (supabase) {
-    try {
-      let query = supabase.from('products').select('*, categories!inner(slug)').order('created_at', { ascending: false });
-      
-      if (options?.categorySlug) {
-        query = query.eq('categories.slug', options.categorySlug);
-      }
-      
-      if (options?.search) {
-        const term = options.search.replace(/[,()]/g, ' ');
-        query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
-      }
-      
-      if (options?.limit) {
-        query = query.limit(options.limit);
-        if (options.offset) {
-          query = query.range(options.offset, options.offset + options.limit - 1);
-        }
-      }
+    let query = supabase
+      .from('products')
+      .select(PRODUCT_SELECT)
+      .eq('active', true)
+      .order('featured', { ascending: false })
+      .order('created_at', { ascending: false });
 
-      const { data, error } = await query;
-      if (!error && data) return data as Product[];
-    } catch (e) {
-      console.warn('Supabase fetch failed, using mock data');
+    if (options.categorySlug) {
+      const cat = await getCategoryBySlug(options.categorySlug);
+      if (!cat) return [];
+      query = query.eq('category_id', cat.id);
     }
+
+    if (options.featuredOnly) query = query.eq('featured', true);
+
+    if (options.search?.trim()) {
+      const term = options.search.replace(/[,()]/g, ' ').trim();
+      query = query.or(
+        `name.ilike.%${term}%,description.ilike.%${term}%,short_description.ilike.%${term}%`,
+      );
+    }
+
+    if (options.limit) {
+      const start = options.offset ?? 0;
+      query = query.range(start, start + options.limit - 1);
+    }
+
+    const { data, error } = await query;
+    if (!error && data) return (data as DBProductWithRelations[]).map(mapProduct);
+    if (error) console.warn('Supabase getProducts failed:', error.message);
   }
 
-  // Fallback to mock data
-  let filtered = [...mockProducts];
-  
-  if (options?.categorySlug) {
-    const category = mockCategories.find(c => c.slug === options.categorySlug);
-    if (category) {
-      filtered = filtered.filter(p => p.category_id === category.id);
-    } else {
-      return [];
-    }
+  // ---- mock fallback ---------------------------------------------------
+  let list = mockProducts.filter((p) => p.active !== false);
+
+  if (options.categorySlug) {
+    const cat = mockCategories.find((c) => c.slug === options.categorySlug);
+    if (!cat) return [];
+    list = list.filter((p) => p.category_id === cat.id);
   }
-  
-  if (options?.search) {
-    const searchLower = options.search.toLowerCase();
-    filtered = filtered.filter(p => 
-      p.name.toLowerCase().includes(searchLower) || 
-      p.description.toLowerCase().includes(searchLower)
+  if (options.featuredOnly) list = list.filter((p) => p.featured);
+  if (options.search?.trim()) {
+    const q = options.search.toLowerCase();
+    list = list.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q),
     );
   }
-  
-  if (options?.offset !== undefined && options?.limit !== undefined) {
-    filtered = filtered.slice(options.offset, options.offset + options.limit);
-  } else if (options?.limit) {
-    filtered = filtered.slice(0, options.limit);
+  if (options.offset !== undefined && options.limit !== undefined) {
+    list = list.slice(options.offset, options.offset + options.limit);
+  } else if (options.limit) {
+    list = list.slice(0, options.limit);
   }
-  
-  return filtered;
+  return list;
 }
 
-export async function getFeaturedProducts(limit: number = 6): Promise<Product[]> {
-  const supabase = getSupabase();
-  if (supabase) {
-    try {
-      const { data, error } = await supabase.from('products').select('*').eq('featured', true).limit(limit);
-      if (!error && data && data.length > 0) return data as Product[];
-    } catch (e) {
-      console.warn('Supabase fetch failed, using mock data');
-    }
-  }
-  return mockProducts.filter(p => p.featured).slice(0, limit);
+export async function getFeaturedProducts(limit = 6): Promise<Product[]> {
+  return getProducts({ featuredOnly: true, limit });
 }
 
-export async function getRelatedProducts(product: Product, limit: number = 4): Promise<Product[]> {
+export async function getRelatedProducts(
+  product: Product,
+  limit = 4,
+): Promise<Product[]> {
   const supabase = getSupabase();
   if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('category_id', product.category_id)
-        .neq('id', product.id)
-        .limit(limit);
-      if (!error && data) return data as Product[];
-    } catch (e) {
-      console.warn('Supabase fetch failed, using mock data');
-    }
+    const { data, error } = await supabase
+      .from('products')
+      .select(PRODUCT_SELECT)
+      .eq('active', true)
+      .eq('category_id', product.category_id)
+      .neq('id', product.id)
+      .limit(limit);
+    if (!error && data) return (data as DBProductWithRelations[]).map(mapProduct);
+    if (error) console.warn('Supabase getRelatedProducts failed:', error.message);
   }
   return mockProducts
-    .filter(p => p.category_id === product.category_id && p.id !== product.id)
+    .filter(
+      (p) =>
+        p.active !== false &&
+        p.category_id === product.category_id &&
+        p.id !== product.id,
+    )
     .slice(0, limit);
 }
 
-export async function getProductBySlug(slug: string): Promise<{ product: Product; category: Category } | null> {
+export async function getProductBySlug(
+  slug: string,
+): Promise<{ product: Product; category: Category } | null> {
   const supabase = getSupabase();
   if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*, category:categories(*)')
-        .eq('slug', slug)
-        .single();
-        
-      if (!error && data) {
-        return {
-          product: data as Product,
-          category: data.category as Category
-        };
-      }
-    } catch (e) {
-      console.warn('Supabase fetch failed, using mock data');
+    const { data, error } = await supabase
+      .from('products')
+      .select(PRODUCT_SELECT)
+      .eq('slug', slug)
+      .eq('active', true)
+      .maybeSingle();
+    if (!error && data) {
+      const row = data as DBProductWithRelations;
+      const product = mapProduct(row);
+      const category = row.category
+        ? mapCategory(row.category)
+        : mockCategories.find((c) => c.id === product.category_id);
+      if (category) return { product, category };
     }
+    if (error) console.warn('Supabase getProductBySlug failed:', error.message);
   }
-  
-  const product = mockProducts.find(p => p.slug === slug);
+
+  const product = mockProducts.find((p) => p.slug === slug && p.active !== false);
   if (!product) return null;
-  
-  const category = mockCategories.find(c => c.id === product.category_id);
+  const category = mockCategories.find((c) => c.id === product.category_id);
   if (!category) return null;
-  
   return { product, category };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Tags                                                               */
+/* ------------------------------------------------------------------ */
+
+export async function getTags(): Promise<Tag[]> {
+  const supabase = getSupabase();
+  if (supabase) {
+    const { data, error } = await supabase.from('tags').select('*').order('name');
+    if (!error && data) return (data as DBTag[]).map(mapTag);
+    if (error) console.warn('Supabase getTags failed:', error.message);
+  }
+  return [];
+}
+
+/* ------------------------------------------------------------------ */
+/*  Site settings                                                      */
+/* ------------------------------------------------------------------ */
+
+export async function getSiteSettings(): Promise<SiteSettings> {
+  const supabase = getSupabase();
+  if (supabase) {
+    const { data, error } = await supabase.from('site_settings').select('*');
+    if (!error && data && data.length > 0) {
+      const out: SiteSettings = {};
+      for (const row of data as DBSiteSetting[]) {
+        out[row.key] = row.value as never;
+      }
+      return out;
+    }
+    if (error) console.warn('Supabase getSiteSettings failed:', error.message);
+  }
+  return mockSiteSettings;
 }

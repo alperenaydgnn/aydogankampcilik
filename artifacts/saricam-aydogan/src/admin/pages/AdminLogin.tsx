@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { Trees, Eye, EyeOff } from "lucide-react";
 import { useAdminAuth } from "@/admin/context/AdminAuthContext";
+import { getSupabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,27 +11,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export default function AdminLogin() {
   const { login } = useAdminAuth();
   const [, setLocation] = useLocation();
+  const supabaseConfigured = !!getSupabase();
+
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const isConfigured = !!import.meta.env.VITE_ADMIN_PASSWORD;
+  const envPasswordConfigured = !!import.meta.env.VITE_ADMIN_PASSWORD;
+  const isConfigured = supabaseConfigured || envPasswordConfigured;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isConfigured) return;
     setError("");
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 300));
-    const ok = login(password);
+    const err = supabaseConfigured
+      ? await login(email, password)
+      : await login(password);
     setLoading(false);
-    if (ok) {
-      setLocation("/admin/urunler");
-    } else {
-      setError("Yanlış şifre. Lütfen tekrar deneyin.");
+    if (err) {
+      setError(err);
       setPassword("");
+      return;
     }
+    setLocation("/admin/urunler");
   };
 
   return (
@@ -49,20 +55,39 @@ export default function AdminLogin() {
         <Card>
           <CardHeader>
             <CardTitle>Giriş Yap</CardTitle>
-            <CardDescription>Devam etmek için admin şifresini girin.</CardDescription>
+            <CardDescription>
+              {supabaseConfigured
+                ? "Yetkili admin kullanıcı bilgilerinizi girin."
+                : "Devam etmek için admin şifresini girin."}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {!isConfigured ? (
               <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive space-y-1">
-                <p className="font-semibold">Admin şifresi yapılandırılmamış</p>
+                <p className="font-semibold">Admin paneli yapılandırılmamış</p>
                 <p className="text-destructive/80">
-                  Giriş yapabilmek için{" "}
-                  <code className="font-mono bg-destructive/10 px-1 rounded">VITE_ADMIN_PASSWORD</code>{" "}
-                  ortam değişkenini ayarlayın, ardından sunucuyu yeniden başlatın.
+                  Supabase için <code className="font-mono bg-destructive/10 px-1 rounded">VITE_SUPABASE_URL</code> ve{" "}
+                  <code className="font-mono bg-destructive/10 px-1 rounded">VITE_SUPABASE_ANON_KEY</code>, geliştirme modu için{" "}
+                  <code className="font-mono bg-destructive/10 px-1 rounded">VITE_ADMIN_PASSWORD</code> ortam değişkenini ayarlayın.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {supabaseConfigured && (
+                  <div className="space-y-2">
+                    <Label htmlFor="email">E-posta</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="admin@saricamaydogan.com"
+                      autoComplete="email"
+                      autoFocus
+                      required
+                    />
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="password">Şifre</Label>
                   <div className="relative">
@@ -71,10 +96,11 @@ export default function AdminLogin() {
                       type={show ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Admin şifrenizi girin"
+                      placeholder={supabaseConfigured ? "••••••••" : "Admin şifrenizi girin"}
                       autoComplete="current-password"
-                      autoFocus
+                      autoFocus={!supabaseConfigured}
                       className="pr-10"
+                      required
                     />
                     <button
                       type="button"
@@ -90,7 +116,11 @@ export default function AdminLogin() {
                   <p className="text-sm text-destructive font-medium">{error}</p>
                 )}
 
-                <Button type="submit" className="w-full" disabled={loading || !password}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={loading || !password || (supabaseConfigured && !email)}
+                >
                   {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
                 </Button>
               </form>
@@ -98,8 +128,10 @@ export default function AdminLogin() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-sm text-muted-foreground">
-          Şifrenizi <code className="font-mono bg-muted px-1 rounded">VITE_ADMIN_PASSWORD</code> ortam değişkeniyle ayarlayın.
+        <p className="text-center text-xs text-muted-foreground">
+          {supabaseConfigured
+            ? "Admin yetkisi için kullanıcının admin_users tablosunda kaydı olmalıdır."
+            : "Geliştirme modu — VITE_ADMIN_PASSWORD ile çalışıyor."}
         </p>
       </div>
     </div>

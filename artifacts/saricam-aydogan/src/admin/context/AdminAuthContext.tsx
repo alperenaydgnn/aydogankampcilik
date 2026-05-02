@@ -1,44 +1,136 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
+import { getSupabase } from "@/lib/supabase";
 
-const SESSION_KEY = "sa_admin_auth";
+/**
+ * Admin auth context.
+ *
+ * Two flows supported:
+ *
+ *  1. **Supabase Auth** (production) — when `VITE_SUPABASE_URL` /
+ *     `VITE_SUPABASE_ANON_KEY` are configured. Login uses
+ *     `signInWithPassword`; the user is only treated as admin if their
+ *     `auth.users.id` is present in the `public.admin_users` table
+ *     (verified via a select that only succeeds when RLS allows it).
+ *
+ *  2. **Env-password fallback** (dev) — when Supabase env vars are not
+ *     set, fall back to a single-shared-password gate driven by
+ *     `VITE_ADMIN_PASSWORD`, persisted in `sessionStorage`.
+ */
+
+const SESSION_KEY = "sa_admin_auth_dev";
 
 interface AdminAuthContextType {
   isAuthenticated: boolean;
-  login: (password: string) => boolean;
-  logout: () => void;
+  loading: boolean;
+  email: string | null;
+  /** Returns an error message on failure, or `null` on success. */
+  login: (emailOrPassword: string, password?: string) => Promise<string | null>;
+  logout: () => Promise<void>;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | null>(null);
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return sessionStorage.getItem(SESSION_KEY) === "1";
-  });
+  const supabase = getSupabase();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [email, setEmail] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(!!supabase);
 
+  /** Verify the current Supabase user is registered in admin_users. */
+  const verifyAdmin = useCallback(async (userId: string): Promise<boolean> => {
+    if (!supabase) return false;
+    const { data, error } = await supabase
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (error) {
+      console.warn("admin verify failed:", error.message);
+      return false;
+    }
+    return !!data;
+  }, [supabase]);
+
+  // Bootstrap auth state
   useEffect(() => {
-    if (isAuthenticated) {
-      sessionStorage.setItem(SESSION_KEY, "1");
-    } else {
-      sessionStorage.removeItem(SESSION_KEY);
+    if (!supabase) {
+      setIsAuthenticated(sessionStorage.getItem(SESSION_KEY) === "1");
+      setLoading(false);
+      return;
     }
-  }, [isAuthenticated]);
 
-  const login = (password: string): boolean => {
-    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
-    if (!adminPassword) return false;
-    if (password === adminPassword) {
-      setIsAuthenticated(true);
-      return true;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+      if (cancelled) return;
+      if (session?.user) {
+        const ok = await verifyAdmin(session.user.id);
+        if (cancelled) return;
+        setIsAuthenticated(ok);
+        setEmail(ok ? session.user.email ?? null : null);
+        if (!ok) await supabase.auth.signOut();
+      }
+      setLoading(false);
+    })();
+
+    const { data: sub } = supabase.auth.onAuthStateChange(async (_e, session) => {
+      if (!session?.user) {
+        setIsAuthenticated(false);
+        setEmail(null);
+        return;
+      }
+      const ok = await verifyAdmin(session.user.id);
+      setIsAuthenticated(ok);
+      setEmail(ok ? session.user.email ?? null : null);
+    });
+
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
+  }, [supabase, verifyAdmin]);
+
+  const login = async (emailOrPassword: string, password?: string): Promise<string | null> => {
+    if (!supabase) {
+      // Env-password fallback (no Supabase configured)
+      const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+      if (!adminPassword) return "Admin paneli yapılandırılmamış (VITE_ADMIN_PASSWORD veya Supabase eksik).";
+      if (emailOrPassword === adminPassword) {
+        setIsAuthenticated(true);
+        sessionStorage.setItem(SESSION_KEY, "1");
+        return null;
+      }
+      return "Yanlış şifre.";
     }
-    return false;
+
+    if (!password) return "E-posta ve şifre gerekli.";
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: emailOrPassword,
+      password,
+    });
+    if (error) return error.message;
+    if (!data.user) return "Giriş başarısız oldu.";
+
+    const ok = await verifyAdmin(data.user.id);
+    if (!ok) {
+      await supabase.auth.signOut();
+      return "Bu kullanıcı admin yetkisine sahip değil.";
+    }
+    setIsAuthenticated(true);
+    setEmail(data.user.email ?? null);
+    return null;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    if (supabase) await supabase.auth.signOut();
+    sessionStorage.removeItem(SESSION_KEY);
     setIsAuthenticated(false);
+    setEmail(null);
   };
 
   return (
-    <AdminAuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AdminAuthContext.Provider value={{ isAuthenticated, loading, email, login, logout }}>
       {children}
     </AdminAuthContext.Provider>
   );
