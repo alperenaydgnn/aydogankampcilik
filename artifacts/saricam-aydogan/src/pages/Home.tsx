@@ -14,8 +14,10 @@ import { Product, Category } from "@/lib/mockData";
 import { ProductCard } from "@/components/ProductCard";
 import { CategoryCard } from "@/components/CategoryCard";
 import { BlurImage } from "@/components/BlurImage";
+import { HeroSlider } from "@/components/HeroSlider";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
 import { useSiteSettings } from "@/lib/useSiteSettings";
+import { mockSiteSettings } from "@/lib/mockData";
 
 /* ─── Main component (Meridian editorial) ─────────────────── */
 export default function Home() {
@@ -52,26 +54,25 @@ export default function Home() {
       </Helmet>
 
       {/* ════════════════════════════════════════
-          § HERO — Full-bleed cinematic
+          § HERO — Full-bleed cinematic slider
       ════════════════════════════════════════ */}
       <section
         aria-label="Ana Görsel"
         className="relative flex items-end overflow-hidden bg-primary"
         style={{ height: "100dvh", minHeight: 640 }}
       >
-        {/* Background image */}
+        {/* Background slider — 6 images, 4s auto-slide left */}
         <div className="absolute inset-0 z-0">
-          <BlurImage
-            src={`${base}/mock/hero.jpg`}
-            alt="Karadeniz kamp ve balık doğası"
-            wrapperClassName="absolute inset-0"
-            className="w-full h-full object-cover"
-            loading="eager"
-            fetchPriority="high"
-            fadeMs={650}
+          <HeroSlider
+            images={
+              Array.isArray(settings.hero_images) && settings.hero_images.length > 0
+                ? settings.hero_images
+                : (mockSiteSettings.hero_images ?? [`${base}/mock/hero.jpg`])
+            }
+            intervalMs={4000}
           />
           {/* Cinematic gradient — darker bottom */}
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/55 via-primary/35 to-primary" />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/55 via-primary/35 to-primary pointer-events-none" />
         </div>
 
         {/* Content — anchored bottom-left, editorial */}
@@ -181,10 +182,10 @@ export default function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
             {categories.length === 0
-              ? [1, 2, 3, 4].map(i => (
+              ? [1, 2, 3, 4, 5, 6, 7, 8].map(i => (
                   <div key={i} className="aspect-[3/4] skeleton" />
                 ))
-              : categories.map((cat, i) => (
+              : categories.slice(0, 8).map((cat, i) => (
                   <CategoryCard key={cat.id} category={cat} index={i} />
                 ))
             }

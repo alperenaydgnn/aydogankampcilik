@@ -31,6 +31,7 @@ import AdminLogin from "@/admin/pages/AdminLogin";
 import AdminProducts from "@/admin/pages/AdminProducts";
 import AdminProductForm from "@/admin/pages/AdminProductForm";
 import AdminCategories from "@/admin/pages/AdminCategories";
+import AdminSiteSettings from "@/admin/pages/AdminSiteSettings";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,9 @@ function AdminRouter() {
         </Route>
         <Route path="/admin/kategoriler">
           <PrivateRoute><AdminCategories /></PrivateRoute>
+        </Route>
+        <Route path="/admin/anasayfa">
+          <PrivateRoute><AdminSiteSettings /></PrivateRoute>
         </Route>
         <Route path="/admin">
           <Redirect to="/admin/urunler" />

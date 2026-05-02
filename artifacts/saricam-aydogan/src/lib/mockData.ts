@@ -50,6 +50,7 @@ export type SiteSettings = Record<string, unknown> & {
   map_url?: string;
   hero_title?: string;
   hero_subtitle?: string;
+  hero_images?: string[];
   working_hours?: string;
   social?: { instagram?: string; facebook?: string; [k: string]: string | undefined };
 };
@@ -156,6 +157,16 @@ export const mockCategories: Category[] = [
     image_url: asset('/mock/product-6.jpg'),
     active: true,
     sort_order: 7,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'c-8',
+    name: 'Çakmak & Ateş Ekipmanları',
+    slug: 'cakmak-ve-ates',
+    description: 'Rüzgar geçirmez çakmaklar, çakmaktaşları, fitil ve kamp ateşi tutuşturma ekipmanları — her koşulda güvenli ateş.',
+    image_url: asset('/mock/product-2.jpg'),
+    active: true,
+    sort_order: 8,
     created_at: new Date().toISOString(),
   },
 ];
@@ -392,6 +403,14 @@ export const mockSiteSettings: SiteSettings = {
   map_url: 'https://maps.app.goo.gl/saricam-aydogan',
   hero_title: "Karadeniz'in Doğasına Hazır Ol",
   hero_subtitle: "Trabzon'un kalbinde 25 yıllık tecrübeyle kamp ve balıkçı malzemeleri.",
+  hero_images: [
+    asset('/mock/hero.jpg'),
+    asset('/mock/category-cadir.jpg'),
+    asset('/mock/category-olta.jpg'),
+    asset('/mock/category-aydinlatma.jpg'),
+    asset('/mock/category-aksesuar.jpg'),
+    asset('/mock/product-5.jpg'),
+  ],
   working_hours: 'Pzt–Cmt 09:00–19:00',
   social: {
     instagram: 'https://instagram.com/saricamaydogan',

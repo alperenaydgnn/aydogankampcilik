@@ -350,3 +350,26 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   }
   return mockSiteSettings;
 }
+
+/**
+ * Upsert a single site_settings row by key. Stores the value under the
+ * `value` JSON column. Returns true on success, false otherwise.
+ *
+ * Mock mode (no Supabase): no-op success — the change won't persist.
+ */
+export async function saveSiteSetting(
+  key: string,
+  value: unknown,
+): Promise<boolean> {
+  const supabase = getSupabase();
+  if (!supabase) return true;
+  const { error } = await supabase
+    .from('site_settings')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .upsert({ key, value: value as any }, { onConflict: 'key' });
+  if (error) {
+    console.warn('Supabase saveSiteSetting failed:', error.message);
+    return false;
+  }
+  return true;
+}

@@ -16,17 +16,19 @@ export function CategoryCard({ category, index = 0 }: { category: Category; inde
     >
       <Link href={`/urunler/${category.slug}`} className="block group">
         {/* Editorial bare image */}
-        <div className="relative overflow-hidden bg-foreground/5">
+        <div className="relative overflow-hidden bg-foreground/5 transition-transform duration-500 ease-out group-hover:-translate-y-1.5">
           <AspectRatio ratio={3 / 4}>
             <BlurImage
               src={category.image_url}
               alt={category.name}
               wrapperClassName="absolute inset-0"
-              className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+              className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.07]"
               loading="lazy"
             />
-            {/* Subtle gradient bottom */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+            {/* Subtle gradient bottom — intensifies on hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent transition-opacity duration-500 group-hover:from-black/55" />
+            {/* Hairline accent that grows in on hover */}
+            <div className="absolute left-5 right-5 bottom-[5.5rem] md:bottom-[6.5rem] h-px bg-white/0 group-hover:bg-white/60 origin-left scale-x-0 group-hover:scale-x-100 transition-all duration-500 ease-out" />
 
             {/* Top-left index */}
             <div className="absolute top-5 left-5 text-[0.65rem] font-bold uppercase tracking-[0.25em] text-white/85">

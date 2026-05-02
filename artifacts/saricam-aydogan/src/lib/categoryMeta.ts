@@ -109,6 +109,19 @@ export const categoryMetas: CategoryMeta[] = [
     accentColor: 'hsl(149 43% 17%)',
     keywords: ['outdoor ekipmanları', 'trekking bıçağı', 'multi-tool', 'survival kit', 'doğa yürüyüşü'],
   },
+  {
+    slug: 'cakmak-ve-ates',
+    seoTitle: 'Çakmak & Ateş Ekipmanları — Rüzgar Geçirmez',
+    seoDescription: 'Rüzgar geçirmez çakmaklar, çakmaktaşları, magnezyum çubuk ve kamp ateşi tutuşturucular. Yağmurda ve nemde çalışan güvenli ateş ekipmanları.',
+    heroTitle: 'Çakmak & Ateş Ekipmanları',
+    heroSubtitle: 'Rüzgarda, yağmurda, nemde — her koşulda güvenli ateş',
+    infoTitle: 'Doğru Ateş Ekipmanı Nasıl Seçilir?',
+    infoText: 'Kamp ve outdoor maceralarında ateş hayati bir ihtiyaçtır — sıcaklık, yemek pişirme ve güvenlik için vazgeçilmezdir. Rüzgar geçirmez plazma çakmaklar yağmurlu ve rüzgarlı havada bile güvenle çalışır; pille şarj edildikleri için yakıt taşıma derdi yoktur. Magnezyum çakmaktaşı (ferro rod) ise nemde bile binlerce kıvılcım üreten en güvenilir survival ekipmanıdır. Tutuşturucu fitil ve kamp ateşi başlatıcılar ıslak odunla bile ateş yakmanızı sağlar. Karadeniz\'in nemli ikliminde her kamp çantasında rüzgar geçirmez bir çakmak ve magnezyum çubuk bulunmalıdır.',
+    whatsappMessage: 'Merhaba! Çakmak ve ateş ekipmanları için yardım istiyorum.',
+    icon: '🔥',
+    accentColor: 'hsl(20 80% 45%)',
+    keywords: ['çakmak', 'plazma çakmak', 'çakmaktaşı', 'magnezyum çubuk', 'kamp ateşi', 'tutuşturucu'],
+  },
 ];
 
 export const allProductsMeta = {

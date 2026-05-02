@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { ReactNode } from "react";
-import { Trees, Package, Tag, LogOut, Menu, X } from "lucide-react";
+import { Trees, Package, Tag, LogOut, Menu, X, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { useAdminAuth } from "@/admin/context/AdminAuthContext";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { label: "Ürünler", href: "/admin/urunler", icon: Package },
   { label: "Kategoriler", href: "/admin/kategoriler", icon: Tag },
+  { label: "Anasayfa Görselleri", href: "/admin/anasayfa", icon: ImageIcon },
 ];
 
 function NavLink({ href, icon: Icon, label }: { href: string; icon: React.ElementType; label: string }) {

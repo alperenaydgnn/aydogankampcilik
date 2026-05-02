@@ -70,7 +70,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
     >
       {/* Editorial bare image */}
       <Link href={`/urun/${product.slug}`} tabIndex={-1} aria-hidden className="block">
-        <div className="product-card-image relative">
+        <div className="product-card-image relative overflow-hidden bg-foreground/5 transition-transform duration-500 ease-out group-hover:-translate-y-1.5">
           {/* Out of stock overlay */}
           {isOOS && (
             <div className="absolute inset-0 z-10 bg-background/70 flex items-center justify-center">
@@ -85,9 +85,11 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
               src={product.images[0]}
               alt={product.name}
               wrapperClassName="absolute inset-0"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
               loading="lazy"
             />
+            {/* Subtle dark wash on hover for editorial depth */}
+            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-500" />
           </AspectRatio>
         </div>
       </Link>
