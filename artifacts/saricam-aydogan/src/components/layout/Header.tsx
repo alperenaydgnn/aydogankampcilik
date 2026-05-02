@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Instagram } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
@@ -108,6 +108,22 @@ export function Header() {
           >
             Bize Ulaşın
           </a>
+
+          <a
+            href="https://www.instagram.com/aydogankamcilik/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram'da takip edin"
+            className={cn(
+              "inline-flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-300 ease-out",
+              "hover:scale-105 hover:-rotate-3",
+              onDark
+                ? "border-white/30 text-white/85 hover:text-white hover:border-white/70 hover:bg-white/10"
+                : "border-foreground/15 text-foreground/70 hover:text-secondary hover:border-secondary/60 hover:bg-secondary/5"
+            )}
+          >
+            <Instagram className="w-[18px] h-[18px]" strokeWidth={1.75} />
+          </a>
         </div>
 
         {/* Mobile toggle */}
@@ -183,6 +199,17 @@ export function Header() {
                   className="btn-cta-amber btn-cta w-full justify-center"
                 >
                   WhatsApp'tan Ulaşın
+                </a>
+
+                <a
+                  href="https://www.instagram.com/aydogankamcilik/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={closeMobile}
+                  className="mt-4 inline-flex items-center justify-center gap-2.5 w-full py-3 rounded-full border border-foreground/15 text-foreground/70 hover:text-secondary hover:border-secondary/60 hover:bg-secondary/5 transition-all duration-300 text-[0.7rem] font-bold uppercase tracking-[0.22em]"
+                >
+                  <Instagram className="w-4 h-4" strokeWidth={1.75} />
+                  Instagram
                 </a>
               </motion.div>
             </motion.div>
