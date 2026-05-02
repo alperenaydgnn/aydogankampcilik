@@ -12,7 +12,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { CategoryCard } from "@/components/CategoryCard";
 import { SectionHeading } from "@/components/SectionHeading";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
-import { useSiteSettings } from "@/lib/SiteSettingsContext";
+import { useSiteSettings } from "@/lib/useSiteSettings";
 import { cn } from "@/lib/utils";
 
 /* ─── Counter hook ─────────────────────────────────────────── */

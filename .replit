@@ -34,3 +34,8 @@ externalPort = 3001
 [[ports]]
 localPort = 20167
 externalPort = 3000
+
+[userenv]
+
+[userenv.development]
+VITE_ADMIN_PASSWORD = "admin123"

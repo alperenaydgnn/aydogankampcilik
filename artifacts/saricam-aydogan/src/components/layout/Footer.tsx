@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { Trees, MapPin, Phone, Mail, Instagram, Facebook, MessageCircle, Clock } from "lucide-react";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
-import { useSiteSettings } from "@/lib/SiteSettingsContext";
+import { useSiteSettings } from "@/lib/useSiteSettings";
 
 export function Footer() {
   const settings = useSiteSettings();

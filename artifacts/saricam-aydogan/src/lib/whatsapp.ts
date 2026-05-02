@@ -1,4 +1,4 @@
-import { useSiteSettings } from "./SiteSettingsContext";
+import { useSiteSettings } from "./useSiteSettings";
 
 const DEFAULT_NUMBER = "905551112233";
 const SITE_URL = "https://saricamaydogan.com";
