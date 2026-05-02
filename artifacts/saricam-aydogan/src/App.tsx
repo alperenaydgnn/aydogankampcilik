@@ -25,7 +25,15 @@ import AdminCategories from "@/admin/pages/AdminCategories";
 const queryClient = new QueryClient();
 
 function PrivateRoute({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAdminAuth();
+  const { isAuthenticated, loading } = useAdminAuth();
+  // While Supabase is restoring the session, don't bounce a valid admin to login.
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div className="h-10 w-10 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+      </div>
+    );
+  }
   if (!isAuthenticated) return <Redirect to="/admin/login" />;
   return <AdminLayout>{children}</AdminLayout>;
 }

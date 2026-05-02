@@ -63,11 +63,7 @@ create table public.products (
   whatsapp_message  text,
   meta_title        text,
   meta_description  text,
-  search_vector     tsvector generated always as (
-    setweight(to_tsvector('simple', unaccent(coalesce(name, ''))),              'A') ||
-    setweight(to_tsvector('simple', unaccent(coalesce(short_description, ''))), 'B') ||
-    setweight(to_tsvector('simple', unaccent(coalesce(description, ''))),       'C')
-  ) stored,
+  search_vector     tsvector,
   created_at        timestamptz not null default now(),
   updated_at        timestamptz not null default now()
 );
@@ -80,6 +76,25 @@ create index products_search_idx   on public.products using gin (search_vector);
 create trigger products_set_updated_at
   before update on public.products
   for each row execute function public.set_updated_at();
+
+-- search_vector is maintained by trigger (not a generated column) because
+-- unaccent() is STABLE, not IMMUTABLE, so PostgreSQL rejects it inside a
+-- generated-column expression.
+create or replace function public.products_search_vector_update()
+returns trigger language plpgsql as $$
+begin
+  new.search_vector :=
+    setweight(to_tsvector('simple', unaccent(coalesce(new.name, ''))),              'A') ||
+    setweight(to_tsvector('simple', unaccent(coalesce(new.short_description, ''))), 'B') ||
+    setweight(to_tsvector('simple', unaccent(coalesce(new.description, ''))),       'C');
+  return new;
+end;
+$$;
+
+create trigger products_search_vector_trigger
+  before insert or update of name, short_description, description
+  on public.products
+  for each row execute function public.products_search_vector_update();
 
 -- ---------------------------------------------------------------------
 -- product_images
