@@ -1,13 +1,14 @@
 import { Link } from "wouter";
-import { motion } from "framer-motion";
+import { motion, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
-import { AlertTriangle, XCircle } from "lucide-react";
+import { AlertTriangle, XCircle, ArrowUpRight } from "lucide-react";
 import { Product, Category, StockStatus } from "@/lib/mockData";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { BlurImage } from "@/components/BlurImage";
 import { getCategories } from "@/lib/data";
 import { buildProductMessage } from "@/lib/whatsapp";
 import { WhatsAppButton, OutOfStockButton } from "@/components/WhatsAppButton";
+import { useTilt } from "@/lib/useTilt";
 import { cn } from "@/lib/utils";
 
 /* ── Shared category cache ────────────────────────────── */
@@ -55,112 +56,166 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
   const category = categories.find(c => c.id === product.category_id);
   const isOOS = product.stock_status === "out_of_stock";
 
+  const { ref, rotateX, rotateY, shineX, shineY, isHovered, onMove, onEnter, onLeave, reduced } = useTilt(5);
+  // Radial spotlight that follows the cursor — opacity bound to hover
+  const spotlight = useTransform(
+    [shineX, shineY, isHovered],
+    ([x, y, h]) =>
+      `radial-gradient(420px circle at ${x} ${y}, rgba(255,255,255,${0.18 * (h as number)}), transparent 55%)`
+  );
+
   const waMessage = category
     ? buildProductMessage(product, category)
     : `Merhaba! 👋\n\n📦 *${product.name}* ürünü hakkında bilgi almak istiyorum.\n\nStok teyidi alabilir miyim?`;
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.6, delay: Math.min(index * 0.06, 0.3), ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.7, delay: Math.min(index * 0.06, 0.35), ease: [0.22, 1, 0.36, 1] }}
       className={cn("group product-card flex flex-col", isOOS && "opacity-60")}
       aria-label={product.name}
     >
-      {/* Editorial bare image */}
-      <Link href={`/urun/${product.slug}`} tabIndex={-1} aria-hidden className="block">
-        <div className="product-card-image relative overflow-hidden bg-foreground/5 transition-transform duration-500 ease-out group-hover:-translate-y-1.5">
-          {/* Out of stock overlay */}
-          {isOOS && (
-            <div className="absolute inset-0 z-10 bg-background/70 flex items-center justify-center">
-              <span className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-red-700 bg-background px-4 py-1.5 border border-red-300">
-                Tükendi
-              </span>
-            </div>
-          )}
+      {/* Tilt shell — owns mouse listeners + perspective transform */}
+      <motion.div
+        ref={ref}
+        onMouseMove={onMove}
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
+        style={reduced ? undefined : { rotateX, rotateY, transformPerspective: 1100, transformStyle: "preserve-3d" }}
+        className="flex flex-col flex-1 will-change-transform"
+      >
+        {/* Editorial bare image */}
+        <Link href={`/urun/${product.slug}`} tabIndex={-1} aria-hidden className="block">
+          <div className="product-card-image relative overflow-hidden bg-foreground/5 transition-transform duration-500 ease-out group-hover:-translate-y-2">
+            {/* Out of stock overlay */}
+            {isOOS && (
+              <div className="absolute inset-0 z-30 bg-background/70 flex items-center justify-center">
+                <span className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-red-700 bg-background px-4 py-1.5 border border-red-300">
+                  Tükendi
+                </span>
+              </div>
+            )}
 
-          <AspectRatio ratio={4 / 5}>
-            <BlurImage
-              src={product.images[0]}
-              alt={product.name}
-              wrapperClassName="absolute inset-0"
-              className="w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
-              loading="lazy"
-            />
-            {/* Subtle dark wash on hover for editorial depth */}
-            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-500" />
-          </AspectRatio>
-        </div>
-      </Link>
+            <AspectRatio ratio={4 / 5}>
+              <BlurImage
+                src={product.images[0]}
+                alt={product.name}
+                wrapperClassName="absolute inset-0"
+                className="w-full h-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.08]"
+                loading="lazy"
+              />
 
-      {/* Editorial body */}
-      <div className="flex flex-col flex-1 pt-6 gap-3">
-        {/* Category eyebrow */}
-        {category && (
-          <span className="text-[0.65rem] font-bold uppercase tracking-[0.22em] text-foreground/45">
-            {category.name}
-            {product.is_new && <span className="ml-2 text-secondary">— Yeni</span>}
-          </span>
-        )}
+              {/* Cursor-following radial spotlight */}
+              {!reduced && (
+                <motion.div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 mix-blend-soft-light"
+                  style={{ background: spotlight }}
+                />
+              )}
 
-        {/* Title (Fraunces) */}
-        <Link href={`/urun/${product.slug}`} className="flex-1">
-          <h3 className="font-serif font-light text-xl md:text-2xl leading-snug text-primary tracking-tight line-clamp-2 group-hover:text-secondary transition-colors duration-300">
-            {product.name}
-          </h3>
+              {/* Diagonal sheen sweep (CSS keyframe, triggers on hover) */}
+              <div aria-hidden className="card-sheen pointer-events-none absolute inset-0 overflow-hidden" />
+
+              {/* Subtle dark wash on hover for editorial depth */}
+              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-500" />
+
+              {/* Top-right circular arrow chip — slides + rotates in on hover */}
+              {!isOOS && (
+                <div
+                  aria-hidden
+                  className="absolute top-3 right-3 z-20 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm border border-foreground/8
+                             flex items-center justify-center shadow-sm
+                             opacity-0 -translate-y-1 translate-x-1 scale-90
+                             group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 group-hover:scale-100
+                             transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                  style={{ transform: "translateZ(40px)" } as React.CSSProperties}
+                >
+                  <ArrowUpRight className="w-4 h-4 text-primary group-hover:rotate-12 transition-transform duration-500 ease-out" />
+                </div>
+              )}
+            </AspectRatio>
+          </div>
         </Link>
 
-        {/* Stock + Price row */}
-        <div className="flex items-baseline justify-between pt-2">
-          <span
-            className={cn(
-              "font-serif",
-              product.price_numeric
-                ? "text-primary text-lg font-medium tracking-tight"
-                : "text-foreground/50 text-sm italic"
-            )}
-          >
-            {product.price_label}
-          </span>
-          {product.stock_status && product.stock_status !== "in_stock" ? (
-            <StockBadge status={product.stock_status} />
-          ) : (
-            <span className="inline-flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.18em] text-emerald-700">
-              <span className="w-1 h-1 rounded-full bg-emerald-600" />
-              Stokta
+        {/* Editorial body */}
+        <div className="flex flex-col flex-1 pt-6 gap-3">
+          {/* Category eyebrow */}
+          {category && (
+            <span className="text-[0.65rem] font-bold uppercase tracking-[0.22em] text-foreground/45 inline-flex items-center gap-2">
+              <span className="inline-block w-3 h-px bg-foreground/30 group-hover:w-6 group-hover:bg-secondary transition-all duration-500 ease-out" />
+              {category.name}
+              {product.is_new && <span className="ml-1 text-secondary">— Yeni</span>}
             </span>
           )}
-        </div>
 
-        {/* Hairline */}
-        <div className="h-px w-full bg-foreground/10 mt-2" />
+          {/* Title (Fraunces) — animated underline draw */}
+          <Link href={`/urun/${product.slug}`} className="flex-1">
+            <h3 className="font-serif font-light text-xl md:text-2xl leading-snug text-primary tracking-tight line-clamp-2
+                           group-hover:text-secondary transition-colors duration-300 inline-block">
+              <span className="bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat bg-[length:0%_1px] bg-[position:0_100%]
+                               group-hover:bg-[length:100%_1px] transition-[background-size] duration-700 ease-out">
+                {product.name}
+              </span>
+            </h3>
+          </Link>
 
-        {/* CTA */}
-        <div className="pt-1">
-          {isOOS ? (
-            <OutOfStockButton size="sm" fullWidth />
-          ) : (
-            <WhatsAppButton
-              message={waMessage}
-              tracking={{
-                event: "product_order",
-                source: "product_card",
-                product_id: product.id,
-                product_name: product.name,
-                product_slug: product.slug,
-                category_id: product.category_id,
-                category_name: category?.name,
-                price_numeric: product.price_numeric ?? undefined,
-              }}
-              size="sm"
-              fullWidth
-              label="WhatsApp ile Sipariş"
-              onClick={e => e.stopPropagation()}
-            />
-          )}
+          {/* Stock + Price row */}
+          <div className="flex items-baseline justify-between pt-2">
+            <span
+              className={cn(
+                "font-serif",
+                product.price_numeric
+                  ? "text-primary text-lg font-medium tracking-tight"
+                  : "text-foreground/50 text-sm italic"
+              )}
+            >
+              {product.price_label}
+            </span>
+            {product.stock_status && product.stock_status !== "in_stock" ? (
+              <StockBadge status={product.stock_status} />
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.18em] text-emerald-700">
+                <span className="w-1 h-1 rounded-full bg-emerald-600 animate-pulse-soft" />
+                Stokta
+              </span>
+            )}
+          </div>
+
+          {/* Hairline that grows on hover */}
+          <div className="relative h-px w-full bg-foreground/10 mt-2 overflow-hidden">
+            <span aria-hidden
+              className="absolute inset-y-0 left-0 w-0 bg-secondary group-hover:w-full transition-[width] duration-700 ease-out" />
+          </div>
+
+          {/* CTA */}
+          <div className="pt-1">
+            {isOOS ? (
+              <OutOfStockButton size="sm" fullWidth />
+            ) : (
+              <WhatsAppButton
+                message={waMessage}
+                tracking={{
+                  event: "product_order",
+                  source: "product_card",
+                  product_id: product.id,
+                  product_name: product.name,
+                  product_slug: product.slug,
+                  category_id: product.category_id,
+                  category_name: category?.name,
+                  price_numeric: product.price_numeric ?? undefined,
+                }}
+                size="sm"
+                fullWidth
+                label="WhatsApp ile Sipariş"
+                onClick={e => e.stopPropagation()}
+              />
+            )}
+          </div>
         </div>
-      </div>
+      </motion.div>
     </motion.article>
   );
 }
