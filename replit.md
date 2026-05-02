@@ -73,21 +73,29 @@ Turkish e-commerce storefront for camping & fishing equipment. No online checkou
 - `/admin/kategoriler` — Category management (CRUD, image preview)
 
 **Admin features:**
-- Session-based auth via `sessionStorage` + `VITE_ADMIN_PASSWORD` env var
-- Supabase Storage image upload (drag-drop or file picker)
-- Dynamic key-value specs editor
-- Sortable image URL list with thumbnail preview
-- Confirmation dialogs for deletes, toast notifications for all actions
-- Responsive sidebar layout (collapsible on mobile)
+- Auth: Supabase Auth (`signInWithPassword`) gated by `admin_users` membership; falls back to a single `VITE_ADMIN_PASSWORD` shared password when Supabase isn't configured
+- Soft delete everywhere: products & categories use `active=false` instead of hard delete (avoids FK conflicts, reversible from the admin UI)
+- Status filter (Tümü / Yayında / Gizli) and inline yayın switch on the products table; "Gizli" badge on inactive rows
+- Numeric price + old_price + price_label override; stock count (auto-derived `stock_status`: 0 → out_of_stock, 1-10 → low_stock, >10 → in_stock)
+- Tag picker (multi-select chips) re-syncs `product_tags` on save; image list re-syncs `product_images` (first image marked `is_primary=true`)
+- SEO meta_title / meta_description fields, short_description for catalog cards
+- Supabase Storage image upload + sortable URL list, dynamic key-value specs editor
+- Confirmation dialogs, toast notifications, responsive sidebar
+
+**Backend (Supabase):**
+- Versioned migrations in `supabase/migrations/0001_init.sql` (apply via Dashboard → SQL editor; CLI not used)
+- Seed data in `supabase/seed.sql` (7 categories, 17 products, tags, product_images, site_settings)
+- Setup walkthrough in `supabase/README.md`
+- Tables: `categories`, `products`, `product_images`, `tags`, `product_tags`, `admin_users`, `site_settings` — all with RLS enabled
+- RLS model: anon can SELECT only `active=true` rows; full CRUD for users in `admin_users` via `is_admin()` (security definer, granted to anon/authenticated)
+- TypeScript types: `src/lib/database.types.ts` mirrors the DB; `src/lib/data.ts` maps DB rows → app `Product`/`Category` shapes via `PRODUCT_SELECT = "*, category:categories(*), product_images(*), product_tags(tag:tags(*))"`
 
 **Environment variables:**
 - `VITE_SUPABASE_URL` — Supabase project URL
 - `VITE_SUPABASE_ANON_KEY` — Supabase anon key
 - `VITE_WHATSAPP_NUMBER` — WhatsApp number (default: `905551112233`)
-- `VITE_ADMIN_PASSWORD` — Admin panel password (default: `admin123`)
-
-**Supabase tables:** `categories(id, name, slug, description, image_url, created_at)`, `products(id, name, slug, category_id, description, specs jsonb, price_label, images text[], featured bool, whatsapp_message, created_at)`
+- `VITE_ADMIN_PASSWORD` — Dev-only fallback password when Supabase isn't configured
 
 **Supabase Storage:** `product-images` bucket for admin-uploaded images
 
-**Fallback:** All data falls back to rich Turkish mock data (4 categories, 12 products) when Supabase env vars are missing.
+**Fallback:** When `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` are missing, the data layer transparently falls back to rich Turkish mock data (7 categories, 17 products) and the admin login uses the shared `VITE_ADMIN_PASSWORD`.
