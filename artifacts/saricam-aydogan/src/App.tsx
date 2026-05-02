@@ -4,10 +4,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { HelmetProvider } from "react-helmet-async";
 import { ReactNode } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
+import { ScrollToTop, RouteProgress } from "@/components/RouteFx";
+import { pageVariants } from "@/lib/motion";
 
 import Home from "@/pages/Home";
 import Catalog from "@/pages/Catalog";
@@ -73,12 +76,28 @@ function AdminRouter() {
   );
 }
 
-function StoreFront() {
+function AnimatedRoutes() {
+  const [location] = useLocation();
+  const reduce = useReducedMotion();
+
+  // Use just the pathname (strip query/hash + trailing slashes) as the
+  // AnimatePresence key so within-page hash/query updates don't remount.
+  const routeKey =
+    location.split("?")[0].split("#")[0].replace(/\/+$/, "") || "/";
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-grow">
-        <Switch>
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={routeKey}
+        variants={reduce
+          ? { initial: { opacity: 0 }, enter: { opacity: 1, transition: { duration: 0.12 } }, exit: { opacity: 0, transition: { duration: 0.08 } } }
+          : pageVariants}
+        initial="initial"
+        animate="enter"
+        exit="exit"
+        className="will-change-[opacity,transform]"
+      >
+        <Switch location={location}>
           <Route path="/" component={Home} />
           <Route path="/urunler" component={Catalog} />
           <Route path="/urunler/:kategori" component={Catalog} />
@@ -93,6 +112,19 @@ function StoreFront() {
           <Route path="/magaza-politikasi" component={StorePolicy} />
           <Route component={NotFound} />
         </Switch>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+function StoreFront() {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <ScrollToTop />
+      <RouteProgress />
+      <Header />
+      <main className="flex-grow">
+        <AnimatedRoutes />
       </main>
       <Footer />
       <WhatsAppFab />

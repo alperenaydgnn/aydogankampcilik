@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useScroll, useTransform, motion, useInView } from "framer-motion";
+import { useScroll, useTransform, motion, useInView, useReducedMotion, type MotionValue } from "framer-motion";
 import { Link } from "wouter";
 import {
   ArrowRight, Compass, Shield, Users, MapPin, MessageCircle,
@@ -17,6 +17,9 @@ import { Product, Category } from "@/lib/mockData";
 import { ProductCard } from "@/components/ProductCard";
 import { CategoryCard } from "@/components/CategoryCard";
 import { SectionHeading } from "@/components/SectionHeading";
+import { AmbientOrbs } from "@/components/AmbientOrbs";
+import { BlurImage } from "@/components/BlurImage";
+import { MagneticButton } from "@/components/MagneticButton";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
 import { useSiteSettings } from "@/lib/useSiteSettings";
 import { cn } from "@/lib/utils";
@@ -26,9 +29,12 @@ function useCounter(target: number, duration = 1600) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const reduce = useReducedMotion();
 
   useEffect(() => {
     if (!inView) return;
+    // Respect reduced-motion: snap straight to the final value.
+    if (reduce) { setCount(target); return; }
     let start = 0;
     const step = target / (duration / 16);
     const timer = setInterval(() => {
@@ -37,7 +43,7 @@ function useCounter(target: number, duration = 1600) {
       else setCount(Math.floor(start));
     }, 16);
     return () => clearInterval(timer);
-  }, [inView, target, duration]);
+  }, [inView, target, duration, reduce]);
 
   return { count, ref };
 }
@@ -63,9 +69,15 @@ function StatItem({ value, suffix, label, index }: { value: number; suffix: stri
 
 /* ─── Main component ───────────────────────────────────────── */
 export default function Home() {
+  const reduce = useReducedMotion();
   const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 900], [0, 260]);
-  const heroScale = useTransform(scrollY, [0, 900], [1, 1.08]);
+  // Always declare hooks unconditionally — pick which value to apply later.
+  const heroYLive     = useTransform(scrollY, [0, 900], [0, 260]);
+  const heroScaleLive = useTransform(scrollY, [0, 900], [1, 1.08]);
+  // Under reduced motion we just pass through static numbers (framer-motion
+  // accepts plain numbers for `style.y` / `style.scale` interchangeably).
+  const heroY:     MotionValue<number> | number = reduce ? 0 : heroYLive;
+  const heroScale: MotionValue<number> | number = reduce ? 1 : heroScaleLive;
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -123,14 +135,19 @@ export default function Home() {
           <div className="absolute inset-0 z-10" style={{
             background: "linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.62) 100%)"
           }} />
-          <img
+          <BlurImage
             src={`${base}/mock/hero.jpg`}
             alt="Doğada kamp alanı — Karadeniz kamp ve balık ekipmanları"
+            wrapperClassName="absolute inset-0"
             className="w-full h-full object-cover"
             loading="eager"
             fetchPriority="high"
+            fadeMs={650}
           />
         </motion.div>
+
+        {/* Ambient floating orbs (decorative, motion-safe) */}
+        <AmbientOrbs variant="mixed" size="lg" className="z-[1]" />
 
         {/* Content */}
         <div className="container relative z-20 px-4 md:px-6 text-center" style={{ marginTop: "5rem" }}>
@@ -180,21 +197,22 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.42 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12"
           >
-            <a
+            <MagneticButton
               href={whatsappGeneral}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-cta btn-cta-amber flex items-center gap-2 !px-7 !py-3.5 text-[0.95rem]"
+              external
+              ariaLabel="WhatsApp'tan Sipariş Ver"
+              className="rounded-full"
             >
-              <MessageCircle className="w-5 h-5" />
-              WhatsApp'tan Sipariş Ver
-            </a>
-            <Link
-              href="/urunler"
-              className="btn-ghost-white flex items-center gap-2 !px-7 !py-3.5 text-[0.95rem]"
-            >
-              Tüm Ürünleri İncele <ArrowRight className="w-4 h-4" />
-            </Link>
+              <span className="btn-cta btn-cta-amber flex items-center gap-2 !px-7 !py-3.5 text-[0.95rem]">
+                <MessageCircle className="w-5 h-5" />
+                WhatsApp'tan Sipariş Ver
+              </span>
+            </MagneticButton>
+            <MagneticButton href="/urunler" className="rounded-full">
+              <span className="btn-ghost-white flex items-center gap-2 !px-7 !py-3.5 text-[0.95rem]">
+                Tüm Ürünleri İncele <ArrowRight className="w-4 h-4" />
+              </span>
+            </MagneticButton>
           </motion.div>
 
           {/* Quick category chips */}

@@ -63,15 +63,16 @@ export function Header() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
+                    data-active={isActive ? "true" : "false"}
                     className={cn(
-                      "relative px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                      "nav-underline relative px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200",
                       isScrolled
                         ? isActive
-                          ? "text-primary bg-primary/8"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                          ? "text-primary"
+                          : "text-muted-foreground hover:text-foreground"
                         : isActive
-                          ? "text-white bg-white/15"
-                          : "text-white/75 hover:text-white hover:bg-white/10"
+                          ? "text-white"
+                          : "text-white/75 hover:text-white"
                     )}
                   >
                     {link.name}
@@ -79,10 +80,10 @@ export function Header() {
                       <motion.span
                         layoutId="nav-indicator"
                         className={cn(
-                          "absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full",
-                          isScrolled ? "bg-secondary" : "bg-white/70"
+                          "absolute left-3.5 right-3.5 -bottom-0.5 h-[2px] rounded-full",
+                          isScrolled ? "bg-secondary" : "bg-white"
                         )}
-                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
                       />
                     )}
                   </Link>

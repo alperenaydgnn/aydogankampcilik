@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Category } from "@/lib/mockData";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { BlurImage } from "@/components/BlurImage";
 
 export function CategoryCard({ category, index = 0 }: { category: Category; index?: number }) {
   return (
@@ -13,12 +14,13 @@ export function CategoryCard({ category, index = 0 }: { category: Category; inde
       transition={{ duration: 0.5, delay: index * 0.09, ease: [0.22, 1, 0.36, 1] }}
     >
       <Link href={`/urunler/${category.slug}`} className="block group">
-        <div className="relative overflow-hidden rounded-2xl shadow-card hover-lift">
+        <div className="relative overflow-hidden rounded-2xl shadow-card hover-lift card-glow">
           <AspectRatio ratio={3 / 4}>
             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/25 transition-colors duration-500 z-10" />
-            <img
+            <BlurImage
               src={category.image_url}
               alt={category.name}
+              wrapperClassName="absolute inset-0"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.08]"
               loading="lazy"
             />

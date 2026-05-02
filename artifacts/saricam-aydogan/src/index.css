@@ -606,3 +606,162 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* ─────────────────────────────────────────────────────────────────
+   PREMIUM MOTION UTILITIES
+   ───────────────────────────────────────────────────────────────── */
+@layer utilities {
+
+  /* ── Soft button press / ripple-feel ──────────── */
+  .btn-press {
+    transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 200ms ease;
+    will-change: transform;
+  }
+  .btn-press:hover {
+    transform: translateY(-1px);
+  }
+  .btn-press:active {
+    transform: translateY(0) scale(0.97);
+    transition-duration: 100ms;
+  }
+
+  /* ── Animated underline for nav links ─────────── */
+  /* Only shown on hover for INACTIVE links — the active link gets the
+     framer-motion `layoutId="nav-indicator"` indicator, so we explicitly
+     suppress this CSS underline when data-active is true to avoid doubling. */
+  .nav-underline {
+    position: relative;
+  }
+  .nav-underline::after {
+    content: "";
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    bottom: 0.35rem;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    opacity: 0.6;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nav-underline:not([data-active="true"]):hover::after,
+  .nav-underline:not([data-active="true"]):focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /* ── Card glow on hover (premium) ─────────────── */
+  .card-glow {
+    position: relative;
+    isolation: isolate;
+  }
+  .card-glow::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: radial-gradient(
+      400px circle at var(--mx, 50%) var(--my, 50%),
+      hsl(38 94% 55% / 0.18),
+      transparent 50%
+    );
+    opacity: 0;
+    transition: opacity 320ms ease;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .card-glow:hover::before {
+    opacity: 1;
+  }
+
+  /* ── Soft pulse for status pips ───────────────── */
+  @keyframes softPulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%     { opacity: 0.55; transform: scale(1.18); }
+  }
+  .pulse-soft {
+    animation: softPulse 2.4s ease-in-out infinite;
+  }
+
+  /* ── Floating chip / badge ────────────────────── */
+  @keyframes gentleFloat {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-4px); }
+  }
+  .float-soft {
+    animation: gentleFloat 4.5s ease-in-out infinite;
+  }
+
+  /* ── Image / hero zoom on hover ───────────────── */
+  .hover-zoom-img img {
+    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .hover-zoom-img:hover img {
+    transform: scale(1.05);
+  }
+
+  /* ── Marquee fade edges ───────────────────────── */
+  .fade-edges-x {
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%
+    );
+  }
+}
+
+/* Apply press feel to all primary CTAs by default — inlined so the
+   active-scale rule wins over the existing `transform: translateY(0)` on :active. */
+.btn-cta:active,
+.btn-cta-amber:active,
+.btn-ghost-white:active {
+  transform: translateY(0) scale(0.97) !important;
+  transition-duration: 100ms !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   REDUCED MOTION — universal guard
+   ─────────────────────────────────────────────────────────────────
+   Respect users who request less motion: kill long transitions,
+   loops, and parallax. Keep crossfades short for perceived speed.
+   ───────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration:        0.01ms !important;
+    animation-iteration-count: 1     !important;
+    transition-duration:       0.12s !important;
+    scroll-behavior:           auto  !important;
+  }
+  .skeleton          { animation: none !important; }
+  .pulse-soft        { animation: none !important; }
+  .float-soft        { animation: none !important; }
+  .whatsapp-fab-pulse{ animation: none !important; opacity: 0; }
+  .card-outdoor:hover,
+  .product-card:hover,
+  .hover-lift:hover,
+  .whatsapp-fab:hover,
+  .btn-cta:hover,
+  .btn-cta-amber:hover,
+  .btn-ghost-white:hover {
+    transform: none !important;
+  }
+  .img-zoom:hover img,
+  .hover-zoom-img:hover img {
+    transform: none !important;
+  }
+}
