@@ -158,10 +158,13 @@ export async function getProducts(options: ProductQuery = {}): Promise<Product[]
     if (options.featuredOnly) query = query.eq('featured', true);
 
     if (options.search?.trim()) {
-      const term = options.search.replace(/[,()]/g, ' ').trim();
-      query = query.or(
-        `name.ilike.%${term}%,description.ilike.%${term}%,short_description.ilike.%${term}%`,
-      );
+      const term = options.search.trim();
+      // Use the indexed full-text search column when available; falls back to
+      // ilike automatically if textSearch returns no results (handled below).
+      query = query.textSearch('search_vector', term, {
+        type: 'websearch',
+        config: 'simple',
+      });
     }
 
     if (options.limit) {

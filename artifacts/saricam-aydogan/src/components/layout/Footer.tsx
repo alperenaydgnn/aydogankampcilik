@@ -1,16 +1,23 @@
 import { Link } from "wouter";
 import { Trees, MapPin, Phone, Mail, Instagram, Facebook, MessageCircle, Clock } from "lucide-react";
-import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { useBuildWhatsAppLink } from "@/lib/whatsapp";
+import { useSiteSettings } from "@/lib/SiteSettingsContext";
 
 export function Footer() {
+  const settings = useSiteSettings();
+  const buildWhatsAppLink = useBuildWhatsAppLink();
+  const phone = settings.phone ?? "+90 555 111 22 33";
+  const phoneHref = `tel:${(phone ?? "").replace(/\s+/g, "")}`;
+  const email = settings.email ?? "bilgi@saricamaydogan.com";
+  const address = settings.address ?? "Atatürk Cad. No:123 Merkez / Trabzon";
+  const hours = settings.working_hours ?? "Pzt – Cmt: 09:00 – 19:30";
+  const instagram = settings.social?.instagram;
+  const facebook = settings.social?.facebook;
+
   return (
     <footer className="footer-surface text-primary-foreground pt-16 pb-8">
       <div className="container mx-auto px-4 md:px-6">
-
-        {/* Top grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
-
-          {/* Brand column */}
           <div className="space-y-5 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 group">
               <div className="p-2 rounded-xl bg-white/8 group-hover:bg-secondary/20 transition-colors">
@@ -22,20 +29,28 @@ export function Footer() {
               Karadeniz'in zorlu doğa koşullarına dayanıklı, uzun ömürlü kamp ve balıkçılık ekipmanları. Yılların tecrübesiyle özenle seçilmiş ürünler.
             </p>
             <div className="flex items-center gap-3 pt-1">
-              <a
-                href="#"
-                aria-label="Instagram"
-                className="w-9 h-9 rounded-xl bg-white/8 flex items-center justify-center hover:bg-secondary hover:text-white transition-all duration-200 hover:scale-105"
-              >
-                <Instagram className="w-4 h-4" />
-              </a>
-              <a
-                href="#"
-                aria-label="Facebook"
-                className="w-9 h-9 rounded-xl bg-white/8 flex items-center justify-center hover:bg-secondary hover:text-white transition-all duration-200 hover:scale-105"
-              >
-                <Facebook className="w-4 h-4" />
-              </a>
+              {instagram && (
+                <a
+                  href={instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="w-9 h-9 rounded-xl bg-white/8 flex items-center justify-center hover:bg-secondary hover:text-white transition-all duration-200 hover:scale-105"
+                >
+                  <Instagram className="w-4 h-4" />
+                </a>
+              )}
+              {facebook && (
+                <a
+                  href={facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  className="w-9 h-9 rounded-xl bg-white/8 flex items-center justify-center hover:bg-secondary hover:text-white transition-all duration-200 hover:scale-105"
+                >
+                  <Facebook className="w-4 h-4" />
+                </a>
+              )}
               <a
                 href={buildWhatsAppLink("Merhaba, yardım almak istiyorum.")}
                 target="_blank"
@@ -48,7 +63,6 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
             <h3 className="font-serif text-base font-semibold mb-5 text-primary-foreground/90">Hızlı Bağlantılar</h3>
             <ul className="space-y-2.5">
@@ -70,7 +84,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Categories */}
           <div>
             <h3 className="font-serif text-base font-semibold mb-5 text-primary-foreground/90">Kategoriler</h3>
             <ul className="space-y-2.5">
@@ -93,27 +106,25 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
           <div>
             <h3 className="font-serif text-base font-semibold mb-5 text-primary-foreground/90">İletişim</h3>
             <ul className="space-y-3.5">
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
-                <span className="text-primary-foreground/60 text-sm leading-relaxed">Atatürk Cad. No:123 Merkez / Trabzon</span>
+                <span className="text-primary-foreground/60 text-sm leading-relaxed">{address}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-secondary shrink-0" />
-                <a href="tel:+905551112233" className="text-primary-foreground/60 text-sm hover:text-secondary transition-colors">+90 555 111 22 33</a>
+                <a href={phoneHref} className="text-primary-foreground/60 text-sm hover:text-secondary transition-colors">{phone}</a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-secondary shrink-0" />
-                <a href="mailto:bilgi@saricamaydogan.com" className="text-primary-foreground/60 text-sm hover:text-secondary transition-colors">bilgi@saricamaydogan.com</a>
+                <a href={`mailto:${email}`} className="text-primary-foreground/60 text-sm hover:text-secondary transition-colors">{email}</a>
               </li>
               <li className="flex items-center gap-3">
                 <Clock className="w-4 h-4 text-secondary shrink-0" />
                 <div>
-                  <p className="text-primary-foreground/60 text-sm">Pzt – Cmt: 09:00 – 19:30</p>
-                  <p className="text-primary-foreground/40 text-xs mt-0.5">Pazar: Kapalı</p>
+                  <p className="text-primary-foreground/60 text-sm">{hours}</p>
                 </div>
               </li>
             </ul>
@@ -130,7 +141,6 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Divider */}
         <div className="border-t border-primary-foreground/10 pt-7 flex flex-col md:flex-row items-center justify-between gap-3">
           <p className="text-primary-foreground/35 text-xs">
             © {new Date().getFullYear()} Sarıçam Aydoğan Kamp ve Balık Malzemeleri. Tüm hakları saklıdır.

@@ -1,8 +1,9 @@
 import { MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { useBuildWhatsAppLink } from "@/lib/whatsapp";
 
 export function WhatsAppFab() {
+  const buildWhatsAppLink = useBuildWhatsAppLink();
   return (
     <motion.button
       initial={{ opacity: 0, scale: 0.6, y: 16 }}

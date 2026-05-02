@@ -11,7 +11,8 @@ import { Product, Category } from "@/lib/mockData";
 import { ProductCard } from "@/components/ProductCard";
 import { CategoryCard } from "@/components/CategoryCard";
 import { SectionHeading } from "@/components/SectionHeading";
-import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { useBuildWhatsAppLink } from "@/lib/whatsapp";
+import { useSiteSettings } from "@/lib/SiteSettingsContext";
 import { cn } from "@/lib/utils";
 
 /* ─── Counter hook ─────────────────────────────────────────── */
@@ -73,6 +74,8 @@ export default function Home() {
   }, []);
 
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const settings = useSiteSettings();
+  const buildWhatsAppLink = useBuildWhatsAppLink();
 
   const whatsappGeneral = buildWhatsAppLink(
     "Merhaba, kamp ve balık malzemeleri hakkında bilgi almak istiyorum."
@@ -83,6 +86,9 @@ export default function Home() {
   const whatsappLocation = buildWhatsAppLink(
     "Merhaba, mağazanıza gelmek istiyorum. Konum ve çalışma saatlerinizi paylaşır mısınız?"
   );
+
+  const heroSubtitle = settings.hero_subtitle ||
+    "Ailenizle güvenli kamp geceleri, dostlarınızla bereketli avlar için kamp malzemeleri, balık malzemeleri, av malzemeleri ve outdoor ekipmanlarında Karadeniz'in en güvenilir adresi.";
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -151,9 +157,7 @@ export default function Home() {
             className="text-white/78 font-light leading-relaxed mb-10 mx-auto"
             style={{ fontSize: "clamp(1rem, 2vw, 1.2rem)", maxWidth: "38rem" }}
           >
-            Ailenizle güvenli kamp geceleri, dostlarınızla bereketli avlar için
-            kamp malzemeleri, balık malzemeleri, av malzemeleri ve outdoor ekipmanlarında
-            Karadeniz'in en güvenilir adresi.
+            {heroSubtitle}
           </motion.p>
 
           {/* CTAs */}

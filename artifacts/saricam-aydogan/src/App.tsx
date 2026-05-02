@@ -16,6 +16,7 @@ import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
 
 import { AdminAuthProvider, useAdminAuth } from "@/admin/context/AdminAuthContext";
+import { SiteSettingsProvider } from "@/lib/SiteSettingsContext";
 import { AdminLayout } from "@/admin/components/AdminLayout";
 import AdminLogin from "@/admin/pages/AdminLogin";
 import AdminProducts from "@/admin/pages/AdminProducts";
@@ -97,9 +98,11 @@ function App() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
-          </WouterRouter>
+          <SiteSettingsProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <Router />
+            </WouterRouter>
+          </SiteSettingsProvider>
           <Toaster />
         </TooltipProvider>
       </QueryClientProvider>
