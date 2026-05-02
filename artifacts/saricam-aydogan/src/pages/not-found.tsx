@@ -1,23 +1,27 @@
 import { Link } from "wouter";
-import { ArrowLeft, Compass } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="min-h-[70vh] w-full flex flex-col items-center justify-center bg-background px-4">
-      <Compass className="w-24 h-24 text-secondary mb-8 opacity-50" />
-      <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 text-center">
-        Yolumuzu Kaybettik
-      </h1>
-      <p className="text-lg text-muted-foreground mb-8 text-center max-w-md">
-        Aradığınız sayfayı bulamadık. Ormanda kaybolmuş olabilirsiniz, ama anasayfaya dönmek çok kolay.
-      </p>
-      <Link href="/">
-        <Button size="lg" className="rounded-full gap-2 text-lg px-8 py-6">
-          <ArrowLeft className="w-5 h-5" />
-          Anasayfaya Dön
-        </Button>
-      </Link>
+    <div className="min-h-screen w-full flex items-center justify-center bg-background px-6 pt-32 pb-24">
+      <div className="max-w-2xl text-center">
+        <span className="eyebrow justify-center">Hata 404</span>
+        <h1 className="editorial-heading text-5xl md:text-7xl mb-8">
+          Yolumuzu.
+          <br />
+          <em className="italic font-light text-secondary">Kaybettik.</em>
+        </h1>
+        <p className="text-foreground/60 text-base md:text-lg leading-relaxed font-light max-w-md mx-auto mb-12">
+          Aradığınız sayfayı bulamadık. Belki bir dağ patikasında saptınız —
+          ana sayfaya dönüş çok yakında.
+        </p>
+        <Link href="/">
+          <span className="link-hairline cursor-pointer">
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Ana Sayfaya Dön
+          </span>
+        </Link>
+      </div>
     </div>
   );
 }

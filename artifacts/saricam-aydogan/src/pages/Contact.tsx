@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import {
-  MapPin, Phone, Mail, Clock, MessageCircle, Navigation, Store, Send,
+  MapPin, Phone, Mail, Clock, MessageCircle, Navigation, Store,
 } from "lucide-react";
 import { SEO } from "@/lib/seo";
 import {
@@ -28,7 +28,6 @@ export default function Contact() {
   const address = settings.address || SITE_ADDRESS_FULL;
   const hours = settings.working_hours || SITE_HOURS_HUMAN;
 
-  // OpenStreetMap embed centered on store coordinates
   const mapBbox = `${SITE_GEO.lng - 0.012},${SITE_GEO.lat - 0.006},${SITE_GEO.lng + 0.012},${SITE_GEO.lat + 0.006}`;
   const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${mapBbox}&layer=mapnik&marker=${SITE_GEO.lat},${SITE_GEO.lng}`;
   const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${SITE_GEO.lat},${SITE_GEO.lng}`;
@@ -54,7 +53,8 @@ export default function Contact() {
       <PageHero
         eyebrow="İletişim"
         icon={Phone}
-        title="Bize Ulaşın"
+        title="Bize"
+        italicAccent="ulaşın."
         subtitle="Mağazamıza uğrayın, çayımızı için ya da WhatsApp üzerinden hızlıca yazın. Doğru ürünü bulmanızda size yardımcı olalım."
         breadcrumbs={[
           { label: "Ana Sayfa", href: "/" },
@@ -62,62 +62,59 @@ export default function Contact() {
         ]}
       />
 
-      {/* Quick contact tiles */}
-      <section className="py-16 md:py-20">
-        <div className="container px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
+      {/* Quick contact tiles — three editorial channels */}
+      <section className="section">
+        <div className="container px-6 max-w-6xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
             {[
               {
-                icon: MessageCircle,
-                title: "WhatsApp",
+                num: "01",
+                label: "WhatsApp",
                 value: phone,
-                cta: "WhatsApp'tan yaz",
+                cta: "WhatsApp'tan Yaz",
                 href: buildWhatsAppLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum."),
-                color: "bg-[#25D366]",
                 external: true,
                 ariaLabel: `WhatsApp üzerinden ${phone} numarasına yaz`,
               },
               {
-                icon: Phone,
-                title: "Telefon",
+                num: "02",
+                label: "Telefon",
                 value: phone,
-                cta: "Hemen ara",
+                cta: "Hemen Ara",
                 href: phoneHref,
-                color: "bg-secondary",
                 external: false,
                 ariaLabel: `${phone} numarasını ara`,
               },
               {
-                icon: Mail,
-                title: "E-posta",
+                num: "03",
+                label: "E-posta",
                 value: email,
-                cta: "Mail gönder",
+                cta: "Mail Gönder",
                 href: `mailto:${email}`,
-                color: "bg-primary",
                 external: false,
                 ariaLabel: `${email} adresine e-posta gönder`,
               },
             ].map((item, idx) => (
               <motion.a
-                key={idx}
+                key={item.num}
                 href={item.href}
                 aria-label={item.ariaLabel}
                 target={item.external ? "_blank" : undefined}
                 rel={item.external ? "noopener noreferrer" : undefined}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.08 }}
-                className="group relative bg-card border border-border rounded-2xl p-7 hover:shadow-lg hover:border-secondary/40 transition-all duration-300"
+                transition={{ delay: idx * 0.08, duration: 0.6 }}
+                className="group block border-t border-foreground/15 pt-8 hover:border-secondary/60 transition-colors"
               >
-                <div className={`inline-flex w-12 h-12 ${item.color} rounded-xl items-center justify-center mb-5 text-white`}>
-                  <item.icon className="w-6 h-6" />
-                </div>
-                <h3 className="font-serif text-lg font-bold mb-1">{item.title}</h3>
-                <p className="text-muted-foreground text-sm mb-4 break-all">{item.value}</p>
-                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-secondary group-hover:gap-2.5 transition-all">
+                <span className="font-serif font-light text-5xl text-secondary leading-none">{item.num}</span>
+                <h3 className="font-serif font-light text-2xl mt-5 mb-3 tracking-tight text-foreground">
+                  {item.label}
+                </h3>
+                <p className="text-foreground/55 text-sm font-light mb-8 break-all">{item.value}</p>
+                <span className="link-hairline text-foreground group-hover:text-secondary">
                   {item.cta}
-                  <Send className="w-3.5 h-3.5" />
+                  <span className="text-base">→</span>
                 </span>
               </motion.a>
             ))}
@@ -126,69 +123,60 @@ export default function Contact() {
       </section>
 
       {/* Map + store info */}
-      <section className="py-16 md:py-20 bg-muted/30">
-        <div className="container px-4">
+      <section className="section bg-muted/30">
+        <div className="container px-6">
           <SectionHeading
             eyebrow="Mağazamız"
-            title="Trabzon'da Bizi Ziyaret Edin"
+            title="Trabzon'da bizi"
+            italicAccent="ziyaret edin."
             subtitle="Mağazamızda ürünleri inceleyebilir, yıllarca dayanacak doğru ekipman seçimi için danışabilirsiniz."
             align="center"
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 max-w-6xl mx-auto">
             {/* Map */}
-            <div className="lg:col-span-3 rounded-2xl overflow-hidden border border-border shadow-sm bg-card">
+            <div className="lg:col-span-3 overflow-hidden border border-foreground/15">
               <iframe
                 title="Sarıçam Aydoğan Mağaza Konumu — Trabzon"
                 src={mapSrc}
-                className="w-full h-[400px] lg:h-full border-0"
+                className="w-full h-[420px] lg:h-full border-0"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
 
             {/* Info panel */}
-            <div className="lg:col-span-2 space-y-4">
-              <div className="bg-card border border-border rounded-2xl p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 bg-primary/10 text-primary rounded-xl flex items-center justify-center shrink-0">
-                    <MapPin className="w-5 h-5" />
+            <div className="lg:col-span-2 flex flex-col justify-between gap-8">
+              <div className="space-y-10">
+                <div className="border-t border-foreground/15 pt-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <MapPin className="w-4 h-4 text-secondary" strokeWidth={1.4} />
+                    <span className="eyebrow !mb-0">Adres</span>
                   </div>
-                  <div>
-                    <h4 className="font-semibold mb-1">Adres</h4>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{address}</p>
-                  </div>
+                  <p className="font-serif font-light text-xl md:text-2xl text-foreground tracking-tight leading-snug">{address}</p>
                 </div>
-              </div>
 
-              <div className="bg-card border border-border rounded-2xl p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 bg-primary/10 text-primary rounded-xl flex items-center justify-center shrink-0">
-                    <Clock className="w-5 h-5" />
+                <div className="border-t border-foreground/15 pt-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Clock className="w-4 h-4 text-secondary" strokeWidth={1.4} />
+                    <span className="eyebrow !mb-0">Çalışma Saatleri</span>
                   </div>
-                  <div>
-                    <h4 className="font-semibold mb-1">Çalışma Saatleri</h4>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{hours}</p>
-                    <p className="text-muted-foreground/70 text-xs mt-1">
-                      Resmî tatillerde mağaza kapalıdır. WhatsApp'tan yazabilirsiniz.
-                    </p>
-                  </div>
+                  <p className="font-serif font-light text-xl md:text-2xl text-foreground tracking-tight leading-snug">{hours}</p>
+                  <p className="text-foreground/55 text-sm mt-3 font-light">
+                    Resmî tatillerde mağaza kapalıdır. WhatsApp'tan yazabilirsiniz.
+                  </p>
                 </div>
-              </div>
 
-              <div className="bg-card border border-border rounded-2xl p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 bg-primary/10 text-primary rounded-xl flex items-center justify-center shrink-0">
-                    <Store className="w-5 h-5" />
+                <div className="border-t border-foreground/15 pt-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Store className="w-4 h-4 text-secondary" strokeWidth={1.4} />
+                    <span className="eyebrow !mb-0">Mağazada Ne Yapabilirsiniz</span>
                   </div>
-                  <div>
-                    <h4 className="font-semibold mb-1">Mağazada Ne Yapabilirsiniz?</h4>
-                    <ul className="text-muted-foreground text-sm leading-relaxed space-y-1 list-disc list-inside">
-                      <li>Ürünleri elden inceleyin</li>
-                      <li>Av ve kamp planınız için danışın</li>
-                      <li>Karadeniz'e özgü tavsiyeler alın</li>
-                    </ul>
-                  </div>
+                  <ul className="space-y-2 font-serif font-light text-lg text-foreground/80 leading-snug">
+                    <li>— Ürünleri elden inceleyin</li>
+                    <li>— Av ve kamp planınız için danışın</li>
+                    <li>— Karadeniz'e özgü tavsiyeler alın</li>
+                  </ul>
                 </div>
               </div>
 
@@ -197,37 +185,39 @@ export default function Contact() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`Google Haritalar üzerinden ${address} adresine yol tarifi al`}
-                className="btn-cta-amber btn-cta w-full justify-center inline-flex items-center gap-2"
+                className="link-hairline self-start hover:text-secondary"
               >
-                <Navigation className="w-4 h-4" />
+                <Navigation className="w-3.5 h-3.5" />
                 Yol Tarifi Al
+                <span className="text-base">→</span>
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA strip */}
-      <section className="py-16 md:py-20">
-        <div className="container px-4">
-          <div className="bg-primary text-primary-foreground rounded-3xl p-8 md:p-14 text-center max-w-4xl mx-auto">
-            <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4">
-              Hızlı Yardım mı Lazım?
-            </h2>
-            <p className="text-primary-foreground/75 text-base md:text-lg mb-7 max-w-2xl mx-auto">
-              Bir ürün hakkında soru, stok durumu veya kargo bilgisi için en pratik yol WhatsApp.
-              Genellikle dakikalar içinde dönüş yapıyoruz.
-            </p>
-            <a
-              href={buildWhatsAppLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5A] text-white font-semibold transition-colors"
-            >
-              <MessageCircle className="w-5 h-5" />
-              WhatsApp'tan Yaz
-            </a>
-          </div>
+      {/* CTA — Dark editorial band */}
+      <section className="section-sm bg-[#111111] text-white">
+        <div className="container px-6 max-w-4xl text-center">
+          <span className="eyebrow justify-center text-secondary">Hızlı Yardım</span>
+          <h2 className="editorial-heading text-4xl md:text-5xl lg:text-6xl text-white mb-8">
+            Bir mesaj uzaktayız.
+            <br />
+            <em className="italic font-light text-white/70">Dakikalar içinde dönüyoruz.</em>
+          </h2>
+          <p className="text-white/55 text-base md:text-lg font-light mb-12 max-w-xl mx-auto leading-relaxed">
+            Bir ürün hakkında soru, stok durumu veya kargo bilgisi için en pratik yol WhatsApp.
+          </p>
+          <a
+            href={buildWhatsAppLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link-hairline text-white border-white/40 hover:text-secondary"
+          >
+            <MessageCircle className="w-3.5 h-3.5" />
+            WhatsApp'tan Yaz
+            <span className="text-base">→</span>
+          </a>
         </div>
       </section>
     </div>

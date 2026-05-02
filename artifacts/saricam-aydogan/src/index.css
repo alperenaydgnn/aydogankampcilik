@@ -338,21 +338,52 @@
   .eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
+    gap: 0.625rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: hsl(var(--secondary));
-    margin-bottom: 0.875rem;
+    margin-bottom: 1.25rem;
   }
   .eyebrow::before {
     content: '';
     display: block;
-    width: 1.25rem;
-    height: 2px;
+    width: 1.5rem;
+    height: 1px;
     background: currentColor;
-    border-radius: 1px;
+  }
+
+  /* ── Editorial heading (Fraunces light + italic accent) ── */
+  .editorial-heading {
+    font-family: var(--app-font-serif);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    color: hsl(var(--primary));
+  }
+  .editorial-heading em,
+  .editorial-heading .italic {
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  /* ── Hairline link (underlined CTA, Meridian style) ── */
+  .link-hairline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: hsl(var(--foreground));
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 0.25rem;
+    transition: color 200ms ease;
+  }
+  .link-hairline:hover {
+    color: hsl(var(--secondary));
   }
 
   /* ── Divider ────────────────────────────────── */
@@ -404,10 +435,10 @@
 
   /* ── Section container ──────────────────────── */
   .section {
-    @apply py-20 md:py-28;
+    @apply py-24 md:py-40;
   }
   .section-sm {
-    @apply py-12 md:py-16;
+    @apply py-16 md:py-24;
   }
 
   /* ── Primary CTA button (pill) ──────────────── */
@@ -491,17 +522,23 @@
     box-shadow: 0 1px 8px rgba(0,0,0,.06);
   }
 
-  /* ── Product & Category Cards ───────────────── */
+  /* ── Product & Category Cards (Editorial / bare) ─ */
   .product-card {
-    @apply bg-card rounded-2xl overflow-hidden;
-    border: 1px solid hsl(var(--card-border));
-    box-shadow: var(--ds-shadow-card);
-    transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
-                box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1);
+    @apply bg-transparent overflow-hidden;
+    border: none;
+    box-shadow: none;
+    transition: opacity 300ms cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--ds-shadow-card-hover);
+  .product-card .product-card-image {
+    overflow: hidden;
+    background: hsl(38 25% 88%);
+  }
+  .product-card .product-card-image img {
+    transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .product-card:hover .product-card-image img {
+    transform: scale(1.04);
   }
 
   /* ── Input fields ───────────────────────────── */
@@ -520,11 +557,11 @@
 
   /* ── Section heading accent line ────────────── */
   .section-accent-line {
-    width: 3rem;
-    height: 3px;
-    border-radius: 2px;
-    background: linear-gradient(90deg, hsl(38 94% 45%), hsl(38 94% 60%));
-    margin-top: 1.25rem;
+    width: 2.5rem;
+    height: 1px;
+    border-radius: 0;
+    background: hsl(var(--secondary));
+    margin-top: 1.5rem;
   }
 
   /* ── WhatsApp FAB ───────────────────────────── */
@@ -566,12 +603,7 @@
 
   /* ── Footer ─────────────────────────────────── */
   .footer-surface {
-    background: linear-gradient(
-      160deg,
-      hsl(149 43% 14%) 0%,
-      hsl(149 38% 17%) 60%,
-      hsl(213 30% 14%) 100%
-    );
+    background: #111111;
   }
 
   /* ── Hero gradient ───────────────────────────── */

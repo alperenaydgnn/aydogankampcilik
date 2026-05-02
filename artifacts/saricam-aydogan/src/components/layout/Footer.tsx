@@ -1,5 +1,4 @@
 import { Link } from "wouter";
-import { Trees, MapPin, Phone, Mail, Instagram, Facebook, MessageCircle, Clock } from "lucide-react";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
 import { useSiteSettings } from "@/lib/useSiteSettings";
 import {
@@ -21,69 +20,49 @@ export function Footer() {
   const facebook = settings.social?.facebook;
 
   return (
-    <footer className="footer-surface text-primary-foreground pt-16 pb-8">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-14">
-          <div className="space-y-5 lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="p-2 rounded-xl bg-white/8 group-hover:bg-secondary/20 transition-colors">
-                <Trees className="w-6 h-6 text-secondary" />
-              </div>
-              <span className="font-serif text-xl font-bold tracking-tight">Sarıçam Aydoğan</span>
-            </Link>
-            <p className="text-primary-foreground/60 text-sm leading-relaxed">
-              Karadeniz'in zorlu doğa koşullarına dayanıklı, uzun ömürlü kamp ve balıkçılık ekipmanları. Yılların tecrübesiyle özenle seçilmiş ürünler.
-            </p>
-            <div className="flex items-center gap-3 pt-1">
-              {instagram && (
-                <a
-                  href={instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  className="w-9 h-9 rounded-xl bg-white/8 flex items-center justify-center hover:bg-secondary hover:text-white transition-all duration-200 hover:scale-105"
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-              )}
-              {facebook && (
-                <a
-                  href={facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Facebook"
-                  className="w-9 h-9 rounded-xl bg-white/8 flex items-center justify-center hover:bg-secondary hover:text-white transition-all duration-200 hover:scale-105"
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-              )}
-              <a
-                href={buildWhatsAppLink("Merhaba, yardım almak istiyorum.")}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="WhatsApp"
-                className="w-9 h-9 rounded-xl bg-white/8 flex items-center justify-center hover:bg-[#25D366] hover:text-white transition-all duration-200 hover:scale-105"
-              >
-                <MessageCircle className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
+    <footer className="footer-surface text-white">
+      {/* Top oversized brand statement */}
+      <div className="container mx-auto px-6 md:px-10 pt-24 md:pt-32 pb-16">
+        <div className="max-w-5xl">
+          <span className="inline-flex items-center gap-2.5 mb-8 text-[0.7rem] font-bold uppercase tracking-[0.22em] text-secondary">
+            <span className="w-6 h-px bg-secondary" />
+            Sarıçam Aydoğan
+          </span>
+          <h2 className="font-serif font-light text-4xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight">
+            Karadeniz'in vahşi doğasına.<br />
+            <em className="italic text-white/70">Hazır mıyız.</em>
+          </h2>
+          <a
+            href={buildWhatsAppLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-cta-amber btn-cta mt-12 !text-[0.7rem] !font-bold !uppercase !tracking-[0.2em]"
+          >
+            WhatsApp'tan Yazın
+          </a>
+        </div>
+      </div>
+
+      {/* Hairline */}
+      <div className="container mx-auto px-6 md:px-10">
+        <div className="h-px bg-white/12" />
+      </div>
+
+      {/* Columns */}
+      <div className="container mx-auto px-6 md:px-10 py-16 md:py-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-14">
 
           <div>
-            <h3 className="font-serif text-base font-semibold mb-5 text-primary-foreground/90">Hızlı Bağlantılar</h3>
-            <ul className="space-y-2.5">
+            <h3 className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-white/45 mb-6">Keşfet</h3>
+            <ul className="space-y-3.5">
               {[
                 { name: "Anasayfa", href: "/" },
-                { name: "Tüm Ürünler", href: "/urunler" },
+                { name: "Ürünler", href: "/urunler" },
                 { name: "Hakkımızda", href: "/hakkimizda" },
                 { name: "İletişim", href: "/iletisim" },
               ].map((l) => (
                 <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    className="text-primary-foreground/55 hover:text-secondary text-sm transition-colors duration-150 inline-flex items-center gap-2 group"
-                  >
-                    <span className="w-1 h-1 rounded-full bg-secondary/40 group-hover:bg-secondary transition-colors" />
+                  <Link href={l.href} className="text-white/70 hover:text-secondary text-sm font-light transition-colors">
                     {l.name}
                   </Link>
                 </li>
@@ -92,8 +71,8 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-serif text-base font-semibold mb-5 text-primary-foreground/90">Kategoriler</h3>
-            <ul className="space-y-2.5">
+            <h3 className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-white/45 mb-6">Kategoriler</h3>
+            <ul className="space-y-3.5">
               {[
                 { name: "Çadırlar", href: "/urunler/cadirlar" },
                 { name: "Olta & Makine", href: "/urunler/olta-ve-makine" },
@@ -101,11 +80,7 @@ export function Footer() {
                 { name: "Aydınlatma", href: "/urunler/aydinlatma" },
               ].map((l) => (
                 <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    className="text-primary-foreground/55 hover:text-secondary text-sm transition-colors duration-150 inline-flex items-center gap-2 group"
-                  >
-                    <span className="w-1 h-1 rounded-full bg-secondary/40 group-hover:bg-secondary transition-colors" />
+                  <Link href={l.href} className="text-white/70 hover:text-secondary text-sm font-light transition-colors">
                     {l.name}
                   </Link>
                 </li>
@@ -114,8 +89,8 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-serif text-base font-semibold mb-5 text-primary-foreground/90">Kurumsal</h3>
-            <ul className="space-y-2.5">
+            <h3 className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-white/45 mb-6">Kurumsal</h3>
+            <ul className="space-y-3.5">
               {[
                 { name: "Sık Sorulan Sorular", href: "/sss" },
                 { name: "Teslimat & Sipariş", href: "/teslimat" },
@@ -123,11 +98,7 @@ export function Footer() {
                 { name: "KVKK & Gizlilik", href: "/kvkk" },
               ].map((l) => (
                 <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    className="text-primary-foreground/55 hover:text-secondary text-sm transition-colors duration-150 inline-flex items-center gap-2 group"
-                  >
-                    <span className="w-1 h-1 rounded-full bg-secondary/40 group-hover:bg-secondary transition-colors" />
+                  <Link href={l.href} className="text-white/70 hover:text-secondary text-sm font-light transition-colors">
                     {l.name}
                   </Link>
                 </li>
@@ -136,47 +107,40 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-serif text-base font-semibold mb-5 text-primary-foreground/90">İletişim</h3>
-            <ul className="space-y-3.5">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
-                <span className="text-primary-foreground/60 text-sm leading-relaxed">{address}</span>
+            <h3 className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-white/45 mb-6">İletişim</h3>
+            <ul className="space-y-4 text-sm font-light">
+              <li className="text-white/70 leading-relaxed">{address}</li>
+              <li>
+                <a href={phoneHref} className="text-white/70 hover:text-secondary transition-colors">{phone}</a>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-secondary shrink-0" />
-                <a href={phoneHref} className="text-primary-foreground/60 text-sm hover:text-secondary transition-colors">{phone}</a>
+              <li>
+                <a href={`mailto:${email}`} className="text-white/70 hover:text-secondary transition-colors">{email}</a>
               </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-secondary shrink-0" />
-                <a href={`mailto:${email}`} className="text-primary-foreground/60 text-sm hover:text-secondary transition-colors">{email}</a>
-              </li>
-              <li className="flex items-center gap-3">
-                <Clock className="w-4 h-4 text-secondary shrink-0" />
-                <div>
-                  <p className="text-primary-foreground/60 text-sm">{hours}</p>
-                </div>
-              </li>
+              <li className="text-white/55 italic">{hours}</li>
             </ul>
 
-            <a
-              href={buildWhatsAppLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] text-sm font-semibold transition-all duration-200 border border-[#25D366]/20"
-            >
-              <MessageCircle className="w-4 h-4" />
-              WhatsApp'tan Yaz
-            </a>
+            <div className="flex items-center gap-5 mt-8">
+              {instagram && (
+                <a href={instagram} target="_blank" rel="noopener noreferrer" className="text-white/55 hover:text-secondary text-[0.7rem] font-bold uppercase tracking-[0.2em] transition-colors">
+                  Instagram
+                </a>
+              )}
+              {facebook && (
+                <a href={facebook} target="_blank" rel="noopener noreferrer" className="text-white/55 hover:text-secondary text-[0.7rem] font-bold uppercase tracking-[0.2em] transition-colors">
+                  Facebook
+                </a>
+              )}
+            </div>
           </div>
         </div>
+      </div>
 
-        <div className="border-t border-primary-foreground/10 pt-7 flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-primary-foreground/35 text-xs">
-            © {new Date().getFullYear()} Sarıçam Aydoğan Kamp ve Balık Malzemeleri. Tüm hakları saklıdır.
-          </p>
-          <p className="text-primary-foreground/25 text-xs">
-            Trabzon — Doğanın Kalbinde
-          </p>
+      {/* Bottom hairline + copyright */}
+      <div className="container mx-auto px-6 md:px-10">
+        <div className="h-px bg-white/12" />
+        <div className="py-8 flex flex-col md:flex-row items-center justify-between gap-3 text-[0.7rem] uppercase tracking-[0.2em] text-white/35">
+          <p>© {new Date().getFullYear()} Sarıçam Aydoğan</p>
+          <p className="italic normal-case tracking-normal text-white/40 font-serif text-sm">Trabzon — Doğanın Kalbinde</p>
         </div>
       </div>
     </footer>

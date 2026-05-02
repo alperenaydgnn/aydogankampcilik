@@ -1,7 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import {
-  ShieldCheck, RefreshCw, Package, AlertCircle, MessageCircle,
-  CheckCircle2, XCircle, FileText,
+  ShieldCheck, RefreshCw, MessageCircle, CheckCircle2, XCircle,
 } from "lucide-react";
 import { SEO } from "@/lib/seo";
 import { buildBreadcrumbSchema } from "@/lib/schemas";
@@ -33,7 +32,8 @@ export default function StorePolicy() {
       <PageHero
         eyebrow="Güvenli Alışveriş"
         icon={ShieldCheck}
-        title="Mağaza Politikamız"
+        title="Mağaza"
+        italicAccent="politikamız."
         subtitle="Sizden bekleyebileceklerinizi açıkça yazıyoruz. Memnun kalmazsanız çözüm üretmek için ilk adımı biz atarız."
         breadcrumbs={[
           { label: "Ana Sayfa", href: "/" },
@@ -41,44 +41,51 @@ export default function StorePolicy() {
         ]}
       />
 
-      {/* Promise pillars */}
-      <section className="py-16 md:py-20">
-        <div className="container px-4 max-w-5xl">
+      {/* Promise pillars — three-column editorial */}
+      <section className="section">
+        <div className="container px-6 max-w-6xl">
           <SectionHeading
             eyebrow="Sözümüz"
-            title="Üç Temel Söz"
+            title="Üç temel"
+            italicAccent="söz."
             subtitle="Her satış sonrasında da yanınızda oluruz; çünkü bizim için doğru ürün kadar uzun ömürlü güven de önemlidir."
             align="center"
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
             {[
-              { icon: CheckCircle2, title: "Orijinal Ürün",  desc: "Sattığımız her ürün doğrudan üreticiden ya da yetkili distribütörden gelir. Faturalı satış." },
-              { icon: RefreshCw,    title: "Kolay Değişim",  desc: "Beğenmediğiniz veya yanlış seçtiğiniz ürün için 14 gün içinde sorunsuz değişim." },
-              { icon: ShieldCheck,  title: "Üretici Garantisi", desc: "Tüm ürünler marka garantisi kapsamındadır. Garanti süresince yanınızdayız." },
-            ].map((item, idx) => (
-              <div key={idx} className="bg-card border border-border rounded-2xl p-7">
-                <div className="w-12 h-12 bg-secondary/15 text-secondary rounded-xl flex items-center justify-center mb-5">
-                  <item.icon className="w-6 h-6" />
-                </div>
-                <h3 className="font-serif text-lg font-bold mb-2">{item.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
+              { num: "01", title: "Orijinal Ürün",  desc: "Sattığımız her ürün doğrudan üreticiden ya da yetkili distribütörden gelir. Faturalı satış." },
+              { num: "02", title: "Kolay Değişim",  desc: "Beğenmediğiniz veya yanlış seçtiğiniz ürün için 14 gün içinde sorunsuz değişim." },
+              { num: "03", title: "Üretici Garantisi", desc: "Tüm ürünler marka garantisi kapsamındadır. Garanti süresince yanınızdayız." },
+            ].map((item) => (
+              <div key={item.num} className="border-t border-foreground/15 pt-8">
+                <span className="font-serif font-light text-5xl text-secondary leading-none">{item.num}</span>
+                <h3 className="font-serif font-light text-2xl mt-5 mb-3 tracking-tight">{item.title}</h3>
+                <p className="text-foreground/60 text-sm font-light leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Policy details */}
-      <section className="py-16 md:py-20 bg-muted/30">
-        <div className="container px-4 max-w-3xl">
-          <div className="mb-8 p-4 bg-card border border-border rounded-xl text-sm text-muted-foreground">
-            <strong className="text-foreground">Son güncelleme:</strong> {lastUpdated}
+      {/* Policy details — editorial prose */}
+      <section className="section bg-muted/30">
+        <div className="container px-6 max-w-3xl">
+          <div className="mb-16 pb-6 border-b border-foreground/15 flex items-center justify-between text-xs uppercase tracking-[0.18em] text-foreground/50">
+            <span>Son güncelleme</span>
+            <span className="text-foreground/80 font-medium">{lastUpdated}</span>
           </div>
 
-          <div className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-foreground prose-headings:font-bold prose-p:text-muted-foreground prose-p:leading-relaxed prose-li:text-muted-foreground prose-strong:text-foreground prose-h2:mt-12 prose-h2:mb-4 prose-h3:mt-8 prose-h3:mb-3 prose-h2:text-2xl prose-h3:text-xl">
+          <div className="prose prose-lg max-w-none
+            prose-headings:font-serif prose-headings:font-light prose-headings:tracking-tight prose-headings:text-foreground
+            prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:leading-tight
+            prose-h3:text-xl md:prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:font-light
+            prose-p:text-foreground/65 prose-p:font-light prose-p:leading-relaxed
+            prose-li:text-foreground/65 prose-li:font-light
+            prose-strong:text-foreground prose-strong:font-medium
+            prose-em:text-secondary prose-em:italic">
 
-            <h2>Cayma Hakkı (14 Gün)</h2>
+            <h2>Cayma hakkı <em className="italic text-secondary">— 14 gün.</em></h2>
             <p>
               Mesafeli Satış mevzuatı uyarınca, ürünü teslim aldığınız tarihten itibaren <strong>14 gün içinde</strong> hiçbir
               gerekçe göstermeden cayma hakkınızı kullanabilirsiniz. Bunun için yapmanız gereken tek şey
@@ -93,14 +100,14 @@ export default function StorePolicy() {
               <li>Faturanın bir nüshası ürünle birlikte gönderilmeli.</li>
             </ul>
 
-            <h2>Değişim</h2>
+            <h2>Değişim.</h2>
             <p>
               Ürünün bedeni, modeli veya rengini değiştirmek isterseniz değişim talebinizi WhatsApp'tan
               iletmeniz yeterli. Değişim için aynı 14 günlük süre ve cayma koşulları geçerlidir. Stoktaki uygun
               alternatifleri size hızla bildiririz.
             </p>
 
-            <h3>Değişim Süreci</h3>
+            <h3>Değişim süreci</h3>
             <ol>
               <li>WhatsApp'tan değişim talebinizi ve nedenini iletin.</li>
               <li>Yeni ürün için stok teyidi alın.</li>
@@ -108,7 +115,7 @@ export default function StorePolicy() {
               <li>Yeni ürün size kargolanır; varsa fiyat farkı için bilgilendirilirsiniz.</li>
             </ol>
 
-            <h2>Kargo Ücreti — Kim Karşılar?</h2>
+            <h2>Kargo ücreti — kim karşılar?</h2>
             <ul>
               <li><strong>Üretim hatası veya hasarlı ürün:</strong> Kargo ücreti tamamen tarafımıza aittir.</li>
               <li><strong>Yanlış ürün gönderimi:</strong> Hata bizden kaynaklı ise iade ve yeni gönderim ücretsizdir.</li>
@@ -116,14 +123,14 @@ export default function StorePolicy() {
               <li><strong>Mağazadan elden değişim:</strong> Tamamen ücretsizdir.</li>
             </ul>
 
-            <h2>Hasarlı veya Eksik Ürün Durumu</h2>
+            <h2>Hasarlı veya eksik ürün durumu.</h2>
             <p>
               Kargonuz elinize ulaştığında paketi kuryenin yanında açmanızı tavsiye ediyoruz. Hasar veya
               eksik bir durum varsa <strong>kuryeye tutanak tutturun</strong> ve fotoğrafla birlikte bize ulaşın.
               Bu sayede süreci en hızlı şekilde sizin lehinize çözebiliyoruz.
             </p>
 
-            <h2>İade Kapsamı Dışındaki Ürünler</h2>
+            <h2>İade kapsamı dışındaki ürünler.</h2>
             <p>
               Yasal düzenlemeler ve hijyen gereği aşağıdaki ürünler iade kapsamında değildir:
             </p>
@@ -134,7 +141,7 @@ export default function StorePolicy() {
               <li>Üretici tarafından özel olarak güvenlikli paketlenmiş gaz / yakıt ürünleri.</li>
             </ul>
 
-            <h2>Garanti Şartları</h2>
+            <h2>Garanti şartları.</h2>
             <p>
               Ürün garantisi <strong>üretici firma tarafından sağlanır</strong> ve tüm ürünlerimiz Türkiye distribütörü
               veya üreticinin garanti kapsamındadır. Garanti süresi markaya ve ürün kategorisine göre değişir
@@ -146,7 +153,7 @@ export default function StorePolicy() {
               <li>Doğal aşınma ve yıpranma (örneğin uzun süre kullanılan misina aşınması).</li>
             </ul>
 
-            <h2>Müşteri Memnuniyeti Taahhüdümüz</h2>
+            <h2>Müşteri memnuniyeti taahhüdümüz.</h2>
             <p>
               Bir ürünü beğenmediyseniz, beklediğiniz performansı vermediyse veya teknik bir sorun yaşıyorsanız
               önce bize yazın. Mevzuat çerçevesinde ne yapabileceğimizi ve ek olarak nasıl yardımcı olabileceğimizi
@@ -156,82 +163,82 @@ export default function StorePolicy() {
         </div>
       </section>
 
-      {/* Quick decision matrix */}
-      <section className="py-16 md:py-20">
-        <div className="container px-4 max-w-5xl">
+      {/* Quick decision matrix — minimal hairline two-column */}
+      <section className="section">
+        <div className="container px-6 max-w-6xl">
           <SectionHeading
             eyebrow="Hızlı Bakış"
-            title="Hangi Ürün İade Edilebilir?"
+            title="Hangi ürün"
+            italicAccent="iade edilebilir?"
             align="center"
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="bg-card border border-emerald-200 rounded-2xl p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <CheckCircle2 className="w-6 h-6 text-emerald-600" />
-                <h3 className="font-serif text-lg font-bold text-emerald-900">Evet, İade Edilebilir</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20">
+            <div className="border-t-2 border-emerald-700/60 pt-8">
+              <div className="flex items-center gap-3 mb-6">
+                <CheckCircle2 className="w-5 h-5 text-emerald-700" strokeWidth={1.4} />
+                <span className="eyebrow !mb-0 text-emerald-800">Evet, iade edilebilir</span>
               </div>
-              <ul className="space-y-2 text-muted-foreground text-sm leading-relaxed">
-                <li className="flex gap-2"><span className="text-emerald-600">✓</span>Çadır, uyku tulumu (kullanılmamış, ambalajında)</li>
-                <li className="flex gap-2"><span className="text-emerald-600">✓</span>Kamp ekipmanları (ocak, masa, sandalye)</li>
-                <li className="flex gap-2"><span className="text-emerald-600">✓</span>Fenerler, kafa lambaları (kullanılmamış)</li>
-                <li className="flex gap-2"><span className="text-emerald-600">✓</span>Olta kamışı ve makine (kullanılmamış)</li>
-                <li className="flex gap-2"><span className="text-emerald-600">✓</span>Soğutucu ve termoslar (ambalajında)</li>
-                <li className="flex gap-2"><span className="text-emerald-600">✓</span>Üretici hatalı her ürün</li>
+              <ul className="space-y-3 text-foreground/65 font-light leading-relaxed">
+                <li className="flex gap-3"><span className="text-emerald-700 mt-1.5 w-1 h-1 rounded-full bg-current shrink-0" />Çadır, uyku tulumu (kullanılmamış, ambalajında)</li>
+                <li className="flex gap-3"><span className="text-emerald-700 mt-1.5 w-1 h-1 rounded-full bg-current shrink-0" />Kamp ekipmanları (ocak, masa, sandalye)</li>
+                <li className="flex gap-3"><span className="text-emerald-700 mt-1.5 w-1 h-1 rounded-full bg-current shrink-0" />Fenerler, kafa lambaları (kullanılmamış)</li>
+                <li className="flex gap-3"><span className="text-emerald-700 mt-1.5 w-1 h-1 rounded-full bg-current shrink-0" />Olta kamışı ve makine (kullanılmamış)</li>
+                <li className="flex gap-3"><span className="text-emerald-700 mt-1.5 w-1 h-1 rounded-full bg-current shrink-0" />Soğutucu ve termoslar (ambalajında)</li>
+                <li className="flex gap-3"><span className="text-emerald-700 mt-1.5 w-1 h-1 rounded-full bg-current shrink-0" />Üretici hatalı her ürün</li>
               </ul>
             </div>
 
-            <div className="bg-card border border-rose-200 rounded-2xl p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <XCircle className="w-6 h-6 text-rose-600" />
-                <h3 className="font-serif text-lg font-bold text-rose-900">Hayır, İade Edilemez</h3>
+            <div className="border-t-2 border-rose-700/60 pt-8">
+              <div className="flex items-center gap-3 mb-6">
+                <XCircle className="w-5 h-5 text-rose-700" strokeWidth={1.4} />
+                <span className="eyebrow !mb-0 text-rose-800">Hayır, iade edilemez</span>
               </div>
-              <ul className="space-y-2 text-muted-foreground text-sm leading-relaxed">
-                <li className="flex gap-2"><span className="text-rose-600">✗</span>Açılmış misina ve ipek makaraları</li>
-                <li className="flex gap-2"><span className="text-rose-600">✗</span>Kullanılmış sahte yemler ve iğneler</li>
-                <li className="flex gap-2"><span className="text-rose-600">✗</span>Açılmış gaz tüpleri ve yakıtlar</li>
-                <li className="flex gap-2"><span className="text-rose-600">✗</span>Hijyen ürünleri (iç giyim niteliği)</li>
-                <li className="flex gap-2"><span className="text-rose-600">✗</span>Özel sipariş / kişiye özel ürünler</li>
-                <li className="flex gap-2"><span className="text-rose-600">✗</span>Etiketleri sökülmüş, kullanım izi olan ürünler</li>
+              <ul className="space-y-3 text-foreground/65 font-light leading-relaxed">
+                <li className="flex gap-3"><span className="text-rose-700 mt-1.5 w-1 h-1 rounded-full bg-current shrink-0" />Açılmış misina ve ipek makaraları</li>
+                <li className="flex gap-3"><span className="text-rose-700 mt-1.5 w-1 h-1 rounded-full bg-current shrink-0" />Kullanılmış sahte yemler ve iğneler</li>
+                <li className="flex gap-3"><span className="text-rose-700 mt-1.5 w-1 h-1 rounded-full bg-current shrink-0" />Açılmış gaz tüpleri ve yakıtlar</li>
+                <li className="flex gap-3"><span className="text-rose-700 mt-1.5 w-1 h-1 rounded-full bg-current shrink-0" />Hijyen ürünleri (iç giyim niteliği)</li>
+                <li className="flex gap-3"><span className="text-rose-700 mt-1.5 w-1 h-1 rounded-full bg-current shrink-0" />Özel sipariş / kişiye özel ürünler</li>
+                <li className="flex gap-3"><span className="text-rose-700 mt-1.5 w-1 h-1 rounded-full bg-current shrink-0" />Etiketleri sökülmüş, kullanım izi olan ürünler</li>
               </ul>
             </div>
           </div>
 
-          <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-900 flex gap-3">
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-            <span>
-              Emin değilseniz iade veya değişim talebinizi göndermeden önce bize WhatsApp'tan sorabilirsiniz.
-              Birçok özel durumu sizin lehinize çözecek esneklik gösteriyoruz.
-            </span>
-          </div>
+          <p className="mt-12 text-foreground/55 text-xs md:text-sm uppercase tracking-[0.18em] text-center font-medium">
+            Emin değilseniz WhatsApp'tan sorabilirsiniz · Birçok özel durumu sizin lehinize çözüyoruz
+          </p>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 md:py-20 bg-primary text-primary-foreground">
-        <div className="container px-4 max-w-3xl text-center">
-          <Package className="w-12 h-12 mx-auto mb-5 text-secondary" />
-          <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4">
-            İade veya Değişim Talebiniz mi Var?
+      {/* CTA — Dark editorial band */}
+      <section className="section-sm bg-[#111111] text-white">
+        <div className="container px-6 max-w-4xl text-center">
+          <span className="eyebrow justify-center text-secondary">İade veya Değişim</span>
+          <h2 className="editorial-heading text-4xl md:text-5xl lg:text-6xl text-white mb-8">
+            Süreci tamamen biz.
+            <br />
+            <em className="italic font-light text-white/70">Takip ederiz.</em>
           </h2>
-          <p className="text-primary-foreground/75 text-base md:text-lg mb-7">
-            WhatsApp'tan sipariş numaranızı ve nedenini yazmanız yeterli. Sürecin tamamını biz takip ediyoruz.
+          <p className="text-white/55 text-base md:text-lg font-light mb-12 max-w-xl mx-auto leading-relaxed">
+            WhatsApp'tan sipariş numaranızı ve nedenini yazmanız yeterli.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <a
               href={buildWhatsAppLink("Merhaba, iade/değişim talebim hakkında bilgi almak istiyorum.")}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5A] text-white font-semibold transition-colors"
+              className="link-hairline text-white border-white/40 hover:text-secondary"
             >
-              <MessageCircle className="w-5 h-5" />
+              <MessageCircle className="w-3.5 h-3.5" />
               WhatsApp'tan Yaz
+              <span className="text-base">→</span>
             </a>
             <a
               href="/sss"
-              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold transition-colors border border-white/20"
+              className="link-hairline text-white/60 border-white/20 hover:text-white"
             >
-              <FileText className="w-5 h-5" />
+              <RefreshCw className="w-3.5 h-3.5" />
               SSS'yi Gör
             </a>
           </div>

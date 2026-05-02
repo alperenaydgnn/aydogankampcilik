@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Trees, Menu, X, Phone } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   { name: "Anasayfa", href: "/" },
-  { name: "Tüm Ürünler", href: "/urunler" },
+  { name: "Ürünler", href: "/urunler" },
   { name: "Hakkımızda", href: "/hakkimizda" },
   { name: "İletişim", href: "/iletisim" },
 ];
@@ -18,6 +18,10 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const buildWhatsAppLink = useBuildWhatsAppLink();
 
+  // Most pages besides Home have a dark hero, so default to dark-overlay header.
+  // Home overrides via scroll only.
+  const isHome = location === "/";
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -25,93 +29,92 @@ export function Header() {
   }, []);
 
   const closeMobile = () => setIsMobileMenuOpen(false);
+  const onDark = !isScrolled; // header sits over dark hero on every page when not scrolled
 
   return (
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled ? "nav-scrolled py-3" : "bg-transparent py-5"
+        isScrolled ? "nav-scrolled py-4" : "bg-transparent py-6"
       )}
     >
-      <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
+      <div className="container mx-auto px-6 md:px-10 grid grid-cols-2 md:grid-cols-3 items-center gap-4">
 
-        {/* Logo */}
-        <Link href="/" className="relative z-50 flex items-center gap-2.5 group">
-          <div className={cn(
-            "p-1.5 rounded-xl transition-colors duration-300",
-            isScrolled ? "bg-primary/10" : "bg-white/10"
-          )}>
-            <Trees className={cn(
-              "w-6 h-6 transition-colors duration-300",
-              isScrolled ? "text-primary" : "text-white"
-            )} />
-          </div>
-          <span className={cn(
-            "font-serif text-[1.1rem] font-bold tracking-tight transition-colors duration-300",
-            isScrolled ? "text-foreground" : "text-white"
-          )}>
-            Sarıçam Aydoğan
+        {/* Left — Mobile Menu Toggle on small, Nav on desktop */}
+        <nav className="hidden md:flex items-center gap-7">
+          {navLinks.slice(0, 2).map((link) => {
+            const isActive = location === link.href || (link.href === "/urunler" && location.startsWith("/urunler"));
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                data-active={isActive ? "true" : "false"}
+                className={cn(
+                  "nav-underline relative text-[0.7rem] font-bold uppercase tracking-[0.22em] transition-colors duration-200",
+                  onDark
+                    ? isActive ? "text-white" : "text-white/65 hover:text-white"
+                    : isActive ? "text-primary" : "text-foreground/60 hover:text-foreground",
+                )}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Center — Logo */}
+        <Link
+          href="/"
+          className={cn(
+            "relative z-50 flex items-center justify-self-start md:justify-self-center text-center",
+          )}
+        >
+          <span
+            className={cn(
+              "font-serif font-light text-xl md:text-[1.35rem] tracking-tight transition-colors duration-300 whitespace-nowrap",
+              onDark ? "text-white" : "text-primary"
+            )}
+          >
+            Sarıçam Aydoğan<span className="italic text-secondary">.</span>
           </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
-          <ul className="flex items-center gap-1">
-            {navLinks.map((link) => {
-              const isActive = location === link.href;
-              return (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    data-active={isActive ? "true" : "false"}
-                    className={cn(
-                      "nav-underline relative px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200",
-                      isScrolled
-                        ? isActive
-                          ? "text-primary"
-                          : "text-muted-foreground hover:text-foreground"
-                        : isActive
-                          ? "text-white"
-                          : "text-white/75 hover:text-white"
-                    )}
-                  >
-                    {link.name}
-                    {isActive && (
-                      <motion.span
-                        layoutId="nav-indicator"
-                        className={cn(
-                          "absolute left-3.5 right-3.5 -bottom-0.5 h-[2px] rounded-full",
-                          isScrolled ? "bg-secondary" : "bg-white"
-                        )}
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+        {/* Right — Desktop nav + CTA */}
+        <div className="hidden md:flex items-center justify-end gap-7">
+          {navLinks.slice(2).map((link) => {
+            const isActive = location === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                data-active={isActive ? "true" : "false"}
+                className={cn(
+                  "nav-underline relative text-[0.7rem] font-bold uppercase tracking-[0.22em] transition-colors duration-200",
+                  onDark
+                    ? isActive ? "text-white" : "text-white/65 hover:text-white"
+                    : isActive ? "text-primary" : "text-foreground/60 hover:text-foreground",
+                )}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
 
           <a
             href={buildWhatsAppLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-cta-amber btn-cta !py-2.5 !px-5 !text-sm flex items-center gap-2"
+            className="btn-cta-amber btn-cta !py-2 !px-5 !text-[0.7rem] !font-bold !uppercase !tracking-[0.18em]"
           >
-            <Phone className="w-4 h-4" />
             Bize Ulaşın
           </a>
-        </nav>
+        </div>
 
         {/* Mobile toggle */}
         <button
           className={cn(
-            "relative z-50 md:hidden p-2 rounded-xl transition-colors",
-            isMobileMenuOpen
-              ? "bg-foreground/10 text-foreground"
-              : isScrolled
-                ? "text-foreground hover:bg-muted"
-                : "text-white hover:bg-white/15"
+            "relative z-50 md:hidden p-2 -mr-2 transition-colors justify-self-end",
+            onDark ? "text-white" : "text-foreground"
           )}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Menü"
@@ -133,32 +136,30 @@ export function Header() {
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
               className="fixed inset-0 bg-background z-40 flex flex-col"
             >
-              {/* Top spacer */}
-              <div className="h-20" />
-
-              <nav className="flex-1 px-6 pt-8">
-                <ul className="space-y-1">
+              <div className="h-24" />
+              <nav className="flex-1 px-8 pt-12">
+                <ul className="space-y-2">
                   {navLinks.map((link, i) => (
                     <motion.li
                       key={link.href}
-                      initial={{ opacity: 0, x: -16 }}
+                      initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.06 + 0.1 }}
+                      transition={{ delay: i * 0.07 + 0.15, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                     >
                       <Link
                         href={link.href}
                         onClick={closeMobile}
                         className={cn(
-                          "flex items-center gap-3 px-4 py-3.5 rounded-xl text-lg font-serif font-bold transition-colors",
+                          "block py-4 font-serif font-light text-3xl md:text-4xl tracking-tight transition-colors border-b border-foreground/10",
                           location === link.href
-                            ? "text-primary bg-primary/8"
-                            : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                            ? "text-primary"
+                            : "text-foreground/60 hover:text-primary"
                         )}
                       >
                         {link.name}
@@ -169,19 +170,18 @@ export function Header() {
               </nav>
 
               <motion.div
-                className="p-6 pb-safe-or-6"
+                className="p-8 pb-safe-or-8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.25 }}
+                transition={{ delay: 0.35 }}
               >
                 <a
                   href={buildWhatsAppLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={closeMobile}
-                  className="btn-cta-amber btn-cta w-full justify-center flex gap-2"
+                  className="btn-cta-amber btn-cta w-full justify-center"
                 >
-                  <Phone className="w-5 h-5" />
                   WhatsApp'tan Ulaşın
                 </a>
               </motion.div>

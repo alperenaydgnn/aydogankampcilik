@@ -3,9 +3,7 @@ import { useParams, Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import {
-  ShieldCheck, Truck, Store,
-  RefreshCcw, ChevronDown, ChevronRight, Tag, Star,
-  Sparkles, AlertTriangle, XCircle,
+  ChevronDown, ChevronRight, Sparkles, Star,
 } from "lucide-react";
 import { getProductBySlug, getRelatedProducts } from "@/lib/data";
 import { Product, Category, StockStatus } from "@/lib/mockData";
@@ -65,26 +63,27 @@ function getFaqs(categoryId: string): FAQ[] {
   return [...categoryFaqs.slice(0, 2), ...GENERAL_FAQS];
 }
 
-/* ── Stock config ────────────────────────────────────── */
-const stockConfig: Record<StockStatus, { label: string; color: string; icon: typeof AlertTriangle }> = {
-  in_stock:    { label: "Stokta mevcut — hemen sipariş verebilirsiniz", color: "text-emerald-700 bg-emerald-50 border-emerald-200", icon: ShieldCheck as typeof AlertTriangle },
-  low_stock:   { label: "Son stoklar — hızlı hareket edin!", color: "text-amber-700 bg-amber-50 border-amber-200",    icon: AlertTriangle },
-  out_of_stock:{ label: "Bu ürün şu an stokta bulunmuyor",               color: "text-red-600 bg-red-50 border-red-200",            icon: XCircle },
+/* ── Stock config — editorial hairline ───────────────── */
+const stockConfig: Record<StockStatus, { label: string; tone: string; dot: string }> = {
+  in_stock:    { label: "Stokta mevcut",        tone: "text-emerald-700", dot: "bg-emerald-600" },
+  low_stock:   { label: "Son stoklar",          tone: "text-amber-700",   dot: "bg-amber-500" },
+  out_of_stock:{ label: "Şu an stokta yok",      tone: "text-rose-700",    dot: "bg-rose-500" },
 };
 
-/* ── FAQ accordion ───────────────────────────────────── */
+/* ── FAQ accordion — editorial hairline ──────────────── */
 function FAQAccordion({ items }: { items: FAQ[] }) {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <div className="space-y-2">
+    <div className="border-t border-foreground/15">
       {items.map((item, i) => (
-        <div key={i} className="bg-card border border-card-border rounded-xl overflow-hidden">
+        <div key={i} className="border-b border-foreground/15">
           <button
             onClick={() => setOpen(open === i ? null : i)}
-            className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+            className="w-full flex items-center justify-between gap-6 py-6 text-left group"
+            aria-expanded={open === i}
           >
-            <span className="font-semibold text-sm text-foreground leading-snug">{item.q}</span>
-            <ChevronDown className={cn("w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200", open === i && "rotate-180")} />
+            <span className="font-serif font-light text-lg md:text-xl text-foreground tracking-tight">{item.q}</span>
+            <ChevronDown className={cn("w-4 h-4 text-foreground/40 shrink-0 transition-all duration-300 group-hover:text-secondary", open === i && "rotate-180 text-secondary")} />
           </button>
           <AnimatePresence initial={false}>
             {open === i && (
@@ -92,12 +91,10 @@ function FAQAccordion({ items }: { items: FAQ[] }) {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden"
               >
-                <p className="px-5 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border/50 pt-3">
-                  {item.a}
-                </p>
+                <p className="pb-7 -mt-1 text-foreground/65 leading-relaxed font-light max-w-3xl">{item.a}</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -107,12 +104,34 @@ function FAQAccordion({ items }: { items: FAQ[] }) {
   );
 }
 
-/* ── Section heading ─────────────────────────────────── */
-function SectionHeading({ children }: { children: React.ReactNode }) {
+/* ── Local section heading — editorial split ───────── */
+function ProductSectionHeading({
+  eyebrow,
+  title,
+  italicAccent,
+  children,
+}: {
+  eyebrow?: string;
+  title: string;
+  italicAccent?: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <h2 className="font-serif font-bold text-2xl md:text-3xl text-foreground tracking-tight mb-6">
+    <div className="flex items-end justify-between gap-6 mb-12 md:mb-16 flex-wrap">
+      <div>
+        {eyebrow && <span className="eyebrow">{eyebrow}</span>}
+        <h2 className="editorial-heading text-3xl md:text-4xl lg:text-5xl">
+          {title}
+          {italicAccent && (
+            <>
+              {" "}
+              <em className="italic font-light text-secondary">{italicAccent}</em>
+            </>
+          )}
+        </h2>
+      </div>
       {children}
-    </h2>
+    </div>
   );
 }
 
@@ -152,26 +171,26 @@ export default function ProductDetail() {
   /* ── Loading state ─────────────────────────────────── */
   if (loading) {
     return (
-      <div className="min-h-screen bg-background" style={{ paddingTop: "5rem" }}>
-        <div className="container px-4 max-w-6xl py-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="min-h-screen bg-background pt-32 md:pt-40">
+        <div className="container px-6 max-w-6xl py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
             <div className="space-y-3">
-              <div className="skeleton rounded-2xl" style={{ aspectRatio: "4/3" }} />
+              <div className="skeleton" style={{ aspectRatio: "4/5" }} />
               <div className="flex gap-2">
-                {[1,2,3].map(i => <div key={i} className="skeleton w-20 h-20 rounded-xl" />)}
+                {[1,2,3].map(i => <div key={i} className="skeleton w-20 h-20" />)}
               </div>
             </div>
             <div className="space-y-4 pt-2">
-              <div className="skeleton h-4 rounded-full w-24" />
-              <div className="skeleton h-8 rounded-full w-4/5" />
-              <div className="skeleton h-8 rounded-full w-3/5" />
+              <div className="skeleton h-3 rounded-full w-24" />
+              <div className="skeleton h-10 rounded-sm w-4/5" />
+              <div className="skeleton h-10 rounded-sm w-3/5" />
               <div className="skeleton h-5 rounded-full w-28 mt-2" />
               <div className="space-y-2 mt-4">
                 <div className="skeleton h-3.5 rounded-full w-full" />
                 <div className="skeleton h-3.5 rounded-full w-full" />
                 <div className="skeleton h-3.5 rounded-full w-3/4" />
               </div>
-              <div className="skeleton h-14 rounded-xl w-full mt-4" />
+              <div className="skeleton h-14 rounded-full w-full mt-4" />
             </div>
           </div>
         </div>
@@ -186,8 +205,7 @@ export default function ProductDetail() {
   const stock = stockConfig[stockStatus];
   const isOOS = stockStatus === "out_of_stock";
   const faqs = getFaqs(product.category_id);
-  const siteUrl = "https://saricamaydogan.com";
-  const productUrl = `${siteUrl}/urun/${product.slug}`;
+  const productUrl = `${SITE_URL}/urun/${product.slug}`;
 
   const waMessage = buildProductMessage(product, category);
 
@@ -239,7 +257,7 @@ export default function ProductDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-background" style={{ paddingBottom: "5rem" }}>
+    <div className="min-h-screen bg-background pb-24">
       {/* Meta */}
       <SEO
         title={product.name}
@@ -264,12 +282,12 @@ export default function ProductDetail() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-background/95 backdrop-blur-md border-t border-border px-4 py-3 shadow-xl"
+            className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-background/95 backdrop-blur-md border-t border-foreground/15 px-5 py-3"
           >
             <div className="flex items-center gap-3 max-w-lg mx-auto">
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-foreground line-clamp-1">{product.name}</p>
-                <p className={cn("text-sm font-bold", product.price_numeric ? "text-primary" : "text-muted-foreground")}>
+                <p className="text-xs font-medium text-foreground/65 uppercase tracking-wide line-clamp-1">{product.name}</p>
+                <p className={cn("font-serif font-light text-xl tracking-tight", product.price_numeric ? "text-primary" : "text-foreground/55 italic")}>
                   {product.price_label}
                 </p>
               </div>
@@ -292,7 +310,7 @@ export default function ProductDetail() {
                   className="shrink-0"
                 />
               ) : (
-                <span className="text-xs font-semibold text-red-500 bg-red-50 border border-red-200 px-4 py-2.5 rounded-full">
+                <span className="text-xs uppercase tracking-[0.18em] font-semibold text-rose-700 px-4 py-2 border border-rose-700/30">
                   Tükendi
                 </span>
               )}
@@ -302,31 +320,31 @@ export default function ProductDetail() {
       </AnimatePresence>
 
       {/* ── Main content ───────────────────────────── */}
-      <div style={{ paddingTop: "5rem" }}>
-        <div className="container px-4 md:px-6 max-w-6xl">
+      <div className="pt-32 md:pt-40">
+        <div className="container px-6 max-w-6xl">
 
-          {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground pt-6 pb-8 flex-wrap">
-            <Link href="/" className="hover:text-primary transition-colors font-medium">Ana Sayfa</Link>
-            <ChevronRight className="w-3 h-3" />
-            <Link href="/urunler" className="hover:text-primary transition-colors font-medium">Ürünler</Link>
-            <ChevronRight className="w-3 h-3" />
-            <Link href={`/urunler/${category.slug}`} className="hover:text-primary transition-colors font-medium">
+          {/* Breadcrumb — editorial */}
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.2em] text-foreground/55 pb-12 flex-wrap">
+            <Link href="/" className="hover:text-secondary transition-colors">Ana Sayfa</Link>
+            <span className="text-foreground/30">/</span>
+            <Link href="/urunler" className="hover:text-secondary transition-colors">Ürünler</Link>
+            <span className="text-foreground/30">/</span>
+            <Link href={`/urunler/${category.slug}`} className="hover:text-secondary transition-colors">
               {category.name}
             </Link>
-            <ChevronRight className="w-3 h-3" />
-            <span className="text-foreground font-semibold line-clamp-1">{product.name}</span>
+            <span className="text-foreground/30">/</span>
+            <span className="text-foreground/85 line-clamp-1">{product.name}</span>
           </nav>
 
           {/* ── Hero grid ─────────────────────────── */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_440px] gap-10 lg:gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_440px] gap-12 lg:gap-20 items-start">
 
             {/* Gallery — sticky on desktop */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="lg:sticky lg:top-24"
+              transition={{ duration: 0.6 }}
+              className="lg:sticky lg:top-32"
             >
               <ImageGallery images={product.images} alt={product.name} />
             </motion.div>
@@ -335,64 +353,56 @@ export default function ProductDetail() {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.12 }}
-              className="flex flex-col gap-6"
+              transition={{ duration: 0.6, delay: 0.12 }}
+              className="flex flex-col gap-8"
             >
-              {/* Top badges */}
-              <div className="flex items-center gap-2 flex-wrap">
+              {/* Top eyebrow + flags */}
+              <div className="flex items-center gap-4 flex-wrap text-[0.7rem] uppercase tracking-[0.22em] font-semibold">
                 <Link
                   href={`/urunler/${category.slug}`}
-                  className="inline-flex items-center gap-1.5 badge-category text-white"
+                  className="text-secondary hover:text-primary transition-colors"
                 >
                   {category.name}
                 </Link>
                 {product.is_new && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-secondary text-white text-xs font-bold">
-                    <Sparkles className="w-3 h-3" /> Yeni Ürün
+                  <span className="inline-flex items-center gap-1.5 text-foreground/65">
+                    <Sparkles className="w-3 h-3" /> Yeni
                   </span>
                 )}
                 {product.featured && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold border border-primary/20">
-                    <Star className="w-3 h-3 fill-primary" /> Öne Çıkan
+                  <span className="inline-flex items-center gap-1.5 text-foreground/65">
+                    <Star className="w-3 h-3" /> Öne Çıkan
                   </span>
                 )}
               </div>
 
-              {/* Title */}
-              <h1 className="font-serif font-bold text-2xl md:text-3xl lg:text-4xl text-foreground leading-tight tracking-tight">
+              {/* Title — Fraunces light editorial */}
+              <h1 className="font-serif font-light tracking-tight leading-[1.05] text-foreground text-4xl md:text-5xl lg:text-6xl">
                 {product.name}
               </h1>
 
-              {/* Price + stock */}
-              <div className="bg-card border border-card-border rounded-2xl p-5 space-y-3">
-                <div className="flex items-baseline gap-3">
-                  <span className={cn(
-                    "font-bold",
-                    product.price_numeric ? "text-3xl text-primary" : "text-lg text-muted-foreground italic"
-                  )}>
-                    {product.price_label}
-                  </span>
-                  {!product.price_numeric && (
-                    <span className="text-sm text-muted-foreground">Fiyat için WhatsApp'tan sorunuz</span>
-                  )}
-                </div>
-
-                {/* Stock status */}
-                <div className={cn("flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium", stock.color)}>
-                  {stockStatus === "in_stock" && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />}
-                  {stockStatus === "low_stock" && <AlertTriangle className="w-4 h-4 shrink-0" />}
-                  {stockStatus === "out_of_stock" && <XCircle className="w-4 h-4 shrink-0" />}
+              {/* Price — editorial */}
+              <div className="border-t border-foreground/15 pt-6 flex items-baseline justify-between gap-4 flex-wrap">
+                <span className={cn(
+                  "font-serif font-light tracking-tight",
+                  product.price_numeric ? "text-4xl md:text-5xl text-primary" : "text-2xl text-foreground/55 italic"
+                )}>
+                  {product.price_label}
+                </span>
+                {/* Stock indicator — hairline */}
+                <div className={cn("flex items-center gap-2.5 text-xs uppercase tracking-[0.18em] font-semibold", stock.tone)}>
+                  <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", stock.dot, stockStatus === "in_stock" && "animate-pulse")} />
                   {stock.label}
                 </div>
               </div>
 
               {/* Description */}
-              <p className="text-muted-foreground leading-relaxed text-[0.95rem]">
+              <p className="text-foreground/65 leading-relaxed font-light text-base md:text-lg">
                 {product.description}
               </p>
 
-              {/* WhatsApp CTA */}
-              <div ref={mainCTARef} className="rounded-2xl border border-card-border bg-card p-5 space-y-3">
+              {/* WhatsApp CTA — bare editorial */}
+              <div ref={mainCTARef} className="space-y-4">
                 {!isOOS ? (
                   <>
                     <WhatsAppButton
@@ -410,8 +420,8 @@ export default function ProductDetail() {
                       size="lg"
                       fullWidth
                     />
-                    <p className="text-center text-xs text-muted-foreground leading-relaxed">
-                      Online ödeme almıyoruz — WhatsApp üzerinden stok teyidi alın,<br className="hidden sm:inline" /> güvenle sipariş verin.
+                    <p className="text-xs uppercase tracking-[0.18em] text-foreground/55 leading-relaxed text-center">
+                      WhatsApp üzerinden stok teyidi alın · Güvenle sipariş verin
                     </p>
                   </>
                 ) : (
@@ -437,101 +447,71 @@ export default function ProductDetail() {
                 )}
               </div>
 
-              {/* Trust pillars */}
-              <div className="grid grid-cols-2 gap-3">
+              {/* Trust pillars — minimal hairline grid */}
+              <div className="grid grid-cols-2 gap-x-6 gap-y-5 border-t border-foreground/15 pt-6">
                 {[
-                  { icon: ShieldCheck, title: "Orijinal Ürün", sub: "Üretici garantili", color: "text-emerald-600 bg-emerald-50" },
-                  { icon: Truck,       title: "Aynı Gün Kargo", sub: "Saat 14:00'a kadar",color: "text-blue-600 bg-blue-50" },
-                  { icon: Store,       title: "Mağazadan Teslim", sub: "Trabzon merkez",  color: "text-amber-600 bg-amber-50" },
-                  { icon: RefreshCcw,  title: "7 Gün İade",      sub: "Hasar/arıza için", color: "text-purple-600 bg-purple-50" },
-                ].map(({ icon: Icon, title, sub, color }) => (
-                  <div key={title} className="flex items-center gap-3 bg-card border border-card-border rounded-xl p-3">
-                    <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0", color)}>
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-foreground leading-tight">{title}</p>
-                      <p className="text-[0.65rem] text-muted-foreground">{sub}</p>
-                    </div>
+                  { title: "Orijinal Ürün",   sub: "Üretici garantili" },
+                  { title: "Aynı Gün Kargo",  sub: "Saat 14:00'a kadar" },
+                  { title: "Mağazadan Teslim",sub: "Trabzon merkez" },
+                  { title: "7 Gün İade",       sub: "Hasar/arıza için" },
+                ].map((p) => (
+                  <div key={p.title} className="flex flex-col">
+                    <p className="text-xs uppercase tracking-[0.18em] font-semibold text-foreground">{p.title}</p>
+                    <p className="text-xs text-foreground/55 mt-1 font-light">{p.sub}</p>
                   </div>
                 ))}
               </div>
 
-              {/* Specs */}
+              {/* Specs — editorial table */}
               {product.specs && Object.keys(product.specs).length > 0 && (
-                <div>
-                  <h3 className="font-serif font-semibold text-lg text-foreground mb-3 flex items-center gap-2">
-                    <Tag className="w-4 h-4 text-secondary" />
-                    Teknik Özellikler
-                  </h3>
-                  <div className="border border-card-border rounded-2xl overflow-hidden bg-card">
-                    <table className="w-full text-sm text-left">
-                      <tbody>
-                        {Object.entries(product.specs).map(([key, value], idx) => (
-                          <tr key={key} className={cn("border-b border-border/50 last:border-0", idx % 2 === 0 ? "bg-muted/25" : "bg-card")}>
-                            <th className="px-4 py-3 font-semibold text-foreground w-2/5 border-r border-border/40 text-xs uppercase tracking-wide">
-                              {key}
-                            </th>
-                            <td className="px-4 py-3 text-muted-foreground font-medium">
-                              {value}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                <div className="border-t border-foreground/15 pt-8">
+                  <span className="eyebrow">Teknik Özellikler</span>
+                  <dl className="mt-2">
+                    {Object.entries(product.specs).map(([key, value]) => (
+                      <div
+                        key={key}
+                        className="grid grid-cols-[2fr_3fr] gap-6 py-3 border-b border-foreground/10"
+                      >
+                        <dt className="text-xs uppercase tracking-[0.16em] font-semibold text-foreground/65">{key}</dt>
+                        <dd className="font-serif font-light text-foreground tracking-tight">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
                 </div>
               )}
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 pt-1">
-                <Link href={`/urunler/${category.slug}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border hover:border-primary/30 hover:text-foreground transition-all"
-                >
-                  <Tag className="w-3 h-3" /> {category.name}
-                </Link>
-                {product.is_new && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border">
-                    <Sparkles className="w-3 h-3" /> Yeni Ürün
-                  </span>
-                )}
-                {product.featured && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border">
-                    <Star className="w-3 h-3" /> Öne Çıkan
-                  </span>
-                )}
-              </div>
             </motion.div>
           </div>
 
           {/* ── Full-width sections ─────────────────────── */}
-          <div className="mt-16 md:mt-20 space-y-16">
+          <div className="mt-32 md:mt-40 space-y-32 md:space-y-40">
 
-            {/* Store / Shipping / Return notes */}
+            {/* Store / Shipping / Return — editorial three-up */}
             <motion.section
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6 }}
             >
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <ProductSectionHeading
+                eyebrow="Söz Veriyoruz"
+                title="Satın aldıktan"
+                italicAccent="sonra da."
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
                 {[
                   {
-                    icon: Truck,
+                    num: "01",
                     title: "Hızlı Kargo",
-                    color: "from-blue-50 to-blue-100/50 border-blue-200",
-                    iconColor: "text-blue-600 bg-blue-100",
                     items: [
                       "Saat 14:00'a kadar verilen siparişler aynı gün kargoya verilir.",
-                      "MNG Kargo ve Aras Kargo ile Türkiye geneline teslimat.",
+                      "MNG ve Aras Kargo ile Türkiye geneline teslimat.",
                       "Kargo ücreti sipariş tutarına ve konuma göre belirlenir.",
                     ],
                   },
                   {
-                    icon: Store,
+                    num: "02",
                     title: "Mağazadan Teslim",
-                    color: "from-amber-50 to-amber-100/50 border-amber-200",
-                    iconColor: "text-amber-600 bg-amber-100",
                     items: [
                       "Trabzon'daki mağazamızdan ürünü bizzat teslim alabilirsiniz.",
                       "Ziyaret öncesi WhatsApp'tan randevu almanızı öneririz.",
@@ -539,27 +519,23 @@ export default function ProductDetail() {
                     ],
                   },
                   {
-                    icon: ShieldCheck,
+                    num: "03",
                     title: "Garanti & İade",
-                    color: "from-emerald-50 to-emerald-100/50 border-emerald-200",
-                    iconColor: "text-emerald-600 bg-emerald-100",
                     items: [
                       "Tüm ürünler orijinal üretici garantisi kapsamındadır.",
-                      "Teslim anında hasar/arıza durumunda 7 gün içinde iade/değişim.",
+                      "Hasar/arıza durumunda 7 gün içinde iade/değişim.",
                       "Garanti belgesi ve fatura kargo ile birlikte gönderilir.",
                     ],
                   },
-                ].map(({ icon: Icon, title, color, iconColor, items }) => (
-                  <div key={title} className={cn("rounded-2xl border bg-gradient-to-br p-5", color)}>
-                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-3", iconColor)}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <h3 className="font-serif font-bold text-foreground mb-3">{title}</h3>
-                    <ul className="space-y-2">
-                      {items.map(item => (
-                        <li key={item} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
-                          <span className="w-1.5 h-1.5 rounded-full bg-current mt-1.5 shrink-0 opacity-50" />
-                          {item}
+                ].map((item) => (
+                  <div key={item.num} className="border-t border-foreground/15 pt-6">
+                    <span className="font-serif font-light text-4xl text-secondary leading-none">{item.num}</span>
+                    <h3 className="font-serif font-light text-2xl mt-4 mb-5 tracking-tight text-foreground">{item.title}</h3>
+                    <ul className="space-y-3">
+                      {item.items.map(it => (
+                        <li key={it} className="flex gap-3 text-sm text-foreground/65 leading-relaxed font-light">
+                          <span className="w-1 h-1 rounded-full bg-foreground/40 mt-2 shrink-0" />
+                          {it}
                         </li>
                       ))}
                     </ul>
@@ -568,14 +544,18 @@ export default function ProductDetail() {
               </div>
             </motion.section>
 
-            {/* FAQ */}
+            {/* FAQ — editorial */}
             <motion.section
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6 }}
             >
-              <SectionHeading>Sık Sorulan Sorular</SectionHeading>
+              <ProductSectionHeading
+                eyebrow="Bilgi"
+                title="Sık sorulan"
+                italicAccent="sorular."
+              />
               <FAQAccordion items={faqs} />
             </motion.section>
 
@@ -585,84 +565,81 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.6 }}
               >
-                <div className="flex items-center justify-between mb-6">
-                  <SectionHeading>{category.name} — Benzer Ürünler</SectionHeading>
+                <ProductSectionHeading
+                  eyebrow={category.name}
+                  title="Benzer"
+                  italicAccent="ürünler."
+                >
                   <Link
                     href={`/urunler/${category.slug}`}
-                    className="hidden sm:flex items-center gap-1 text-sm font-semibold text-secondary hover:text-primary transition-colors"
+                    className="link-hairline hidden sm:inline-flex hover:text-secondary"
                   >
-                    Tümünü gör <ChevronRight className="w-4 h-4" />
+                    Tümünü Gör
+                    <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                </ProductSectionHeading>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
                   {related.map((p, i) => (
                     <ProductCard key={p.id} product={p} index={i} />
                   ))}
                 </div>
-                <div className="mt-5 sm:hidden">
+                <div className="mt-12 sm:hidden">
                   <Link
                     href={`/urunler/${category.slug}`}
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-border text-sm font-semibold text-foreground hover:border-primary/30 hover:bg-muted/50 transition-all"
+                    className="link-hairline justify-center w-full hover:text-secondary"
                   >
-                    Tüm {category.name} Ürünleri <ChevronRight className="w-4 h-4" />
+                    Tüm {category.name} Ürünleri
+                    <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
               </motion.section>
             )}
-
-            {/* Final CTA */}
-            <motion.section
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.5 }}
-              className="rounded-3xl overflow-hidden"
-            >
-              <div
-                className="flex flex-col sm:flex-row items-center justify-between gap-6 p-8 md:p-10"
-                style={{ background: "hsl(149 43% 17%)" }}
-              >
-                <div className="text-center sm:text-left">
-                  <div className="flex items-center gap-2 mb-2 justify-center sm:justify-start">
-                    <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
-                    <span className="text-white/60 text-xs font-semibold uppercase tracking-widest">Şu an aktifiz</span>
-                  </div>
-                  <p className="font-serif font-bold text-white text-xl md:text-2xl mb-1">
-                    {isOOS ? "Bu ürün tükendi, başka ne arıyorsunuz?" : "Bu ürünü sipariş etmek ister misiniz?"}
-                  </p>
-                  <p className="text-white/55 text-sm">
-                    {isOOS
-                      ? "WhatsApp'tan yazın — ihtiyacınıza en uygun alternatifi bulalım."
-                      : "WhatsApp üzerinden stok teyidi alın, aynı gün kargo ile kapınıza gelsin."}
-                  </p>
-                </div>
-                <WhatsAppButton
-                  message={isOOS
-                    ? `Merhaba! 👋\n\n"*${product.name}*" tükenmiş — bu ürüne alternatif önerebilir misiniz?`
-                    : waMessage}
-                  tracking={{
-                    event: isOOS ? "product_inquiry" : "product_order",
-                    source: "product_detail_cta_strip",
-                    product_id: product.id,
-                    product_name: product.name,
-                    product_slug: product.slug,
-                    category_id: product.category_id,
-                    category_name: category.name,
-                    price_numeric: product.price_numeric ?? undefined,
-                  }}
-                  size="lg"
-                  rounded="pill"
-                  label={isOOS ? "Alternatif Sorun" : "WhatsApp'tan Sipariş Ver"}
-                  className="shrink-0"
-                />
-              </div>
-            </motion.section>
-
           </div>
         </div>
       </div>
+
+      {/* ── Final CTA — Dark editorial band ─────────── */}
+      <section className="section-sm bg-[#111111] text-white mt-32 md:mt-40">
+        <div className="container px-6 max-w-4xl text-center">
+          <span className="eyebrow justify-center text-secondary">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse" />
+            Şu an aktifiz
+          </span>
+          <h2 className="editorial-heading text-white text-4xl md:text-5xl lg:text-6xl mb-8">
+            {isOOS ? "Bu ürün tükendi." : "Sipariş etmek ister misiniz."}
+            <br />
+            <em className="italic font-light text-white/70">
+              {isOOS ? "Alternatif önerelim." : "Aynı gün kargoda."}
+            </em>
+          </h2>
+          <p className="text-white/55 text-base md:text-lg font-light mb-12 max-w-xl mx-auto leading-relaxed">
+            {isOOS
+              ? "WhatsApp'tan yazın — ihtiyacınıza en uygun alternatifi bulalım."
+              : "WhatsApp üzerinden stok teyidi alın, aynı gün kargo ile kapınıza gelsin."}
+          </p>
+          <WhatsAppButton
+            message={isOOS
+              ? `Merhaba! 👋\n\n"*${product.name}*" tükenmiş — bu ürüne alternatif önerebilir misiniz?`
+              : waMessage}
+            tracking={{
+              event: isOOS ? "product_inquiry" : "product_order",
+              source: "product_detail_cta_strip",
+              product_id: product.id,
+              product_name: product.name,
+              product_slug: product.slug,
+              category_id: product.category_id,
+              category_name: category.name,
+              price_numeric: product.price_numeric ?? undefined,
+            }}
+            size="lg"
+            rounded="pill"
+            label={isOOS ? "Alternatif Sorun" : "WhatsApp'tan Sipariş Ver"}
+          />
+        </div>
+      </section>
     </div>
   );
 }

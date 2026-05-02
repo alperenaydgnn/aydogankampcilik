@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { ArrowRight, AlertTriangle, XCircle, Sparkles } from "lucide-react";
+import { AlertTriangle, XCircle } from "lucide-react";
 import { Product, Category, StockStatus } from "@/lib/mockData";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { BlurImage } from "@/components/BlurImage";
@@ -32,9 +32,9 @@ function useCategories(): Category[] {
 
 /* ── Stock badge ──────────────────────────────────────── */
 const stockConfig: Record<StockStatus, { label: string; cls: string; icon: typeof AlertTriangle | null }> = {
-  in_stock:    { label: "Stokta",      cls: "bg-emerald-50 text-emerald-700 border-emerald-200",   icon: null },
-  low_stock:   { label: "Son stoklar", cls: "bg-amber-50 text-amber-700 border-amber-200",          icon: AlertTriangle },
-  out_of_stock:{ label: "Tükendi",     cls: "bg-red-50 text-red-600 border-red-200",                icon: XCircle },
+  in_stock:    { label: "Stokta",      cls: "text-emerald-700",  icon: null },
+  low_stock:   { label: "Son stoklar", cls: "text-amber-700",    icon: AlertTriangle },
+  out_of_stock:{ label: "Tükendi",     cls: "text-red-600",      icon: XCircle },
 };
 
 function StockBadge({ status }: { status: StockStatus }) {
@@ -42,14 +42,14 @@ function StockBadge({ status }: { status: StockStatus }) {
   if (status === "in_stock") return null;
   const Icon = cfg.icon;
   return (
-    <span className={cn("inline-flex items-center gap-1 text-[0.65rem] font-semibold px-2 py-0.5 rounded-full border", cfg.cls)}>
+    <span className={cn("inline-flex items-center gap-1 text-[0.65rem] font-bold uppercase tracking-[0.15em]", cfg.cls)}>
       {Icon && <Icon className="w-2.5 h-2.5" />}
       {cfg.label}
     </span>
   );
 }
 
-/* ── Main card ────────────────────────────────────────── */
+/* ── Main card (Editorial / Meridian) ─────────────────── */
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const categories = useCategories();
   const category = categories.find(c => c.id === product.category_id);
@@ -61,116 +61,103 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.45, delay: Math.min(index * 0.07, 0.35), ease: [0.22, 1, 0.36, 1] }}
-      className={cn("group product-card card-glow flex flex-col", isOOS && "opacity-70")}
+      transition={{ duration: 0.6, delay: Math.min(index * 0.06, 0.3), ease: [0.22, 1, 0.36, 1] }}
+      className={cn("group product-card flex flex-col", isOOS && "opacity-60")}
       aria-label={product.name}
     >
-      {/* Image */}
-      <div className="relative overflow-hidden rounded-t-2xl bg-muted/40">
-        {/* Top-left badges */}
-        <div className="absolute top-2.5 left-2.5 z-10 flex flex-col gap-1.5 items-start">
-          {category && (
-            <span className="badge-category">{category.name}</span>
+      {/* Editorial bare image */}
+      <Link href={`/urun/${product.slug}`} tabIndex={-1} aria-hidden className="block">
+        <div className="product-card-image relative">
+          {/* Out of stock overlay */}
+          {isOOS && (
+            <div className="absolute inset-0 z-10 bg-background/70 flex items-center justify-center">
+              <span className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-red-700 bg-background px-4 py-1.5 border border-red-300">
+                Tükendi
+              </span>
+            </div>
           )}
-          {product.is_new && (
-            <span className="inline-flex items-center gap-1 text-[0.65rem] font-bold px-2 py-0.5 rounded-full bg-secondary text-white shadow-sm">
-              <Sparkles className="w-2.5 h-2.5" />
-              Yeni
-            </span>
-          )}
-        </div>
 
-        {/* Out of stock overlay */}
-        {isOOS && (
-          <div className="absolute inset-0 z-10 bg-background/60 flex items-center justify-center">
-            <span className="text-xs font-bold text-red-600 bg-white px-3 py-1.5 rounded-full border border-red-200 shadow">
-              Tükendi
-            </span>
-          </div>
-        )}
-
-        <Link href={`/urun/${product.slug}`} tabIndex={-1} aria-hidden>
-          <AspectRatio ratio={4 / 3}>
+          <AspectRatio ratio={4 / 5}>
             <BlurImage
               src={product.images[0]}
               alt={product.name}
               wrapperClassName="absolute inset-0"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
+              className="w-full h-full object-cover"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
           </AspectRatio>
-        </Link>
-      </div>
-
-      {/* Body */}
-      <div className="flex flex-col flex-1 p-4 gap-3">
-        {/* Stock row */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {product.stock_status && product.stock_status !== "in_stock" && (
-            <StockBadge status={product.stock_status} />
-          )}
-          {product.stock_status === "in_stock" && (
-            <span className="inline-flex items-center gap-1 text-[0.65rem] font-semibold text-emerald-700">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Stokta mevcut
-            </span>
-          )}
         </div>
+      </Link>
 
-        {/* Title */}
+      {/* Editorial body */}
+      <div className="flex flex-col flex-1 pt-6 gap-3">
+        {/* Category eyebrow */}
+        {category && (
+          <span className="text-[0.65rem] font-bold uppercase tracking-[0.22em] text-foreground/45">
+            {category.name}
+            {product.is_new && <span className="ml-2 text-secondary">— Yeni</span>}
+          </span>
+        )}
+
+        {/* Title (Fraunces) */}
         <Link href={`/urun/${product.slug}`} className="flex-1">
-          <h3 className="font-serif font-semibold text-[1rem] leading-snug line-clamp-2 text-foreground group-hover:text-primary transition-colors duration-200">
+          <h3 className="font-serif font-light text-xl md:text-2xl leading-snug text-primary tracking-tight line-clamp-2 group-hover:text-secondary transition-colors duration-300">
             {product.name}
           </h3>
         </Link>
 
-        {/* Description */}
-        <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">
-          {product.description}
-        </p>
-
-        {/* Price + detail link */}
-        <div className="flex items-center justify-between pt-2.5 border-t border-border/50">
-          <span className={cn(
-            "font-bold text-sm",
-            product.price_numeric ? "text-primary text-base" : "text-muted-foreground text-xs italic"
-          )}>
+        {/* Stock + Price row */}
+        <div className="flex items-baseline justify-between pt-2">
+          <span
+            className={cn(
+              "font-serif",
+              product.price_numeric
+                ? "text-primary text-lg font-medium tracking-tight"
+                : "text-foreground/50 text-sm italic"
+            )}
+          >
             {product.price_label}
           </span>
-          <Link
-            href={`/urun/${product.slug}`}
-            className="inline-flex items-center gap-1 text-[0.7rem] font-semibold text-secondary hover:text-primary uppercase tracking-wide transition-colors group/link"
-          >
-            İncele <ArrowRight className="w-3 h-3 group-hover/link:translate-x-0.5 transition-transform" />
-          </Link>
+          {product.stock_status && product.stock_status !== "in_stock" ? (
+            <StockBadge status={product.stock_status} />
+          ) : (
+            <span className="inline-flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.18em] text-emerald-700">
+              <span className="w-1 h-1 rounded-full bg-emerald-600" />
+              Stokta
+            </span>
+          )}
         </div>
 
-        {/* WhatsApp CTA */}
-        {isOOS ? (
-          <OutOfStockButton size="sm" fullWidth />
-        ) : (
-          <WhatsAppButton
-            message={waMessage}
-            tracking={{
-              event: "product_order",
-              source: "product_card",
-              product_id: product.id,
-              product_name: product.name,
-              product_slug: product.slug,
-              category_id: product.category_id,
-              category_name: category?.name,
-              price_numeric: product.price_numeric ?? undefined,
-            }}
-            size="sm"
-            fullWidth
-            label="WhatsApp ile Sipariş"
-            onClick={e => e.stopPropagation()}
-          />
-        )}
+        {/* Hairline */}
+        <div className="h-px w-full bg-foreground/10 mt-2" />
+
+        {/* CTA */}
+        <div className="pt-1">
+          {isOOS ? (
+            <OutOfStockButton size="sm" fullWidth />
+          ) : (
+            <WhatsAppButton
+              message={waMessage}
+              tracking={{
+                event: "product_order",
+                source: "product_card",
+                product_id: product.id,
+                product_name: product.name,
+                product_slug: product.slug,
+                category_id: product.category_id,
+                category_name: category?.name,
+                price_numeric: product.price_numeric ?? undefined,
+              }}
+              size="sm"
+              fullWidth
+              label="WhatsApp ile Sipariş"
+              onClick={e => e.stopPropagation()}
+            />
+          )}
+        </div>
       </div>
     </motion.article>
   );

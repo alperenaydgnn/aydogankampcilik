@@ -4,14 +4,14 @@ import {
   Search, Filter, SlidersHorizontal, LayoutGrid, List,
   ChevronLeft, ChevronRight, ArrowRight,
   X, ChevronDown, ChevronUp, Star, Sparkles, ArrowUpDown,
-  CheckCircle2, AlertTriangle,
+  AlertTriangle, MessageCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { getCategories, getProducts } from "@/lib/data";
 import { Category, Product, StockStatus } from "@/lib/mockData";
 import { getCategoryMeta } from "@/lib/categoryMeta";
-import { buildBreadcrumbSchema, buildItemListSchema, SITE_URL } from "@/lib/schemas";
+import { buildBreadcrumbSchema, buildItemListSchema } from "@/lib/schemas";
 import { ProductCard } from "@/components/ProductCard";
 import { SEO } from "@/lib/seo";
 import { buildSearchMessage, buildProductMessage } from "@/lib/whatsapp";
@@ -54,11 +54,11 @@ function readParams(s: string): Params {
 
 /* ── Price ranges ─────────────────────────────────────── */
 const PRICE_RANGES: Record<PriceRange, { label: string; min: number; max: number }> = {
-  all:     { label: "Tüm Fiyatlar", min: 0, max: Infinity },
-  low:     { label: "₺500'a kadar",  min: 0, max: 500 },
-  mid:     { label: "₺500 – ₺2.000", min: 500, max: 2000 },
-  high:    { label: "₺2.000 – ₺5.000", min: 2000, max: 5000 },
-  premium: { label: "₺5.000+",        min: 5000, max: Infinity },
+  all:     { label: "Tüm Fiyatlar",     min: 0,    max: Infinity },
+  low:     { label: "₺500'a kadar",     min: 0,    max: 500 },
+  mid:     { label: "₺500 – ₺2.000",    min: 500,  max: 2000 },
+  high:    { label: "₺2.000 – ₺5.000",  min: 2000, max: 5000 },
+  premium: { label: "₺5.000+",          min: 5000, max: Infinity },
 };
 
 const SORT_LABELS: Record<SortKey, string> = {
@@ -69,10 +69,7 @@ const SORT_LABELS: Record<SortKey, string> = {
 };
 
 /* ── Filtering + sorting (client-side) ───────────────── */
-function applyFilters(
-  products: Product[],
-  params: Params
-): Product[] {
+function applyFilters(products: Product[], params: Params): Product[] {
   let list = [...products];
 
   if (params.feat) list = list.filter(p => p.featured);
@@ -111,24 +108,16 @@ function applyFilters(
 /* ── Skeleton card ────────────────────────────────────── */
 function SkeletonCard() {
   return (
-    <div className="bg-card border border-card-border rounded-2xl overflow-hidden">
-      <div className="skeleton aspect-[4/3]" />
-      <div className="p-4 space-y-2.5">
-        <div className="skeleton h-3 rounded-full w-20" />
-        <div className="skeleton h-4 rounded-full w-4/5" />
-        <div className="skeleton h-3 rounded-full w-full" />
-        <div className="skeleton h-3 rounded-full w-3/4" />
-        <div className="flex justify-between mt-4">
-          <div className="skeleton h-4 rounded-full w-20" />
-          <div className="skeleton h-8 rounded-xl w-32" />
-        </div>
-        <div className="skeleton h-9 rounded-xl w-full mt-1" />
-      </div>
+    <div className="space-y-3">
+      <div className="skeleton" style={{ aspectRatio: "4/5" }} />
+      <div className="skeleton h-3 rounded-full w-20 mt-4" />
+      <div className="skeleton h-5 rounded-sm w-4/5" />
+      <div className="skeleton h-4 rounded-full w-1/3" />
     </div>
   );
 }
 
-/* ── List row ─────────────────────────────────────────── */
+/* ── List row — editorial hairline ───────────────────── */
 function ProductRow({ product, index, categoryName }: {
   product: Product; index: number; categoryName?: string;
 }) {
@@ -142,72 +131,63 @@ function ProductRow({ product, index, categoryName }: {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.32, delay: Math.min(index * 0.04, 0.2) }}
       className={cn(
-        "flex gap-0 bg-card border border-card-border rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-card-hover hover:-translate-y-0.5 group",
+        "grid grid-cols-[120px_1fr] sm:grid-cols-[180px_1fr] gap-6 sm:gap-10 py-8 border-b border-foreground/15 group",
         isOOS && "opacity-65"
       )}
     >
-      {/* Thumbnail */}
-      <div className="w-28 sm:w-40 shrink-0 bg-muted relative">
-        {categoryName && (
-          <span className="absolute top-2 left-2 z-10 badge-category">{categoryName}</span>
-        )}
-        {product.is_new && (
-          <span className="absolute bottom-2 left-2 z-10 inline-flex items-center gap-1 text-[0.6rem] font-bold px-2 py-0.5 rounded-full bg-secondary text-white">
-            <Sparkles className="w-2.5 h-2.5" /> Yeni
-          </span>
-        )}
-        <Link href={`/urun/${product.slug}`} tabIndex={-1}>
-          <AspectRatio ratio={1}>
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          </AspectRatio>
-        </Link>
-      </div>
+      {/* Thumbnail — bare */}
+      <Link href={`/urun/${product.slug}`} tabIndex={-1} className="block overflow-hidden bg-muted/40">
+        <AspectRatio ratio={4/5}>
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            loading="lazy"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          />
+        </AspectRatio>
+      </Link>
 
-      {/* Content */}
-      <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between gap-2 min-w-0">
+      {/* Content — editorial */}
+      <div className="flex flex-col justify-between min-w-0">
         <div className="min-w-0">
-          {/* Stock pill */}
-          {product.stock_status && product.stock_status !== "in_stock" && (
-            <div className="mb-1.5">
-              {product.stock_status === "low_stock" && (
-                <span className="inline-flex items-center gap-1 text-[0.6rem] font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5">
-                  <AlertTriangle className="w-2.5 h-2.5" /> Son stoklar
-                </span>
-              )}
-              {product.stock_status === "out_of_stock" && (
-                <span className="inline-flex items-center gap-1 text-[0.6rem] font-semibold text-red-600 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">
-                  Tükendi
-                </span>
-              )}
-            </div>
-          )}
+          <div className="flex items-center gap-4 text-[0.65rem] uppercase tracking-[0.22em] font-semibold mb-3 flex-wrap">
+            {categoryName && <span className="text-secondary">{categoryName}</span>}
+            {product.is_new && (
+              <span className="inline-flex items-center gap-1 text-foreground/55">
+                <Sparkles className="w-2.5 h-2.5" /> Yeni
+              </span>
+            )}
+            {product.stock_status === "low_stock" && (
+              <span className="inline-flex items-center gap-1 text-amber-700">
+                <AlertTriangle className="w-2.5 h-2.5" /> Son Stoklar
+              </span>
+            )}
+            {product.stock_status === "out_of_stock" && (
+              <span className="text-rose-700">Tükendi</span>
+            )}
+          </div>
           <Link href={`/urun/${product.slug}`}>
-            <h3 className="font-serif font-semibold text-base sm:text-lg line-clamp-1 group-hover:text-primary transition-colors duration-200">
+            <h3 className="font-serif font-light text-2xl md:text-3xl text-foreground tracking-tight leading-tight group-hover:text-secondary transition-colors duration-300">
               {product.name}
             </h3>
           </Link>
-          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mt-1 leading-relaxed">
+          <p className="text-foreground/60 text-sm mt-3 leading-relaxed font-light line-clamp-2 max-w-2xl">
             {product.description}
           </p>
         </div>
-        <div className="flex items-center gap-3 flex-wrap pt-3 border-t border-border/50">
+        <div className="flex items-baseline gap-6 flex-wrap pt-6 mt-6 border-t border-foreground/10">
           <span className={cn(
-            "font-bold",
-            product.price_numeric ? "text-primary text-base" : "text-muted-foreground text-xs italic"
+            "font-serif font-light tracking-tight",
+            product.price_numeric ? "text-primary text-2xl md:text-3xl" : "text-foreground/55 text-base italic"
           )}>
             {product.price_label}
           </span>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-6">
             <Link
               href={`/urun/${product.slug}`}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-secondary hover:text-primary uppercase tracking-wide transition-colors"
+              className="link-hairline hover:text-secondary"
             >
-              İncele <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              İncele <ArrowRight className="w-3 h-3" />
             </Link>
             {!isOOS && (
               <WhatsAppButton
@@ -234,7 +214,7 @@ function ProductRow({ product, index, categoryName }: {
   );
 }
 
-/* ── Empty state ──────────────────────────────────────── */
+/* ── Empty state — editorial ────────────────────────── */
 function EmptyState({
   hasFilters,
   onClear,
@@ -251,29 +231,30 @@ function EmptyState({
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="text-center py-20 px-8 bg-card border border-card-border rounded-3xl"
+      className="text-center py-32 border-t border-b border-foreground/15"
     >
-      <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-5">
-        <SlidersHorizontal className="w-7 h-7 text-muted-foreground opacity-60" />
-      </div>
-      <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
+      <span className="eyebrow justify-center">Sonuç Yok</span>
+      <h3 className="editorial-heading text-3xl md:text-4xl mb-6">
         {query
-          ? `"${query}" için sonuç bulunamadı`
-          : hasFilters ? "Filtrelerle Eşleşen Ürün Yok" : "Bu Kategoride Ürün Yok"}
-      </h3>
-      <p className="text-muted-foreground text-sm mb-7 max-w-xs mx-auto leading-relaxed">
-        {query
-          ? "Arama teriminizi genişletin ya da aradığınız ürünü doğrudan WhatsApp'tan sorun — yardımcı olalım."
+          ? <>"{query}" için <em className="italic text-secondary">sonuç bulunamadı.</em></>
           : hasFilters
-            ? "Seçtiğiniz filtre kriterlerine uygun ürün bulunamadı. Filtreleri genişletin ya da WhatsApp'tan sorun."
+            ? <>Filtreyle eşleşen <em className="italic text-secondary">ürün yok.</em></>
+            : <>Bu kategoride <em className="italic text-secondary">ürün yok.</em></>
+        }
+      </h3>
+      <p className="text-foreground/60 text-base font-light mb-10 max-w-md mx-auto leading-relaxed">
+        {query
+          ? "Arama teriminizi genişletin ya da aradığınız ürünü doğrudan WhatsApp'tan sorun."
+          : hasFilters
+            ? "Seçtiğiniz filtre kriterlerine uygun ürün bulunamadı. Filtreleri genişletin."
             : "Bu kategoriye yakında ürün ekleyeceğiz. WhatsApp'tan sorabilirsiniz."}
       </p>
-      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+      <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
         <button
           onClick={onClear}
-          className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full border border-border text-sm font-medium text-foreground hover:border-primary/30 hover:bg-muted/50 transition-all duration-200"
+          className="link-hairline hover:text-secondary"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3.5 h-3.5" />
           {hasFilters ? "Filtreleri Temizle" : "Tüm Ürünlere Dön"}
         </button>
         <WhatsAppButton
@@ -293,27 +274,27 @@ function EmptyState({
   );
 }
 
-/* ── Sort dropdown ────────────────────────────────────── */
+/* ── Sort dropdown — minimal ─────────────────────────── */
 function SortDropdown({ value, onChange }: { value: SortKey; onChange: (v: SortKey) => void }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
       <button
         onClick={() => setOpen(o => !o)}
-        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-border bg-card text-sm font-medium text-foreground hover:border-primary/30 transition-all"
+        className="inline-flex items-center gap-2 px-4 py-2 border border-foreground/20 text-xs uppercase tracking-[0.18em] font-semibold text-foreground hover:border-secondary hover:text-secondary transition-colors"
       >
-        <ArrowUpDown className="w-3.5 h-3.5 text-secondary" />
+        <ArrowUpDown className="w-3 h-3" />
         {SORT_LABELS[value]}
-        <ChevronDown className={cn("w-3.5 h-3.5 text-muted-foreground transition-transform", open && "rotate-180")} />
+        <ChevronDown className={cn("w-3 h-3 transition-transform", open && "rotate-180")} />
       </button>
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.97 }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 mt-2 w-48 bg-card border border-card-border rounded-xl shadow-lg z-40 overflow-hidden"
+            className="absolute right-0 mt-1 w-52 bg-card border border-foreground/15 z-40 overflow-hidden"
             onMouseLeave={() => setOpen(false)}
           >
             {(Object.entries(SORT_LABELS) as [SortKey, string][]).map(([key, label]) => (
@@ -321,14 +302,12 @@ function SortDropdown({ value, onChange }: { value: SortKey; onChange: (v: SortK
                 key={key}
                 onClick={() => { onChange(key); setOpen(false); }}
                 className={cn(
-                  "w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-2",
+                  "w-full text-left px-4 py-3 text-sm transition-colors border-b border-foreground/10 last:border-0",
                   value === key
-                    ? "bg-primary/8 text-primary font-semibold"
-                    : "text-foreground hover:bg-muted/60"
+                    ? "bg-foreground/5 text-secondary font-serif italic"
+                    : "text-foreground/75 hover:bg-foreground/5"
                 )}
               >
-                {value === key && <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
-                {value !== key && <span className="w-3.5 h-3.5 shrink-0" />}
                 {label}
               </button>
             ))}
@@ -336,6 +315,136 @@ function SortDropdown({ value, onChange }: { value: SortKey; onChange: (v: SortK
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+/* ── Sidebar filter sections (rendered in main + drawer) */
+interface FilterSectionsProps {
+  p: Params;
+  pushParams: (patch: Partial<Record<string, string | number | boolean | undefined>>) => void;
+  hasActiveFilters: boolean;
+  clearAllFilters: () => void;
+}
+
+function FilterSections({ p, pushParams, hasActiveFilters, clearAllFilters }: FilterSectionsProps) {
+  return (
+    <>
+      {/* Sort */}
+      <div>
+        <span className="eyebrow text-foreground/70">Sıralama</span>
+        <div className="flex flex-col gap-0">
+          {(Object.entries(SORT_LABELS) as [SortKey, string][]).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => pushParams({ sort: key, page: 1 })}
+              className={cn(
+                "flex items-center justify-between py-2 text-left text-sm transition-colors border-b border-foreground/10 last:border-0",
+                p.sort === key
+                  ? "text-secondary font-serif italic"
+                  : "text-foreground/65 hover:text-foreground"
+              )}
+            >
+              <span>{label}</span>
+              {p.sort === key && <span className="w-1.5 h-1.5 rounded-full bg-secondary" />}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Price range */}
+      <div>
+        <span className="eyebrow text-foreground/70">Fiyat Aralığı</span>
+        <div className="flex flex-col gap-0">
+          {(Object.entries(PRICE_RANGES) as [PriceRange, { label: string }][]).map(([key, { label }]) => (
+            <button
+              key={key}
+              onClick={() => pushParams({ price: key, page: 1 })}
+              className={cn(
+                "flex items-center justify-between py-2 text-left text-sm transition-colors border-b border-foreground/10 last:border-0",
+                p.price === key
+                  ? "text-secondary font-serif italic"
+                  : "text-foreground/65 hover:text-foreground"
+              )}
+            >
+              <span>{label}</span>
+              {p.price === key && <span className="w-1.5 h-1.5 rounded-full bg-secondary" />}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Stock */}
+      <div>
+        <span className="eyebrow text-foreground/70">Stok Durumu</span>
+        <div className="flex flex-col gap-0">
+          {([
+            ["all",      "Tümü"],
+            ["in_stock", "Stokta Mevcut"],
+            ["low_stock","Son Stoklar"],
+          ] as [StockFilter, string][]).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => pushParams({ stock: key, page: 1 })}
+              className={cn(
+                "flex items-center justify-between py-2 text-left text-sm transition-colors border-b border-foreground/10 last:border-0",
+                p.stock === key
+                  ? "text-secondary font-serif italic"
+                  : "text-foreground/65 hover:text-foreground"
+              )}
+            >
+              <span>{label}</span>
+              {p.stock === key && <span className="w-1.5 h-1.5 rounded-full bg-secondary" />}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Featured toggle */}
+      <div>
+        <span className="eyebrow text-foreground/70">Ürün Tipi</span>
+        <button
+          onClick={() => pushParams({ feat: !p.feat ? "1" : undefined, page: 1 })}
+          className={cn(
+            "flex items-center justify-between py-2 text-left text-sm transition-colors border-b border-foreground/10 w-full",
+            p.feat
+              ? "text-secondary font-serif italic"
+              : "text-foreground/65 hover:text-foreground"
+          )}
+        >
+          <span className="inline-flex items-center gap-2">
+            <Star className="w-3.5 h-3.5" />
+            Yalnızca Öne Çıkanlar
+          </span>
+          {p.feat && <span className="w-1.5 h-1.5 rounded-full bg-secondary" />}
+        </button>
+        <button
+          onClick={() => pushParams({ sort: p.sort === "newest" ? "featured" : "newest", feat: undefined, page: 1 })}
+          className={cn(
+            "flex items-center justify-between py-2 text-left text-sm transition-colors border-b border-foreground/10 w-full",
+            p.sort === "newest"
+              ? "text-secondary font-serif italic"
+              : "text-foreground/65 hover:text-foreground"
+          )}
+        >
+          <span className="inline-flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5" />
+            Yeni Gelenler Önce
+          </span>
+          {p.sort === "newest" && <span className="w-1.5 h-1.5 rounded-full bg-secondary" />}
+        </button>
+      </div>
+
+      {/* Clear all filters */}
+      {hasActiveFilters && (
+        <button
+          onClick={clearAllFilters}
+          className="link-hairline w-full justify-center hover:text-rose-700"
+        >
+          <X className="w-3.5 h-3.5" />
+          Tüm Filtreleri Temizle
+        </button>
+      )}
+    </>
   );
 }
 
@@ -357,6 +466,8 @@ export default function Catalog() {
   const basePath = categorySlug ? `/urunler/${categorySlug}` : "/urunler";
   const meta = getCategoryMeta(categorySlug);
   const activeCategory = categories.find(c => c.slug === categorySlug);
+  const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const heroImage = activeCategory?.image_url ?? `${baseUrl}/mock/hero.jpg`;
 
   /* Sync search input when URL changes */
   useEffect(() => { setSearchInput(p.q); }, [p.q]);
@@ -404,7 +515,7 @@ export default function Catalog() {
   const paged = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   /* ── Active filters (for chip display) ─────────────── */
-  const activeFilters: { label: string; clearKey: string; clearVal?: string }[] = [];
+  const activeFilters: { label: string; clearKey: string }[] = [];
   if (p.sort !== "featured") activeFilters.push({ label: SORT_LABELS[p.sort], clearKey: "sort" });
   if (p.price !== "all")     activeFilters.push({ label: PRICE_RANGES[p.price].label, clearKey: "price" });
   if (p.stock !== "all")     activeFilters.push({
@@ -418,227 +529,6 @@ export default function Catalog() {
     setSearchInput("");
     setLocation(basePath);
   }
-
-  /* ── Sidebar filter sections ────────────────────────── */
-  const FilterSections = () => (
-    <>
-      {/* Sort */}
-      <div>
-        <h3 className="filter-section-title">
-          <ArrowUpDown className="w-3.5 h-3.5 text-secondary" />
-          Sıralama
-        </h3>
-        <div className="flex flex-col gap-0.5">
-          {(Object.entries(SORT_LABELS) as [SortKey, string][]).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => pushParams({ sort: key, page: 1 })}
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-left transition-all duration-200 w-full",
-                p.sort === key
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-              )}
-            >
-              <CheckCircle2 className={cn("w-3.5 h-3.5 shrink-0", p.sort !== key && "invisible")} />
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Price range */}
-      <div>
-        <h3 className="filter-section-title">
-          <SlidersHorizontal className="w-3.5 h-3.5 text-secondary" />
-          Fiyat Aralığı
-        </h3>
-        <div className="flex flex-col gap-0.5">
-          {(Object.entries(PRICE_RANGES) as [PriceRange, { label: string }][]).map(([key, { label }]) => (
-            <button
-              key={key}
-              onClick={() => pushParams({ price: key, page: 1 })}
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-left transition-all duration-200 w-full",
-                p.price === key
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-              )}
-            >
-              <CheckCircle2 className={cn("w-3.5 h-3.5 shrink-0", p.price !== key && "invisible")} />
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Stock */}
-      <div>
-        <h3 className="filter-section-title">
-          <Filter className="w-3.5 h-3.5 text-secondary" />
-          Stok Durumu
-        </h3>
-        <div className="flex flex-col gap-0.5">
-          {([
-            ["all",      "Tümü"],
-            ["in_stock", "Stokta Mevcut"],
-            ["low_stock","Son Stoklar"],
-          ] as [StockFilter, string][]).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => pushParams({ stock: key, page: 1 })}
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-left transition-all duration-200 w-full",
-                p.stock === key
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-              )}
-            >
-              <CheckCircle2 className={cn("w-3.5 h-3.5 shrink-0", p.stock !== key && "invisible")} />
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Featured toggle */}
-      <div>
-        <h3 className="filter-section-title">
-          <Star className="w-3.5 h-3.5 text-secondary" />
-          Ürün Tipi
-        </h3>
-        <button
-          onClick={() => pushParams({ feat: !p.feat ? "1" : undefined, page: 1 })}
-          className={cn(
-            "flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200",
-            p.feat
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-          )}
-        >
-          <CheckCircle2 className={cn("w-3.5 h-3.5 shrink-0", !p.feat && "invisible")} />
-          <Star className="w-3.5 h-3.5 shrink-0" />
-          Yalnızca Öne Çıkanlar
-        </button>
-        <button
-          onClick={() => pushParams({ sort: p.sort === "newest" ? "featured" : "newest", feat: undefined, page: 1 })}
-          className={cn(
-            "flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mt-0.5",
-            p.sort === "newest"
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-          )}
-        >
-          <CheckCircle2 className={cn("w-3.5 h-3.5 shrink-0", p.sort !== "newest" && "invisible")} />
-          <Sparkles className="w-3.5 h-3.5 shrink-0" />
-          Yeni Gelenler Önce
-        </button>
-      </div>
-
-      {/* Clear all filters */}
-      {hasActiveFilters && (
-        <button
-          onClick={clearAllFilters}
-          className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-semibold text-muted-foreground border border-border hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
-        >
-          <X className="w-3.5 h-3.5" />
-          Tüm Filtreleri Temizle
-        </button>
-      )}
-    </>
-  );
-
-  /* ── Sidebar content (categories + search + filters) ── */
-  const SidebarContent = () => (
-    <div className="space-y-7">
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-        <input
-          type="search"
-          placeholder="Ürün ara..."
-          value={searchInput}
-          onChange={e => setSearchInput(e.target.value)}
-          className="input-outdoor w-full pl-9 pr-4"
-          aria-label="Ürün ara"
-        />
-      </div>
-
-      {/* Categories */}
-      <div>
-        <h3 className="filter-section-title">
-          <Filter className="w-3.5 h-3.5 text-secondary" />
-          Kategoriler
-        </h3>
-        <div className="flex flex-col gap-0.5">
-          <Link href="/urunler" onClick={() => setMobileFiltersOpen(false)}>
-            <div className={cn(
-              "flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer",
-              !categorySlug
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-            )}>
-              <span className="text-base">🛒</span>
-              <span>Tüm Ürünler</span>
-              {!categorySlug && (
-                <span className="ml-auto text-xs bg-white/20 rounded-full px-2 py-0.5">
-                  {loading ? "…" : allProducts.length}
-                </span>
-              )}
-            </div>
-          </Link>
-          {categories.map(cat => {
-            const catMeta = getCategoryMeta(cat.slug);
-            const isActive = categorySlug === cat.slug;
-            return (
-              <Link key={cat.id} href={`/urunler/${cat.slug}`} onClick={() => setMobileFiltersOpen(false)}>
-                <div className={cn(
-                  "flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer",
-                  isActive
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                )}>
-                  <span className="text-base shrink-0">{'icon' in catMeta ? catMeta.icon : '📦'}</span>
-                  <span className="line-clamp-1">{cat.name}</span>
-                  {isActive && (
-                    <span className="ml-auto text-xs bg-white/20 rounded-full px-2 py-0.5">
-                      {loading ? "…" : allProducts.length}
-                    </span>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Filter sections */}
-      <FilterSections />
-
-      {/* WhatsApp CTA */}
-      <div className="rounded-2xl p-4 text-white" style={{ background: "hsl(149 43% 17%)" }}>
-        <div className="flex items-center gap-2 mb-2">
-          <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
-          <span className="text-[0.65rem] font-bold tracking-[0.12em] uppercase text-white/60">Şu an aktif</span>
-        </div>
-        <p className="font-serif font-bold text-sm mb-1">WhatsApp'tan Sipariş</p>
-        <p className="text-white/55 text-xs leading-relaxed mb-3">
-          Ürünü seçin, mesaj atın — aynı gün yanıt alın.
-        </p>
-        <WhatsAppButton
-          message={buildSearchMessage("", activeCategory?.name)}
-          tracking={{
-            event: "catalog_inquiry",
-            source: "catalog_sidebar",
-            category_name: activeCategory?.name,
-          }}
-          size="sm"
-          fullWidth
-          label="WhatsApp'tan Yaz"
-        />
-      </div>
-    </div>
-  );
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -672,121 +562,109 @@ export default function Catalog() {
         )}
       </Helmet>
 
-      {/* ── Category Hero ────────────────────────────── */}
-      <div className="relative overflow-hidden" style={{ marginTop: "4rem" }}>
-        {activeCategory?.image_url && (
-          <div className="absolute inset-0 z-0">
-            <img
-              src={activeCategory.image_url}
-              alt={activeCategory.name}
-              className="w-full h-full object-cover"
-              loading="eager"
-            />
-            <div className="absolute inset-0" style={{
-              background: "linear-gradient(135deg, rgba(26,61,43,0.92) 0%, rgba(26,61,43,0.78) 50%, rgba(26,61,43,0.55) 100%)"
-            }} />
-          </div>
-        )}
+      {/* ── Cinematic Editorial Hero ─────────────────── */}
+      <section className="relative pt-40 pb-24 md:pt-48 md:pb-32 overflow-hidden bg-primary">
+        <div className="absolute inset-0 z-0">
+          <img
+            src={heroImage}
+            alt=""
+            aria-hidden
+            className="w-full h-full object-cover opacity-50"
+            loading="eager"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/60 to-primary/95" />
+        </div>
 
-        <div className={cn(
-          "relative z-10 container px-4 md:px-6",
-          activeCategory ? "py-12 md:py-16" : "py-10 md:py-12 gradient-outdoor"
-        )}>
-          {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs mb-4">
-            <Link href="/" className={cn("font-medium transition-colors", activeCategory ? "text-white/60 hover:text-white/90" : "text-primary-foreground/60 hover:text-primary-foreground")}>
-              Ana Sayfa
-            </Link>
-            <ChevronRight className={cn("w-3 h-3", activeCategory ? "text-white/40" : "text-primary-foreground/40")} />
-            <Link href="/urunler" className={cn("font-medium transition-colors", activeCategory ? "text-white/60 hover:text-white/90" : "text-primary-foreground/60 hover:text-primary-foreground")}>
-              Ürünler
-            </Link>
-            {activeCategory && (
-              <>
-                <ChevronRight className="w-3 h-3 text-white/40" />
-                <span className="text-secondary font-semibold">{activeCategory.name}</span>
-              </>
-            )}
-          </nav>
+        <div className="container relative z-10 px-6">
+          <motion.nav
+            aria-label="Breadcrumb"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-10 flex justify-center"
+          >
+            <ol className="flex flex-wrap items-center gap-1 text-[0.7rem] uppercase tracking-[0.2em] text-primary-foreground/55">
+              <li><Link href="/" className="hover:text-primary-foreground transition-colors">Ana Sayfa</Link></li>
+              <li><ChevronRight className="w-3 h-3 mx-1.5 text-primary-foreground/30" /></li>
+              <li>
+                {activeCategory ? (
+                  <Link href="/urunler" className="hover:text-primary-foreground transition-colors">Ürünler</Link>
+                ) : (
+                  <span className="text-primary-foreground/85">Ürünler</span>
+                )}
+              </li>
+              {activeCategory && (
+                <>
+                  <li><ChevronRight className="w-3 h-3 mx-1.5 text-primary-foreground/30" /></li>
+                  <li><span className="text-primary-foreground/85">{activeCategory.name}</span></li>
+                </>
+              )}
+            </ol>
+          </motion.nav>
 
           <motion.div
-            key={categorySlug}
-            initial={{ opacity: 0, y: 16 }}
+            key={categorySlug || "all"}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center max-w-4xl mx-auto"
           >
-            <h1 className={cn(
-              "font-serif font-bold tracking-tight leading-tight mb-3 text-3xl md:text-4xl",
-              activeCategory ? "text-white" : "text-primary-foreground"
-            )}>
+            <span className="inline-flex items-center gap-2.5 mb-8 text-[0.7rem] font-bold uppercase tracking-[0.22em] text-secondary">
+              <span className="w-6 h-px bg-secondary" />
+              {activeCategory ? "Kategori" : "Tüm Koleksiyon"}
+              <span className="w-6 h-px bg-secondary" />
+            </span>
+            <h1 className="font-serif font-light tracking-tight leading-[1.05] text-primary-foreground text-5xl md:text-6xl lg:text-7xl">
               {meta.heroTitle}
             </h1>
-            <p className={cn(
-              "text-sm md:text-base leading-relaxed max-w-xl",
-              activeCategory ? "text-white/68" : "text-primary-foreground/68"
-            )}>
+            <p className="mt-8 text-base md:text-lg text-primary-foreground/70 font-light max-w-2xl mx-auto leading-relaxed">
               {meta.heroSubtitle}
             </p>
-            {'keywords' in meta && meta.keywords.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-5">
-                {meta.keywords.map(kw => (
-                  <span key={kw} className={cn(
-                    "text-[0.7rem] font-medium px-3 py-1 rounded-full border",
-                    activeCategory
-                      ? "border-white/20 text-white/65 bg-white/8"
-                      : "border-primary-foreground/20 text-primary-foreground/65 bg-primary-foreground/8"
-                  )}>
-                    {kw}
-                  </span>
-                ))}
-              </div>
-            )}
           </motion.div>
         </div>
-      </div>
+
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-primary-foreground/10" />
+      </section>
 
       {/* ── Mobile category pills ─────────────────────── */}
-      <div className="lg:hidden sticky top-[4rem] z-30 bg-background/95 backdrop-blur-md border-b border-border">
+      <div className="lg:hidden sticky top-[4rem] z-30 bg-background/95 backdrop-blur-md border-b border-foreground/15">
         <div className="flex items-center gap-0">
           <button
             onClick={() => setMobileFiltersOpen(o => !o)}
             className={cn(
-              "flex items-center gap-1.5 px-4 py-3 text-sm font-semibold border-r border-border shrink-0 transition-colors",
-              hasActiveFilters ? "text-primary" : "text-foreground"
+              "flex items-center gap-2 px-5 py-4 text-xs uppercase tracking-[0.18em] font-semibold border-r border-foreground/15 shrink-0 transition-colors",
+              hasActiveFilters ? "text-secondary" : "text-foreground"
             )}
           >
-            <Filter className="w-4 h-4 text-secondary" />
+            <Filter className="w-3.5 h-3.5" />
             Filtre
             {hasActiveFilters && (
-              <span className="w-4 h-4 rounded-full bg-primary text-primary-foreground text-[0.6rem] font-bold flex items-center justify-center">
-                {activeFilters.length + (p.q ? 1 : 0)}
+              <span className="text-[0.65rem] text-secondary font-serif italic">
+                · {activeFilters.length + (p.q ? 1 : 0)}
               </span>
             )}
-            {mobileFiltersOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            {mobileFiltersOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
           </button>
 
-          <div className="flex items-center gap-2 px-3 overflow-x-auto scrollbar-hide py-2.5">
+          <div className="flex items-center gap-5 px-5 overflow-x-auto scrollbar-hide py-3">
             <Link href="/urunler">
               <span className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer",
-                !categorySlug ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
+                "inline-flex items-center text-xs uppercase tracking-[0.18em] font-semibold whitespace-nowrap transition-colors cursor-pointer",
+                !categorySlug ? "text-secondary border-b border-secondary pb-1" : "text-foreground/55 hover:text-foreground"
               )}>
-                🛒 Tümü
+                Tümü
               </span>
             </Link>
-            {categories.map(cat => {
-              const catMeta = getCategoryMeta(cat.slug);
-              return (
-                <Link key={cat.id} href={`/urunler/${cat.slug}`}>
-                  <span className={cn(
-                    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer",
-                    categorySlug === cat.slug ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
-                  )}>
-                    {'icon' in catMeta ? catMeta.icon : '📦'} {cat.name}
-                  </span>
-                </Link>
-              );
-            })}
+            {categories.map(cat => (
+              <Link key={cat.id} href={`/urunler/${cat.slug}`}>
+                <span className={cn(
+                  "inline-flex items-center text-xs uppercase tracking-[0.18em] font-semibold whitespace-nowrap transition-colors cursor-pointer",
+                  categorySlug === cat.slug ? "text-secondary border-b border-secondary pb-1" : "text-foreground/55 hover:text-foreground"
+                )}>
+                  {cat.name}
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
 
@@ -797,21 +675,20 @@ export default function Catalog() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="overflow-hidden border-t border-border bg-background px-4 py-5"
+              className="overflow-hidden border-t border-foreground/15 bg-background px-6 py-8"
             >
-              <div className="space-y-5">
-                {/* Search in drawer */}
+              <div className="space-y-8">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                  <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/40 pointer-events-none" />
                   <input
                     type="search"
                     placeholder="Ürün ara..."
                     value={searchInput}
                     onChange={e => setSearchInput(e.target.value)}
-                    className="input-outdoor w-full pl-9 pr-4"
+                    className="w-full pl-7 pr-4 py-3 bg-transparent border-b border-foreground/30 focus:border-secondary outline-none text-base font-serif font-light placeholder:text-foreground/40 placeholder:italic"
                   />
                 </div>
-                <FilterSections />
+                <FilterSections p={p} pushParams={pushParams} hasActiveFilters={hasActiveFilters} clearAllFilters={clearAllFilters} />
               </div>
             </motion.div>
           )}
@@ -819,39 +696,112 @@ export default function Catalog() {
       </div>
 
       {/* ── Main layout ──────────────────────────────── */}
-      <div className="container px-4 md:px-6 flex-1 py-8 md:py-10">
-        <div className="flex gap-8">
+      <div className="container px-6 flex-1 py-16 md:py-24">
+        <div className="flex gap-12 lg:gap-16">
 
           {/* Desktop sidebar */}
-          <aside className="hidden lg:block w-64 shrink-0">
-            <div className="sticky top-24">
-              <SidebarContent />
+          <aside className="hidden lg:block w-60 shrink-0">
+            <div className="sticky top-32 space-y-10">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/40 pointer-events-none" />
+                <input
+                  type="search"
+                  placeholder="Ürün ara..."
+                  value={searchInput}
+                  onChange={e => setSearchInput(e.target.value)}
+                  className="w-full pl-7 pr-4 py-3 bg-transparent border-b border-foreground/30 focus:border-secondary outline-none text-base font-serif font-light placeholder:text-foreground/40 placeholder:italic"
+                  aria-label="Ürün ara"
+                />
+              </div>
+
+              {/* Categories */}
+              <div>
+                <span className="eyebrow text-foreground/70">Kategoriler</span>
+                <div className="flex flex-col gap-0">
+                  <Link href="/urunler">
+                    <div className={cn(
+                      "flex items-center justify-between py-2 text-sm transition-colors cursor-pointer border-b border-foreground/10",
+                      !categorySlug
+                        ? "text-secondary font-serif italic"
+                        : "text-foreground/65 hover:text-foreground"
+                    )}>
+                      <span>Tüm Ürünler</span>
+                      {!categorySlug && <span className="text-xs text-foreground/45">{loading ? "…" : allProducts.length}</span>}
+                    </div>
+                  </Link>
+                  {categories.map(cat => {
+                    const isActive = categorySlug === cat.slug;
+                    return (
+                      <Link key={cat.id} href={`/urunler/${cat.slug}`}>
+                        <div className={cn(
+                          "flex items-center justify-between py-2 text-sm transition-colors cursor-pointer border-b border-foreground/10 last:border-0",
+                          isActive
+                            ? "text-secondary font-serif italic"
+                            : "text-foreground/65 hover:text-foreground"
+                        )}>
+                          <span className="line-clamp-1">{cat.name}</span>
+                          {isActive && <span className="text-xs text-foreground/45">{loading ? "…" : allProducts.length}</span>}
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <FilterSections p={p} pushParams={pushParams} hasActiveFilters={hasActiveFilters} clearAllFilters={clearAllFilters} />
+
+              {/* WhatsApp CTA — bare hairline */}
+              <div className="border-t border-foreground/15 pt-6">
+                <div className="flex items-center gap-2 mb-3 text-[0.65rem] uppercase tracking-[0.22em] text-foreground/55 font-semibold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse" />
+                  Şu an aktif
+                </div>
+                <h4 className="font-serif font-light text-xl mb-3 tracking-tight">
+                  WhatsApp'tan <em className="italic text-secondary">sipariş.</em>
+                </h4>
+                <p className="text-foreground/55 text-xs leading-relaxed font-light mb-5">
+                  Ürünü seçin, mesaj atın — aynı gün yanıt alın.
+                </p>
+                <WhatsAppButton
+                  message={buildSearchMessage("", activeCategory?.name)}
+                  tracking={{
+                    event: "catalog_inquiry",
+                    source: "catalog_sidebar",
+                    category_name: activeCategory?.name,
+                  }}
+                  size="sm"
+                  fullWidth
+                  label="WhatsApp'tan Yaz"
+                />
+              </div>
             </div>
           </aside>
 
           {/* Content */}
           <main className="flex-1 min-w-0">
 
-            {/* Toolbar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-              {/* Result count */}
-              <div className="flex items-center gap-2 text-sm flex-wrap">
+            {/* Toolbar — minimal */}
+            <div className="flex flex-wrap items-baseline justify-between gap-4 mb-12 pb-6 border-b border-foreground/15">
+              <div className="flex items-baseline gap-3 text-sm flex-wrap">
                 {loading ? (
-                  <span className="text-muted-foreground">Yükleniyor…</span>
+                  <span className="text-foreground/55 font-light italic">Yükleniyor…</span>
                 ) : (
                   <>
-                    <span className="font-semibold text-foreground">{filtered.length}</span>
-                    <span className="text-muted-foreground">ürün</span>
+                    <span className="font-serif font-light text-3xl text-foreground tracking-tight">
+                      {String(filtered.length).padStart(2, "0")}
+                    </span>
+                    <span className="text-foreground/55 uppercase text-xs tracking-[0.22em] font-semibold">ürün</span>
                     {p.q && (
                       <>
-                        <span className="text-muted-foreground">
-                          — "<span className="text-foreground font-medium">{p.q}</span>"
+                        <span className="text-foreground/55 italic font-serif font-light">
+                          — "{p.q}"
                         </span>
                         <button
                           onClick={() => { setSearchInput(""); pushParams({ q: undefined }); }}
-                          className="inline-flex items-center gap-0.5 text-secondary hover:text-primary text-xs font-medium"
+                          className="inline-flex items-center gap-0.5 text-secondary hover:text-primary text-xs uppercase tracking-[0.18em] font-semibold transition-colors"
                         >
-                          <X className="w-3.5 h-3.5" /> Temizle
+                          <X className="w-3 h-3" /> Temizle
                         </button>
                       </>
                     )}
@@ -859,13 +809,12 @@ export default function Catalog() {
                 )}
               </div>
 
-              {/* Sort + view toggle */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <SortDropdown
                   value={p.sort}
                   onChange={v => pushParams({ sort: v, page: 1 })}
                 />
-                <div className="inline-flex items-center rounded-full border border-border bg-card p-0.5 gap-0">
+                <div className="inline-flex items-center border border-foreground/20 divide-x divide-foreground/20">
                   {(["grid", "list"] as ViewMode[]).map(v => (
                     <button
                       key={v}
@@ -873,34 +822,31 @@ export default function Catalog() {
                       aria-pressed={p.view === v}
                       aria-label={v === "grid" ? "Izgara görünümü" : "Liste görünümü"}
                       className={cn(
-                        "flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-all duration-200",
+                        "p-2.5 transition-colors",
                         p.view === v
-                          ? "bg-primary text-primary-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground"
+                          ? "bg-foreground text-background"
+                          : "text-foreground/55 hover:text-foreground"
                       )}
                     >
-                      {v === "grid"
-                        ? <><LayoutGrid className="w-3.5 h-3.5" /><span className="hidden sm:inline">Izgara</span></>
-                        : <><List className="w-3.5 h-3.5" /><span className="hidden sm:inline">Liste</span></>
-                      }
+                      {v === "grid" ? <LayoutGrid className="w-3.5 h-3.5" /> : <List className="w-3.5 h-3.5" />}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Search hint — appears when user has an active query */}
+            {/* Search hint — hairline */}
             <AnimatePresence>
               {p.q && !loading && (
                 <motion.div
                   initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-                  animate={{ opacity: 1, height: "auto", marginBottom: 16 }}
+                  animate={{ opacity: 1, height: "auto", marginBottom: 32 }}
                   exit={{ opacity: 0, height: 0, marginBottom: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-[#25D366]/8 border border-[#25D366]/20">
-                    <p className="text-xs text-muted-foreground leading-snug">
-                      <span className="font-semibold text-foreground">"{p.q}"</span> için aradığınızı bulamadınız mı?
+                  <div className="flex items-center justify-between gap-4 py-4 border-y border-foreground/15 flex-wrap">
+                    <p className="text-sm text-foreground/65 leading-snug font-light">
+                      <span className="font-serif italic text-foreground">"{p.q}"</span> için aradığınızı bulamadınız mı?
                     </p>
                     <WhatsAppButton
                       message={buildSearchMessage(p.q, activeCategory?.name)}
@@ -927,41 +873,27 @@ export default function Catalog() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="flex flex-wrap items-center gap-2 mb-5 overflow-hidden"
+                  className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-10 overflow-hidden"
                 >
-                  <span className="text-xs text-muted-foreground font-medium">Aktif filtreler:</span>
+                  <span className="eyebrow !mb-0">Aktif</span>
                   {activeFilters.map(f => (
                     <button
                       key={f.clearKey}
                       onClick={() => pushParams({ [f.clearKey]: undefined, page: 1 })}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold border border-primary/20 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all"
+                      className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.18em] font-semibold text-secondary border-b border-secondary/40 hover:text-rose-700 hover:border-rose-700/40 pb-1 transition-colors"
                     >
                       {f.label}
                       <X className="w-3 h-3" />
                     </button>
                   ))}
-                  <button
-                    onClick={clearAllFilters}
-                    className="text-xs text-muted-foreground hover:text-red-500 font-medium underline underline-offset-2 transition-colors"
-                  >
-                    Tümünü temizle
-                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Products */}
+            {/* Results */}
             {loading ? (
-              <div className={cn(
-                p.view === "grid"
-                  ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
-                  : "flex flex-col gap-3"
-              )}>
-                {Array.from({ length: 6 }).map((_, i) =>
-                  p.view === "grid"
-                    ? <SkeletonCard key={i} />
-                    : <div key={i} className="skeleton h-28 rounded-2xl" />
-                )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+                {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : paged.length === 0 ? (
               <EmptyState
@@ -972,35 +904,33 @@ export default function Catalog() {
               />
             ) : (
               <>
-                <AnimatePresence mode="popLayout">
-                  {p.view === "grid" ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                      {paged.map((prod, i) => (
-                        <ProductCard key={prod.id} product={prod} index={i} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-3">
-                      {paged.map((prod, i) => (
-                        <ProductRow
-                          key={prod.id}
-                          product={prod}
-                          index={i}
-                          categoryName={categories.find(c => c.id === prod.category_id)?.name}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </AnimatePresence>
+                {p.view === "grid" ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+                    {paged.map((product, i) => (
+                      <ProductCard key={product.id} product={product} index={i} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="border-t border-foreground/15">
+                    {paged.map((product, i) => (
+                      <ProductRow
+                        key={product.id}
+                        product={product}
+                        index={i}
+                        categoryName={activeCategory?.name}
+                      />
+                    ))}
+                  </div>
+                )}
 
-                {/* Pagination */}
+                {/* Pagination — minimal */}
                 {totalPages > 1 && (
-                  <nav aria-label="Sayfalama" className="flex items-center justify-center gap-2 mt-12">
+                  <nav aria-label="Pagination" className="flex items-center justify-center gap-2 mt-16 pt-12 border-t border-foreground/15">
                     <button
                       disabled={safePage <= 1}
                       onClick={() => pushParams({ page: safePage - 1 })}
                       aria-label="Önceki sayfa"
-                      className="w-9 h-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                      className="p-2 text-foreground/55 hover:text-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
@@ -1010,10 +940,10 @@ export default function Catalog() {
                         onClick={() => pushParams({ page: pg })}
                         aria-current={pg === safePage ? "page" : undefined}
                         className={cn(
-                          "w-9 h-9 rounded-full text-sm font-medium transition-all",
+                          "w-9 h-9 text-sm font-serif transition-colors",
                           pg === safePage
-                            ? "bg-primary text-primary-foreground shadow-sm"
-                            : "border border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
+                            ? "text-secondary italic font-light text-lg"
+                            : "text-foreground/55 hover:text-foreground font-light"
                         )}
                       >
                         {pg}
@@ -1023,7 +953,7 @@ export default function Catalog() {
                       disabled={safePage >= totalPages}
                       onClick={() => pushParams({ page: safePage + 1 })}
                       aria-label="Sonraki sayfa"
-                      className="w-9 h-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                      className="p-2 text-foreground/55 hover:text-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>
@@ -1032,69 +962,72 @@ export default function Catalog() {
               </>
             )}
 
-            {/* WhatsApp CTA strip */}
-            {!loading && allProducts.length > 0 && (
+            {/* Category info — editorial */}
+            {!loading && (
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="mt-12 rounded-2xl overflow-hidden"
+                transition={{ delay: 0.15 }}
+                className="mt-24 md:mt-32 pt-12 border-t border-foreground/15"
               >
-                <div
-                  className="flex flex-col sm:flex-row items-center justify-between gap-5 p-6 md:p-8"
-                  style={{ background: "hsl(149 43% 17%)" }}
-                >
-                  <div className="text-center sm:text-left">
-                    <p className="font-serif font-bold text-white text-lg md:text-xl mb-1">
-                      Aradığınızı bulamadınız mı?
-                    </p>
-                    <p className="text-white/55 text-sm">
-                      WhatsApp'tan yazın, size en uygun ürünü birlikte bulalım.
-                    </p>
+                <span className="eyebrow">Hakkında</span>
+                <h2 className="editorial-heading text-3xl md:text-4xl mb-6 max-w-3xl">
+                  {meta.infoTitle}
+                </h2>
+                <p className="text-foreground/65 text-base md:text-lg leading-relaxed font-light max-w-3xl">
+                  {meta.infoText}
+                </p>
+                {'keywords' in meta && meta.keywords.length > 0 && (
+                  <div className="flex flex-wrap gap-x-6 gap-y-2 mt-8">
+                    {meta.keywords.map(kw => (
+                      <span key={kw} className="text-xs uppercase tracking-[0.18em] font-semibold text-foreground/55">
+                        {kw}
+                      </span>
+                    ))}
                   </div>
-                  <WhatsAppButton
-                    message={buildSearchMessage(p.q, activeCategory?.name)}
-                    tracking={{
-                      event: p.q ? "search_inquiry" : "catalog_inquiry",
-                      source: "catalog_strip",
-                      category_name: activeCategory?.name,
-                      search_query: p.q || undefined,
-                    }}
-                    size="md"
-                    rounded="pill"
-                    label="WhatsApp'tan Yaz"
-                    className="shrink-0"
-                  />
-                </div>
+                )}
               </motion.div>
             )}
-
-            {/* Category info section */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.15 }}
-              className="mt-10 bg-card border border-card-border rounded-2xl p-6 md:p-8"
-            >
-              <h2 className="font-serif text-xl md:text-2xl font-bold text-foreground mb-3 tracking-tight">
-                {meta.infoTitle}
-              </h2>
-              <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                {meta.infoText}
-              </p>
-              <div className="flex flex-wrap gap-2 mt-5">
-                {'keywords' in meta && meta.keywords.map(kw => (
-                  <span key={kw} className="text-xs font-medium px-3 py-1 rounded-full bg-muted text-muted-foreground border border-border">
-                    {kw}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
           </main>
         </div>
       </div>
+
+      {/* ── Final WhatsApp CTA — Dark editorial band ── */}
+      {!loading && allProducts.length > 0 && (
+        <section className="section-sm bg-[#111111] text-white">
+          <div className="container px-6 max-w-4xl text-center">
+            <span className="eyebrow justify-center text-secondary">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse" />
+              Şu an aktifiz
+            </span>
+            <h2 className="editorial-heading text-white text-4xl md:text-5xl lg:text-6xl mb-8">
+              Aradığınızı bulamadınız mı.
+              <br />
+              <em className="italic font-light text-white/70">Birlikte bulalım.</em>
+            </h2>
+            <p className="text-white/55 text-base md:text-lg font-light mb-12 max-w-xl mx-auto leading-relaxed">
+              WhatsApp'tan yazın, size en uygun ürünü birlikte bulalım.
+            </p>
+            <WhatsAppButton
+              message={buildSearchMessage(p.q, activeCategory?.name)}
+              tracking={{
+                event: p.q ? "search_inquiry" : "catalog_inquiry",
+                source: "catalog_strip",
+                category_name: activeCategory?.name,
+                search_query: p.q || undefined,
+              }}
+              size="lg"
+              rounded="pill"
+              label="WhatsApp'tan Yaz"
+            />
+            <div className="mt-6 text-xs uppercase tracking-[0.18em] text-white/40 inline-flex items-center gap-2">
+              <MessageCircle className="w-3 h-3" />
+              Genellikle dakikalar içinde dönüş
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

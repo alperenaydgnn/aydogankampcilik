@@ -1,9 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { Link, useRoute, Redirect } from "wouter";
 import { motion } from "framer-motion";
-import {
-  ChevronRight, ArrowRight, MessageCircle, Compass, CheckCircle2, BookOpen,
-} from "lucide-react";
+import { MessageCircle, Compass } from "lucide-react";
 import { SEO } from "@/lib/seo";
 import { buildBreadcrumbSchema } from "@/lib/schemas";
 import { categoryMetas } from "@/lib/categoryMeta";
@@ -163,6 +161,10 @@ export default function CategoryInfo() {
     return <Redirect to="/urunler" />;
   }
 
+  const heroParts = meta.heroTitle.split(" ");
+  const heroLast = heroParts.length > 1 ? heroParts.pop()! : "";
+  const heroLead = heroParts.join(" ");
+
   return (
     <div className="min-h-screen bg-background">
       <SEO
@@ -184,7 +186,8 @@ export default function CategoryInfo() {
       <PageHero
         eyebrow="Alım Rehberi"
         icon={Compass}
-        title={meta.heroTitle}
+        title={heroLead || meta.heroTitle}
+        italicAccent={heroLast ? `${heroLast.toLowerCase()}.` : undefined}
         subtitle={meta.heroSubtitle}
         breadcrumbs={[
           { label: "Ana Sayfa", href: "/" },
@@ -193,140 +196,135 @@ export default function CategoryInfo() {
         ]}
       />
 
-      {/* Why it matters */}
-      <section className="py-16 md:py-20">
-        <div className="container px-4 max-w-3xl">
+      {/* Why it matters — editorial intro */}
+      <section className="section">
+        <div className="container px-6 max-w-3xl">
           <SectionHeading
-            eyebrow="Neden Önemli?"
+            eyebrow="Neden Önemli"
             title={meta.infoTitle}
           />
-          <div className="prose prose-lg max-w-none prose-p:text-muted-foreground prose-p:leading-relaxed">
-            <p className="text-lg">{guide.whyItMatters}</p>
-            <p>{meta.infoText}</p>
+          <div className="space-y-6 text-foreground/65 font-light leading-relaxed">
+            <p className="font-serif font-light text-2xl md:text-3xl text-foreground/80 tracking-tight leading-snug">
+              {guide.whyItMatters}
+            </p>
+            <p className="text-base md:text-lg">{meta.infoText}</p>
           </div>
         </div>
       </section>
 
-      {/* Buying tips grid */}
-      <section className="py-16 md:py-20 bg-muted/30">
-        <div className="container px-4 max-w-6xl">
+      {/* Buying tips — editorial grid */}
+      <section className="section bg-muted/30">
+        <div className="container px-6 max-w-6xl">
           <SectionHeading
             eyebrow="Doğru Seçim İçin"
-            title="Nelere Dikkat Etmeli?"
+            title="Nelere"
+            italicAccent="dikkat etmeli?"
             subtitle="Bir ürünü seçerken göz önünde tutulması gereken en kritik kriterleri bir araya getirdik."
             align="center"
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-14">
             {guide.buyingTips.map((tip, idx) => (
               <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
+                key={tip.title}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
-                className="bg-card border border-border rounded-2xl p-6 hover:shadow-md transition-shadow"
+                transition={{ delay: idx * 0.05, duration: 0.5 }}
+                className="border-t border-foreground/15 pt-6"
               >
-                <div className="flex items-start gap-3 mb-3">
-                  <CheckCircle2 className="w-5 h-5 text-secondary shrink-0 mt-0.5" />
-                  <h3 className="font-serif text-base font-bold leading-tight">{tip.title}</h3>
-                </div>
-                <p className="text-muted-foreground text-sm leading-relaxed">{tip.desc}</p>
+                <span className="font-serif font-light text-3xl text-secondary leading-none">
+                  {String(idx + 1).padStart(2, "0")}
+                </span>
+                <h3 className="font-serif font-light text-xl mt-4 mb-3 tracking-tight text-foreground">
+                  {tip.title}
+                </h3>
+                <p className="text-foreground/60 text-sm leading-relaxed font-light">{tip.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="py-16 md:py-20">
-        <div className="container px-4 max-w-3xl">
+      {/* FAQ — editorial Q&A */}
+      <section className="section">
+        <div className="container px-6 max-w-3xl">
           <SectionHeading
             eyebrow="Sık Sorulanlar"
-            title="Bu Kategoride Merak Edilenler"
+            title="Bu kategoride"
+            italicAccent="merak edilenler."
             align="center"
           />
 
-          <div className="space-y-3">
-            {guide.faqs.map((faq, idx) => (
-              <div key={idx} className="bg-card border border-border rounded-2xl p-6">
-                <h3 className="font-serif text-base font-semibold mb-2 flex items-start gap-2">
-                  <BookOpen className="w-5 h-5 text-secondary shrink-0 mt-0.5" />
+          <div className="border-t border-foreground/15">
+            {guide.faqs.map((faq) => (
+              <div key={faq.q} className="border-b border-foreground/15 py-8">
+                <h3 className="font-serif font-light text-xl md:text-2xl text-foreground tracking-tight mb-3">
                   {faq.q}
                 </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed pl-7">{faq.a}</p>
+                <p className="text-foreground/65 leading-relaxed font-light max-w-3xl">{faq.a}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Related categories + CTA */}
-      <section className="py-16 md:py-20 bg-muted/30">
-        <div className="container px-4 max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* CTA: Browse this category */}
+      {/* CTA + related categories — Dark editorial band */}
+      <section className="section-sm bg-[#111111] text-white">
+        <div className="container px-6 max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-20">
             <Link
               href={`/urunler/${slug}`}
-              className="lg:col-span-2 group bg-primary text-primary-foreground rounded-2xl p-8 md:p-10 flex flex-col justify-between hover:bg-primary/90 transition-colors"
+              className="lg:col-span-2 group block"
             >
-              <div>
-                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/15 text-secondary text-xs font-semibold uppercase tracking-wider mb-4">
-                  Ürünlere Göz At
-                </span>
-                <h3 className="font-serif text-2xl md:text-3xl font-bold mb-3 leading-tight">
-                  {meta.heroTitle} Ürünlerini Görün
-                </h3>
-                <p className="text-primary-foreground/75 mb-5 leading-relaxed">
-                  Bu kategorideki tüm ürünleri inceleyin, fiyatları görün ve WhatsApp ile hızlı sipariş verin.
-                </p>
-              </div>
-              <span className="inline-flex items-center gap-2 text-secondary font-semibold group-hover:gap-3 transition-all">
+              <span className="eyebrow text-secondary">Ürünlere Göz At</span>
+              <h2 className="editorial-heading text-white text-4xl md:text-5xl lg:text-6xl mb-8">
+                {heroLead || meta.heroTitle}
+                {" "}
+                <em className="italic font-light text-white/70">ürünleri.</em>
+              </h2>
+              <p className="text-white/55 text-base md:text-lg font-light mb-10 max-w-xl leading-relaxed">
+                Bu kategorideki tüm ürünleri inceleyin, fiyatları görün ve WhatsApp ile hızlı sipariş verin.
+              </p>
+              <span className="link-hairline text-white border-white/40 group-hover:text-secondary">
                 Tüm Ürünleri Gör
-                <ArrowRight className="w-4 h-4" />
+                <span className="text-base">→</span>
               </span>
             </Link>
 
-            {/* CTA: WhatsApp */}
             <a
               href={buildWhatsAppLink(meta.whatsappMessage)}
               target="_blank"
               rel="noopener noreferrer"
-              className="group bg-card border border-border rounded-2xl p-8 hover:border-[#25D366]/40 hover:shadow-md transition-all flex flex-col justify-between"
+              className="group block border-t border-white/15 pt-8 lg:border-t-0 lg:border-l lg:border-white/15 lg:pt-0 lg:pl-12 self-start"
             >
-              <div>
-                <div className="w-12 h-12 bg-[#25D366]/15 text-[#25D366] rounded-xl flex items-center justify-center mb-4">
-                  <MessageCircle className="w-6 h-6" />
-                </div>
-                <h3 className="font-serif text-xl font-bold mb-2 leading-tight">
-                  Yardım Lazım mı?
-                </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-5">
-                  Hangi ürünün size uygun olduğunu birlikte belirleyelim.
-                </p>
-              </div>
-              <span className="inline-flex items-center gap-2 text-[#25D366] font-semibold text-sm group-hover:gap-3 transition-all">
+              <MessageCircle className="w-5 h-5 text-secondary mb-6" strokeWidth={1.4} />
+              <h3 className="font-serif font-light text-2xl md:text-3xl text-white mb-4 tracking-tight leading-snug">
+                Yardım <em className="italic text-white/70">lazım mı?</em>
+              </h3>
+              <p className="text-white/55 text-sm font-light mb-8 leading-relaxed">
+                Hangi ürünün size uygun olduğunu birlikte belirleyelim.
+              </p>
+              <span className="link-hairline text-white border-white/40 group-hover:text-secondary">
                 WhatsApp'tan Sor
-                <ArrowRight className="w-4 h-4" />
+                <span className="text-base">→</span>
               </span>
             </a>
           </div>
 
-          {/* Other categories */}
-          <div className="mt-10">
-            <h3 className="font-serif text-lg font-semibold mb-5 text-muted-foreground">Diğer kategoriler:</h3>
-            <div className="flex flex-wrap gap-2">
+          {/* Other categories — minimal hairline list */}
+          <div className="border-t border-white/15 pt-10">
+            <span className="eyebrow text-white/60 mb-6">Diğer Kategoriler</span>
+            <div className="flex flex-wrap gap-x-8 gap-y-4 mt-2">
               {categoryMetas
                 .filter(m => m.slug !== slug)
                 .map(m => (
                   <Link
                     key={m.slug}
                     href={`/kategori/${m.slug}`}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-sm hover:border-secondary/40 hover:bg-secondary/5 transition-colors"
+                    className="font-serif font-light text-lg md:text-xl text-white/75 hover:text-secondary border-b border-white/15 hover:border-secondary pb-1 transition-colors tracking-tight"
                   >
-                    <span>{m.icon}</span>
-                    <span>{m.heroTitle}</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+                    {m.heroTitle}
                   </Link>
                 ))}
             </div>

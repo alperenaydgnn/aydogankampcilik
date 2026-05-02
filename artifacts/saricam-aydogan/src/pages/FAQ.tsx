@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, HelpCircle, MessageCircle } from "lucide-react";
+import { ChevronDown, HelpCircle } from "lucide-react";
 import { SEO } from "@/lib/seo";
 import { buildBreadcrumbSchema, buildFAQSchema } from "@/lib/schemas";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
@@ -16,12 +16,14 @@ interface FAQItem {
 
 interface FAQSection {
   title: string;
+  italicAccent?: string;
   items: FAQItem[];
 }
 
 const faqSections: FAQSection[] = [
   {
-    title: "Sipariş ve Ödeme",
+    title: "Sipariş ve",
+    italicAccent: "ödeme.",
     items: [
       {
         q: "Nasıl sipariş verebilirim?",
@@ -42,7 +44,8 @@ const faqSections: FAQSection[] = [
     ],
   },
   {
-    title: "Kargo ve Teslimat",
+    title: "Kargo ve",
+    italicAccent: "teslimat.",
     items: [
       {
         q: "Türkiye'nin her yerine kargo yapıyor musunuz?",
@@ -63,7 +66,8 @@ const faqSections: FAQSection[] = [
     ],
   },
   {
-    title: "Ürünler ve Garanti",
+    title: "Ürünler ve",
+    italicAccent: "garanti.",
     items: [
       {
         q: "Ürünleriniz orijinal mi?",
@@ -80,7 +84,8 @@ const faqSections: FAQSection[] = [
     ],
   },
   {
-    title: "İade ve Değişim",
+    title: "İade ve",
+    italicAccent: "değişim.",
     items: [
       {
         q: "Ürünü iade edebilir miyim?",
@@ -97,7 +102,8 @@ const faqSections: FAQSection[] = [
     ],
   },
   {
-    title: "Mağaza Hakkında",
+    title: "Mağaza",
+    italicAccent: "hakkında.",
     items: [
       {
         q: "Mağazanız nerede?",
@@ -142,7 +148,8 @@ export default function FAQ() {
       <PageHero
         eyebrow="Yardım Merkezi"
         icon={HelpCircle}
-        title="Sık Sorulan Sorular"
+        title="Sık sorulan"
+        italicAccent="sorular."
         subtitle="Sipariş, kargo, ödeme ve iade hakkında en çok merak edilen konuları sizin için derledik. Aradığınızı bulamazsanız WhatsApp'tan yazmanız yeterli."
         breadcrumbs={[
           { label: "Ana Sayfa", href: "/" },
@@ -150,32 +157,29 @@ export default function FAQ() {
         ]}
       />
 
-      <section className="py-16 md:py-20">
-        <div className="container px-4 max-w-4xl">
+      <section className="section">
+        <div className="container px-6 max-w-4xl">
           {faqSections.map((section, sIdx) => (
-            <div key={sIdx} className={cn("mb-10", sIdx === 0 && "mt-0")}>
-              <SectionHeading title={section.title} />
+            <div key={sIdx} className={cn(sIdx > 0 && "mt-24 md:mt-32")}>
+              <SectionHeading title={section.title} italicAccent={section.italicAccent} />
 
-              <div className="space-y-3">
+              <div className="border-t border-border/60">
                 {section.items.map((item, iIdx) => {
                   const id = `${sIdx}-${iIdx}`;
                   const isOpen = open === id;
                   return (
-                    <div
-                      key={id}
-                      className="bg-card border border-border rounded-2xl overflow-hidden hover:border-secondary/30 transition-colors"
-                    >
+                    <div key={id} className="border-b border-border/60">
                       <button
                         onClick={() => setOpen(isOpen ? null : id)}
                         aria-expanded={isOpen}
-                        className="w-full flex items-center justify-between gap-4 p-5 md:p-6 text-left"
+                        className="w-full flex items-center justify-between gap-6 py-6 md:py-7 text-left group"
                       >
-                        <h3 className="font-serif text-base md:text-lg font-semibold text-foreground">
+                        <h3 className="font-serif font-light text-lg md:text-xl text-foreground tracking-tight pr-4">
                           {item.q}
                         </h3>
                         <ChevronDown
                           className={cn(
-                            "w-5 h-5 text-muted-foreground shrink-0 transition-transform duration-300",
+                            "w-5 h-5 text-foreground/40 shrink-0 transition-transform duration-300 group-hover:text-secondary",
                             isOpen && "rotate-180 text-secondary"
                           )}
                         />
@@ -186,12 +190,12 @@ export default function FAQ() {
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                             className="overflow-hidden"
                           >
-                            <div className="px-5 md:px-6 pb-5 md:pb-6 -mt-1 text-muted-foreground leading-relaxed">
+                            <p className="pb-7 md:pb-8 -mt-1 text-foreground/65 leading-relaxed font-light max-w-3xl">
                               {item.a}
-                            </div>
+                            </p>
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -201,25 +205,30 @@ export default function FAQ() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
 
-          {/* CTA */}
-          <div className="mt-16 bg-muted/40 border border-border rounded-2xl p-8 md:p-10 text-center">
-            <h2 className="font-serif text-2xl md:text-3xl font-bold mb-3">
-              Cevabınızı bulamadınız mı?
-            </h2>
-            <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-              WhatsApp'tan yazmanız yeterli. Sorunuzu kişisel olarak ve mümkün olduğunca hızlı yanıtlıyoruz.
-            </p>
-            <a
-              href={buildWhatsAppLink("Merhaba, sitede cevabını bulamadığım bir sorum var.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#25D366] hover:bg-[#1EBE5A] text-white font-semibold transition-colors"
-            >
-              <MessageCircle className="w-5 h-5" />
-              WhatsApp'tan Sor
-            </a>
-          </div>
+      {/* CTA — Dark editorial band */}
+      <section className="section-sm bg-[#111111] text-white">
+        <div className="container px-6 max-w-4xl text-center">
+          <span className="eyebrow justify-center text-secondary">Hâlâ sorunuz mu var</span>
+          <h2 className="editorial-heading text-4xl md:text-5xl lg:text-6xl text-white mb-8">
+            Cevabınızı bulamadınız mı.
+            <br />
+            <em className="italic font-light text-white/70">Yazın yeter.</em>
+          </h2>
+          <p className="text-white/55 text-base md:text-lg font-light mb-12 max-w-xl mx-auto leading-relaxed">
+            WhatsApp'tan ulaşın. Sorunuzu kişisel olarak ve mümkün olduğunca hızlı yanıtlıyoruz.
+          </p>
+          <a
+            href={buildWhatsAppLink("Merhaba, sitede cevabını bulamadığım bir sorum var.")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link-hairline text-white border-white/40 hover:text-secondary"
+          >
+            WhatsApp'tan Sor
+            <span className="text-base">→</span>
+          </a>
         </div>
       </section>
     </div>
