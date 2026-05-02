@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link, useLocation } from "wouter";
 import {
-  Plus, Search, Pencil, Trash2, Star, StarOff, ChevronUp, ChevronDown, RefreshCw,
+  Plus, Search, Pencil, Trash2, ChevronUp, ChevronDown, RefreshCw, Eye, EyeOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,11 +11,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { useToast } from "@/hooks/use-toast";
 import { getSupabase } from "@/lib/supabase";
-import { getCategories, getProducts } from "@/lib/data";
+import { getCategories } from "@/lib/data";
 import { Category, Product } from "@/lib/mockData";
+import { mockProducts } from "@/lib/mockData";
+import type { DBProductWithRelations } from "@/lib/database.types";
 
 type SortKey = "name" | "created_at" | "price_label";
 type SortDir = "asc" | "desc";
+
+const ADMIN_PRODUCT_SELECT =
+  "*, product_images(*), product_tags(tag:tags(*))";
 
 export default function AdminProducts() {
   const [, setLocation] = useLocation();
@@ -25,19 +30,56 @@ export default function AdminProducts() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterCat, setFilterCat] = useState("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
   const [sortKey, setSortKey] = useState<SortKey>("created_at");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [toggling, setToggling] = useState<string | null>(null);
 
+  /** Admin uses an unfiltered fetch (RLS allows admin to read inactive rows). */
+  const loadProducts = useCallback(async (): Promise<Product[]> => {
+    const supabase = getSupabase();
+    if (!supabase) return mockProducts;
+    const { data, error } = await supabase
+      .from("products")
+      .select(ADMIN_PRODUCT_SELECT)
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.warn("admin loadProducts:", error.message);
+      return mockProducts;
+    }
+    return (data as DBProductWithRelations[]).map((row) => ({
+      id: row.id,
+      name: row.name,
+      slug: row.slug,
+      category_id: row.category_id,
+      description: row.description,
+      short_description: row.short_description,
+      specs: (row.specs as Record<string, string>) ?? {},
+      price_label: row.price_label ?? (row.price != null ? `₺${row.price}` : "Fiyat için sorunuz"),
+      price_numeric: row.price ?? undefined,
+      old_price: row.old_price,
+      stock: row.stock,
+      images: (row.product_images ?? [])
+        .slice()
+        .sort((a, b) => (a.is_primary === b.is_primary ? a.sort_order - b.sort_order : a.is_primary ? -1 : 1))
+        .map((img) => img.url),
+      featured: row.featured,
+      is_new: row.is_new,
+      active: row.active,
+      whatsapp_message: row.whatsapp_message ?? undefined,
+      created_at: row.created_at,
+    }));
+  }, []);
+
   const load = useCallback(async () => {
     setLoading(true);
-    const [cats, prods] = await Promise.all([getCategories(), getProducts()]);
+    const [cats, prods] = await Promise.all([getCategories(), loadProducts()]);
     setCategories(cats);
     setProducts(prods);
     setLoading(false);
-  }, []);
+  }, [loadProducts]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -46,7 +88,11 @@ export default function AdminProducts() {
       const q = search.toLowerCase();
       const matchQ = !q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
       const matchCat = filterCat === "all" || p.category_id === filterCat;
-      return matchQ && matchCat;
+      const matchStatus =
+        filterStatus === "all" ||
+        (filterStatus === "active" && p.active !== false) ||
+        (filterStatus === "inactive" && p.active === false);
+      return matchQ && matchCat && matchStatus;
     })
     .sort((a, b) => {
       const dir = sortDir === "asc" ? 1 : -1;
@@ -78,22 +124,47 @@ export default function AdminProducts() {
     toast({ title: product.featured ? "Öne çıkandan kaldırıldı" : "Öne çıkanlara eklendi" });
   };
 
+  const toggleActive = async (product: Product) => {
+    const supabase = getSupabase();
+    setToggling(product.id);
+    const next = !(product.active !== false);
+    if (supabase) {
+      const { error } = await supabase.from("products").update({ active: next }).eq("id", product.id);
+      if (error) {
+        toast({ variant: "destructive", title: "Hata", description: error.message });
+        setToggling(null);
+        return;
+      }
+    }
+    setProducts((prev) =>
+      prev.map((p) => (p.id === product.id ? { ...p, active: next } : p))
+    );
+    setToggling(null);
+    toast({ title: next ? "Ürün yayına alındı" : "Ürün gizlendi" });
+  };
+
   const handleDelete = async () => {
     if (!deleteTarget) return;
     const supabase = getSupabase();
     setDeleting(true);
+    // Soft delete = set active = false. RLS cascades via the active filter for public.
     if (supabase) {
-      const { error } = await supabase.from("products").delete().eq("id", deleteTarget.id);
+      const { error } = await supabase
+        .from("products")
+        .update({ active: false })
+        .eq("id", deleteTarget.id);
       if (error) {
         toast({ variant: "destructive", title: "Silinemedi", description: error.message });
         setDeleting(false);
         return;
       }
     }
-    setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+    setProducts((prev) =>
+      prev.map((p) => (p.id === deleteTarget.id ? { ...p, active: false } : p))
+    );
     setDeleting(false);
     setDeleteTarget(null);
-    toast({ title: "Ürün silindi" });
+    toast({ title: "Ürün gizlendi", description: "Yayından kaldırıldı (soft delete). İstersen filtreden tekrar açabilirsin." });
   };
 
   const getCatName = (id: string) => categories.find((c) => c.id === id)?.name ?? "—";
@@ -145,6 +216,16 @@ export default function AdminProducts() {
             ))}
           </SelectContent>
         </Select>
+        <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as typeof filterStatus)}>
+          <SelectTrigger className="w-40 bg-background">
+            <SelectValue placeholder="Durum" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tüm Durumlar</SelectItem>
+            <SelectItem value="active">Yayında</SelectItem>
+            <SelectItem value="inactive">Gizli</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Table */}
@@ -153,7 +234,7 @@ export default function AdminProducts() {
           <div className="p-12 text-center text-muted-foreground">Yükleniyor...</div>
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center text-muted-foreground">
-            {search || filterCat !== "all" ? "Sonuç bulunamadı." : "Henüz ürün yok. İlk ürünü ekleyin."}
+            {search || filterCat !== "all" || filterStatus !== "all" ? "Sonuç bulunamadı." : "Henüz ürün yok. İlk ürünü ekleyin."}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -174,67 +255,92 @@ export default function AdminProducts() {
                   >
                     Fiyat <SortIcon k="price_label" />
                   </th>
-                  <th className="text-center p-4 font-medium text-muted-foreground">Öne Çıkan</th>
+                  <th className="text-center p-4 font-medium text-muted-foreground">Yayın</th>
+                  <th className="text-center p-4 font-medium text-muted-foreground hidden lg:table-cell">Öne Çıkan</th>
                   <th className="text-right p-4 font-medium text-muted-foreground">İşlemler</th>
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((product) => (
-                  <tr key={product.id} className="border-b border-border/50 hover:bg-muted/20 transition-colors">
-                    <td className="p-4">
-                      {product.images[0] ? (
-                        <img
-                          src={product.images[0]}
-                          alt={product.name}
-                          className="w-10 h-10 rounded-lg object-cover border border-border"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center border border-border">
-                          <span className="text-muted-foreground text-xs">?</span>
+                {filtered.map((product) => {
+                  const isActive = product.active !== false;
+                  return (
+                    <tr
+                      key={product.id}
+                      className={`border-b border-border/50 hover:bg-muted/20 transition-colors ${!isActive ? "opacity-60" : ""}`}
+                    >
+                      <td className="p-4">
+                        {product.images[0] ? (
+                          <img
+                            src={product.images[0]}
+                            alt={product.name}
+                            className="w-10 h-10 rounded-lg object-cover border border-border"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center border border-border">
+                            <span className="text-muted-foreground text-xs">?</span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="p-4">
+                        <div className="font-medium line-clamp-1 flex items-center gap-2">
+                          {product.name}
+                          {!isActive && (
+                            <Badge variant="outline" className="text-[10px] h-5 px-1.5 border-amber-300 text-amber-700">
+                              Gizli
+                            </Badge>
+                          )}
                         </div>
-                      )}
-                    </td>
-                    <td className="p-4">
-                      <div className="font-medium line-clamp-1">{product.name}</div>
-                      <div className="text-xs text-muted-foreground font-mono mt-0.5">{product.slug}</div>
-                    </td>
-                    <td className="p-4 hidden sm:table-cell">
-                      <Badge variant="secondary">{getCatName(product.category_id)}</Badge>
-                    </td>
-                    <td className="p-4 font-medium hidden md:table-cell">{product.price_label}</td>
-                    <td className="p-4">
-                      <div className="flex justify-center">
-                        <Switch
-                          checked={product.featured}
-                          onCheckedChange={() => toggleFeatured(product)}
-                          disabled={toggling === product.id}
-                          aria-label="Öne çıkan"
-                        />
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex gap-1 justify-end">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setLocation(`/admin/urunler/${product.id}/duzenle`)}
-                          aria-label="Düzenle"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => setDeleteTarget(product)}
-                          aria-label="Sil"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                        <div className="text-xs text-muted-foreground font-mono mt-0.5">{product.slug}</div>
+                      </td>
+                      <td className="p-4 hidden sm:table-cell">
+                        <Badge variant="secondary">{getCatName(product.category_id)}</Badge>
+                      </td>
+                      <td className="p-4 font-medium hidden md:table-cell">{product.price_label}</td>
+                      <td className="p-4">
+                        <div className="flex justify-center">
+                          <Switch
+                            checked={isActive}
+                            onCheckedChange={() => toggleActive(product)}
+                            disabled={toggling === product.id}
+                            aria-label="Yayın durumu"
+                          />
+                        </div>
+                      </td>
+                      <td className="p-4 hidden lg:table-cell">
+                        <div className="flex justify-center">
+                          <Switch
+                            checked={product.featured}
+                            onCheckedChange={() => toggleFeatured(product)}
+                            disabled={toggling === product.id}
+                            aria-label="Öne çıkan"
+                          />
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex gap-1 justify-end">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setLocation(`/admin/urunler/${product.id}/duzenle`)}
+                            aria-label="Düzenle"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => setDeleteTarget(product)}
+                            aria-label="Gizle"
+                            disabled={!isActive}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -244,8 +350,8 @@ export default function AdminProducts() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title={`"${deleteTarget?.name}" silinsin mi?`}
-        description="Bu ürün kalıcı olarak silinecek. Bu işlem geri alınamaz."
+        title={`"${deleteTarget?.name}" gizlensin mi?`}
+        description="Ürün siteden gizlenir (active=false) — kalıcı olarak silinmez. Daha sonra tekrar yayına alabilirsin."
         onConfirm={handleDelete}
         loading={deleting}
       />

@@ -125,10 +125,14 @@ export default function AdminCategories() {
     if (!deleteTarget) return;
     const supabase = getSupabase();
     setDeleting(true);
+    // Soft delete: set active = false (avoids FK conflicts with products).
     if (supabase) {
-      const { error } = await supabase.from("categories").delete().eq("id", deleteTarget.id);
+      const { error } = await supabase
+        .from("categories")
+        .update({ active: false })
+        .eq("id", deleteTarget.id);
       if (error) {
-        toast({ variant: "destructive", title: "Silinemedi", description: error.message });
+        toast({ variant: "destructive", title: "Gizlenemedi", description: error.message });
         setDeleting(false);
         return;
       }
@@ -136,7 +140,7 @@ export default function AdminCategories() {
     setCategories((prev) => prev.filter((c) => c.id !== deleteTarget.id));
     setDeleting(false);
     setDeleteTarget(null);
-    toast({ title: "Kategori silindi" });
+    toast({ title: "Kategori gizlendi", description: "Yayından kaldırıldı (soft delete)." });
   };
 
   return (
@@ -282,8 +286,8 @@ export default function AdminCategories() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title={`"${deleteTarget?.name}" kategorisi silinsin mi?`}
-        description="Bu kategori ve içindeki ürünler etkilenebilir. Bu işlem geri alınamaz."
+        title={`"${deleteTarget?.name}" kategorisi gizlensin mi?`}
+        description="Kategori siteden gizlenir (active=false). İçindeki ürünler etkilenmez; kategori kaydı silinmez, daha sonra tekrar yayına alabilirsin."
         onConfirm={handleDelete}
         loading={deleting}
       />
