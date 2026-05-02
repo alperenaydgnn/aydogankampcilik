@@ -513,6 +513,17 @@
    ───────────────────────────────────────────────────────────────── */
 @layer components {
 
+  /* ── Container (Tailwind v4 has no default .container) ─
+     Centers content + caps width on large screens.
+     Mobile: full width; horizontal padding comes from
+     callsite (px-6 / px-6 md:px-10).
+     ─────────────────────────────────────────────── */
+  .container {
+    width: 100%;
+    margin-inline: auto;
+    max-width: 80rem; /* 1280px — matches max-w-7xl */
+  }
+
   /* ── Navigation ─────────────────────────────── */
   .nav-scrolled {
     background: rgba(245, 240, 232, 0.94);

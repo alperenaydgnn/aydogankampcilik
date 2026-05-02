@@ -38,10 +38,10 @@ export function Header() {
         isScrolled ? "nav-scrolled py-4" : "bg-transparent py-6"
       )}
     >
-      <div className="container mx-auto px-6 md:px-10 grid grid-cols-2 md:grid-cols-3 items-center gap-4">
+      <div className="container mx-auto px-6 md:px-10 grid grid-cols-2 lg:grid-cols-3 items-center gap-4">
 
         {/* Left — Mobile Menu Toggle on small, Nav on desktop */}
-        <nav className="hidden md:flex items-center gap-7">
+        <nav className="hidden lg:flex items-center gap-7">
           {navLinks.slice(0, 2).map((link) => {
             const isActive = location === link.href || (link.href === "/urunler" && location.startsWith("/urunler"));
             return (
@@ -66,7 +66,7 @@ export function Header() {
         <Link
           href="/"
           className={cn(
-            "relative z-50 flex items-center justify-self-start md:justify-self-center text-center",
+            "relative z-50 flex items-center justify-self-start lg:justify-self-center text-center",
           )}
         >
           <span
@@ -80,7 +80,7 @@ export function Header() {
         </Link>
 
         {/* Right — Desktop nav + CTA */}
-        <div className="hidden md:flex items-center justify-end gap-7">
+        <div className="hidden lg:flex items-center justify-end gap-7">
           {navLinks.slice(2).map((link) => {
             const isActive = location === link.href;
             return (
@@ -113,7 +113,7 @@ export function Header() {
         {/* Mobile toggle */}
         <button
           className={cn(
-            "relative z-50 md:hidden p-2 -mr-2 transition-colors justify-self-end",
+            "relative z-50 lg:hidden p-2 -mr-2 transition-colors justify-self-end",
             onDark ? "text-white" : "text-foreground"
           )}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
