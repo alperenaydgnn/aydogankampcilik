@@ -59,18 +59,62 @@ psql "$SUPABASE_DB_URL" -f supabase/seed.sql
 
 ### 4. İlk admin kullanıcıyı oluştur
 
-Supabase dashboard → **Authentication → Users → Add user** ile bir kullanıcı oluştur (örn. `admin@saricamaydogan.com`) ve sonra SQL editor'de:
+`admin_users` tablosunda satırı olmayan auth kullanıcısı admin paneline yazma yapamaz (RLS kapalı). İlk admini eklemek için iki seçenek var.
+
+#### Seçenek A — Supabase Dashboard (kopyala-yapıştır SQL)
+
+1. **Authentication → Users → Add user** ile bir kullanıcı oluştur (örn. `admin@saricamaydogan.com`, "Auto Confirm User" işaretli).
+2. **SQL Editor**'de aşağıdaki snippet'i aç, en üstteki `v_email` / `v_display_name` değerlerini düzenle ve çalıştır:
 
 ```sql
-insert into public.admin_users (user_id, email, display_name)
-values (
-  (select id from auth.users where email = 'admin@saricamaydogan.com'),
-  'admin@saricamaydogan.com',
-  'Site Yöneticisi'
-);
+-- ⬇⬇⬇ SADECE BU İKİ DEĞERİ DÜZENLE ⬇⬇⬇
+do $$
+declare
+  v_email        text := 'admin@saricamaydogan.com';
+  v_display_name text := 'Site Yöneticisi';
+  v_user_id      uuid;
+begin
+  select id into v_user_id from auth.users where email = v_email;
+
+  if v_user_id is null then
+    raise exception
+      'Auth user bulunamadı: %. Önce Authentication → Users → Add user ile oluştur.',
+      v_email;
+  end if;
+
+  insert into public.admin_users (user_id, email, display_name)
+  values (v_user_id, v_email, v_display_name)
+  on conflict (user_id) do update
+    set email        = excluded.email,
+        display_name = excluded.display_name;
+
+  raise notice 'Admin hazır: % (%).', v_email, v_user_id;
+end $$;
 ```
 
-Bu satır eklenmeden RLS yazma izinleri kapalıdır — admin paneli kullanılamaz.
+Snippet idempotenttir; aynı email ile tekrar çalıştırırsan `display_name`'i günceller, hata vermez.
+
+#### Seçenek B — Node script (`supabase/scripts/create-admin.mjs`)
+
+Service-role key ile çalışır; gerekirse auth user'ı da kendisi oluşturur, sonra `admin_users`'e yazar.
+
+```bash
+export SUPABASE_URL="https://<project-ref>.supabase.co"
+export SUPABASE_SERVICE_ROLE_KEY="<service-role-key>"   # asla commit'leme
+
+# Var olan kullanıcıyı admin yap:
+node supabase/scripts/create-admin.mjs --email admin@saricamaydogan.com
+
+# Auth user yoksa onu da oluştur (rastgele şifre üretir, ekrana basar):
+node supabase/scripts/create-admin.mjs \
+  --email admin@saricamaydogan.com \
+  --display-name "Site Yöneticisi" \
+  --create
+```
+
+> Service-role key Supabase Dashboard → **Project Settings → API → `service_role`** altındadır. Anon key DEĞİLdir; tüm RLS'leri bypass eder, frontend'e göndermeyin.
+>
+> Bu script'i yalnızca **güvendiğiniz bir makinede / CI üzerinde** çalıştırın: service-role key'i kullanır ve `--create` ile çağrıldığında üretilen şifreyi bir kez stdout'a basar. Paylaşılan terminallerde ekran görüntüsü / log toplama olmadığından emin olun.
 
 ### 5. Frontend env değişkenleri
 
