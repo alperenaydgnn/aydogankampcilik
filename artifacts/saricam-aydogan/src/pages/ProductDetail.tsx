@@ -10,6 +10,7 @@ import {
 import { getProductBySlug, getRelatedProducts } from "@/lib/data";
 import { Product, Category, StockStatus } from "@/lib/mockData";
 import { SEO } from "@/lib/seo";
+import { buildBreadcrumbSchema, SITE_URL, SITE_NAME, SITE_PHONE } from "@/lib/schemas";
 import { ImageGallery } from "@/components/ImageGallery";
 import { ProductCard } from "@/components/ProductCard";
 import { WhatsAppButton, OutOfStockButton } from "@/components/WhatsAppButton";
@@ -191,6 +192,13 @@ export default function ProductDetail() {
   const waMessage = buildProductMessage(product, category);
 
   /* ── JSON-LD schemas ──────────────────────────────── */
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Ana Sayfa",  url: "/" },
+    { name: "Ürünler",    url: "/urunler" },
+    { name: category.name, url: `/urunler/${category.slug}` },
+    { name: product.name,  url: `/urun/${product.slug}` },
+  ]);
+
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -212,7 +220,10 @@ export default function ProductDetail() {
       }`,
       seller: {
         "@type": "Organization",
-        name: "Sarıçam Aydoğan Kamp & Balık Malzemeleri",
+        "@id": `${SITE_URL}/#business`,
+        name: SITE_NAME,
+        telephone: SITE_PHONE,
+        url: SITE_URL,
       },
     },
   };
@@ -240,6 +251,7 @@ export default function ProductDetail() {
         <meta property="og:type" content="product" />
         <meta property="product:price:amount" content={String(product.price_numeric ?? "")} />
         <meta property="product:price:currency" content="TRY" />
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(productSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>

@@ -1,17 +1,26 @@
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Shield, Users, Compass } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { SEO } from "@/lib/seo";
+import { buildLocalBusinessSchema, SITE_NAME } from "@/lib/schemas";
+import { useSiteSettings } from "@/lib/useSiteSettings";
 import { SectionHeading } from "@/components/SectionHeading";
 
 export default function About() {
   const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const settings = useSiteSettings();
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO 
-        title="Hakkımızda" 
-        description="Sarıçam Aydoğan Kamp ve Balık. Karadeniz'in doğasından ilham alan tecrübemizle yanınızdayız." 
+      <SEO
+        title="Hakkımızda — Trabzon Kamp & Balık Malzemeleri Mağazası"
+        description="Sarıçam Aydoğan, 1995'ten beri Trabzon'da kamp malzemeleri, balık malzemeleri ve outdoor ekipmanları satışı yapan güvenilir mağazanızdır. Karadeniz tecrübesi, kişisel danışmanlık."
+        url="/hakkimizda"
+        keywords="Sarıçam Aydoğan, Trabzon kamp malzemeleri, Trabzon balık malzemeleri, kamp mağazası Trabzon, outdoor ekipmanları Trabzon"
       />
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(buildLocalBusinessSchema())}</script>
+      </Helmet>
 
       {/* Hero */}
       <section className="relative py-32 bg-primary overflow-hidden">
@@ -119,7 +128,14 @@ export default function About() {
                     </div>
                     <div>
                       <h4 className="font-semibold text-lg mb-1">Adres</h4>
-                      <p className="text-primary-foreground/70">Atatürk Cad. No:123<br />Merkez / Trabzon</p>
+                      <p className="text-primary-foreground/70">
+                        {settings.address
+                          ? settings.address.split(",").map((line, i) => (
+                              <span key={i}>{line.trim()}{i === 0 ? <br /> : ""}</span>
+                            ))
+                          : <><span>Cumhuriyet Mah. Sahil Cd. No:42</span><br /><span>Merkez / Trabzon</span></>
+                        }
+                      </p>
                     </div>
                   </div>
                   
@@ -129,7 +145,9 @@ export default function About() {
                     </div>
                     <div>
                       <h4 className="font-semibold text-lg mb-1">Çalışma Saatleri</h4>
-                      <p className="text-primary-foreground/70">Pazartesi - Cumartesi<br />09:00 - 19:30</p>
+                      <p className="text-primary-foreground/70">
+                        {settings.working_hours || "Pzt–Cmt 09:00–19:00"}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -141,7 +159,9 @@ export default function About() {
                     </div>
                     <div>
                       <h4 className="font-semibold text-lg mb-1">Telefon & WhatsApp</h4>
-                      <p className="text-primary-foreground/70">+90 555 111 22 33</p>
+                      <p className="text-primary-foreground/70">
+                        {settings.phone || "+90 555 123 45 67"}
+                      </p>
                     </div>
                   </div>
 
@@ -151,7 +171,9 @@ export default function About() {
                     </div>
                     <div>
                       <h4 className="font-semibold text-lg mb-1">E-posta</h4>
-                      <p className="text-primary-foreground/70">bilgi@saricamaydogan.com</p>
+                      <p className="text-primary-foreground/70">
+                        {settings.email || "info@saricamaydogan.com"}
+                      </p>
                     </div>
                   </div>
                 </div>

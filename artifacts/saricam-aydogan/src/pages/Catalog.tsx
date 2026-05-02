@@ -7,9 +7,11 @@ import {
   CheckCircle2, AlertTriangle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Helmet } from "react-helmet-async";
 import { getCategories, getProducts } from "@/lib/data";
 import { Category, Product, StockStatus } from "@/lib/mockData";
 import { getCategoryMeta } from "@/lib/categoryMeta";
+import { buildBreadcrumbSchema, buildItemListSchema, SITE_URL } from "@/lib/schemas";
 import { ProductCard } from "@/components/ProductCard";
 import { SEO } from "@/lib/seo";
 import { buildSearchMessage, buildProductMessage } from "@/lib/whatsapp";
@@ -640,7 +642,35 @@ export default function Catalog() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <SEO title={meta.seoTitle} description={meta.seoDescription} />
+      <SEO
+        title={meta.seoTitle}
+        description={meta.seoDescription}
+        url={categorySlug ? `/urunler/${categorySlug}` : "/urunler"}
+        keywords={"keywords" in meta ? (meta as { keywords?: string[] }).keywords?.join(", ") : undefined}
+      />
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(
+          buildBreadcrumbSchema([
+            { name: "Ana Sayfa",   url: "/" },
+            { name: "Ürünler",     url: "/urunler" },
+            ...(categorySlug && activeCategory
+              ? [{ name: activeCategory.name, url: `/urunler/${categorySlug}` }]
+              : []
+            ),
+          ])
+        )}</script>
+        {filtered.length > 0 && (
+          <script type="application/ld+json">{JSON.stringify(
+            buildItemListSchema(
+              filtered.map(prod => ({
+                name:  prod.name,
+                url:   `/urun/${prod.slug}`,
+                image: prod.images[0],
+              }))
+            )
+          )}</script>
+        )}
+      </Helmet>
 
       {/* ── Category Hero ────────────────────────────── */}
       <div className="relative overflow-hidden" style={{ marginTop: "4rem" }}>

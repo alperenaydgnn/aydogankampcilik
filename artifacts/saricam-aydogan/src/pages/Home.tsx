@@ -5,7 +5,13 @@ import {
   ArrowRight, Compass, Shield, Users, MapPin, MessageCircle,
   CheckCircle2, Truck, Star, Clock, ChevronRight, Phone,
 } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { SEO } from "@/lib/seo";
+import {
+  buildLocalBusinessSchema,
+  buildOrganizationSchema,
+  buildWebSiteSchema,
+} from "@/lib/schemas";
 import { getFeaturedProducts, getCategories } from "@/lib/data";
 import { Product, Category } from "@/lib/mockData";
 import { ProductCard } from "@/components/ProductCard";
@@ -95,7 +101,14 @@ export default function Home() {
       <SEO
         title="Kamp, Balık & Outdoor Malzemeleri — Trabzon"
         description="Trabzon'un güvenilir kamp malzemeleri, balık malzemeleri, av malzemeleri ve outdoor ekipmanları mağazası. Karadeniz'in zorlu doğasına uygun, kaliteli ve uygun fiyatlı ekipmanlar. WhatsApp ile hızlı sipariş."
+        url="/"
+        keywords="kamp malzemeleri, balık malzemeleri, olta ekipmanları, kamp çadırı, balıkçı malzemeleri, outdoor ekipmanları, kamp ekipmanları, Trabzon, Karadeniz"
       />
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(buildLocalBusinessSchema())}</script>
+        <script type="application/ld+json">{JSON.stringify(buildOrganizationSchema())}</script>
+        <script type="application/ld+json">{JSON.stringify(buildWebSiteSchema())}</script>
+      </Helmet>
 
       {/* ════════════════════════════════════════
           § HERO
