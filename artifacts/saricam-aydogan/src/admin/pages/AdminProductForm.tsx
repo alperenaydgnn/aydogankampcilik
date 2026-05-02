@@ -259,7 +259,7 @@ export default function AdminProductForm() {
         return;
       }
       if (cleanImages.length > 0) {
-        const rows: Partial<DBProductImage>[] = cleanImages.map((url, i) => ({
+        const rows = cleanImages.map((url, i) => ({
           product_id: savedId!,
           url,
           sort_order: i,

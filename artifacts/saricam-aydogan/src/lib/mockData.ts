@@ -1,12 +1,3 @@
-/**
- * App-level domain types and mock fallback data.
- *
- * The `Product` / `Category` types model what the UI consumes. The data
- * layer (`./data.ts`) maps Supabase rows (see `./database.types.ts`) into
- * these app-level shapes — so components don't need to know whether the
- * data came from the DB or the local mock.
- */
-
 export type Category = {
   id: string;
   name: string;

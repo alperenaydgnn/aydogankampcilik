@@ -1,14 +1,3 @@
-/**
- * Data layer — single entry point for fetching catalog & site data.
- *
- * - Reads from Supabase when `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`
- *   are set, otherwise falls back to local mock data so the site keeps
- *   working in dev without backend.
- * - Public reads always filter `active = true` (RLS enforces this too).
- * - Joins `categories`, `product_images`, and `tags` in one query and
- *   maps DB rows into the app-level `Product` / `Category` shapes.
- */
-
 import { getSupabase } from './supabase';
 import {
   mockCategories,

@@ -1,22 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { getSupabase } from "@/lib/supabase";
 
-/**
- * Admin auth context.
- *
- * Two flows supported:
- *
- *  1. **Supabase Auth** (production) — when `VITE_SUPABASE_URL` /
- *     `VITE_SUPABASE_ANON_KEY` are configured. Login uses
- *     `signInWithPassword`; the user is only treated as admin if their
- *     `auth.users.id` is present in the `public.admin_users` table
- *     (verified via a select that only succeeds when RLS allows it).
- *
- *  2. **Env-password fallback** (dev) — when Supabase env vars are not
- *     set, fall back to a single-shared-password gate driven by
- *     `VITE_ADMIN_PASSWORD`, persisted in `sessionStorage`.
- */
-
 const SESSION_KEY = "sa_admin_auth_dev";
 
 interface AdminAuthContextType {
