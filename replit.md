@@ -63,7 +63,18 @@ Turkish e-commerce storefront for camping & fishing equipment. No online checkou
 - `/urunler/:kategori` — Category-filtered catalog
 - `/urun/:slug` — Product detail (gallery, specs, WhatsApp CTA)
 - `/hakkimizda` — About page
+- `/iletisim` — Contact (3 tiles, OSM map, working hours, directions, LocalBusiness JSON-LD)
+- `/sss` — FAQ (5 sections, single-open accordion, FAQPage JSON-LD)
+- `/kvkk` + `/gizlilik` — Privacy / KVKK policy (10 sections, plain Turkish, no legalese)
+- `/teslimat` — Shipping & order info (4-step process, delivery times, payment options)
+- `/magaza-politikasi` — Store policy (3 promise pillars, return matrix, 14-day return window)
+- `/kategori/:slug` — Per-category buying guide (6 tips + FAQ + cross-links to /urunler/:slug)
 - `*` — 404 fallback
+
+**Corporate page conventions:**
+- All corporate pages use the shared `src/components/PageHero.tsx` (breadcrumbs + eyebrow badge + icon + dark-green hero), `<SEO>` component, and `buildBreadcrumbSchema()`.
+- Single source of truth for business contact data: `SITE_PHONE_HUMAN`, `SITE_EMAIL`, `SITE_ADDRESS_FULL`, `SITE_HOURS_HUMAN` exported from `src/lib/schemas.ts`. Footer + Contact page use these as fallbacks when `useSiteSettings()` returns empty values; LocalBusiness/Organization JSON-LD use the same constants. Update `schemas.ts` to change defaults everywhere.
+- `/kategori/:slug` breadcrumbs use the suffix "— Alım Rehberi" to differentiate from the `/urunler/:kategori` catalog page in search results.
 
 **Admin panel routes:**
 - `/admin/login` — Password-protected login (requires `VITE_ADMIN_PASSWORD` env var; shows config error if not set)

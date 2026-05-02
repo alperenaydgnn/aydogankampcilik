@@ -9,6 +9,7 @@ const navLinks = [
   { name: "Anasayfa", href: "/" },
   { name: "Tüm Ürünler", href: "/urunler" },
   { name: "Hakkımızda", href: "/hakkimizda" },
+  { name: "İletişim", href: "/iletisim" },
 ];
 
 export function Header() {

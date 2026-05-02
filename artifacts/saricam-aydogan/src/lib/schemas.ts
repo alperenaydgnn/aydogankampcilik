@@ -15,7 +15,9 @@ export const SITE_ADDRESS = {
   postal:  "61000",
 };
 export const SITE_GEO          = { lat: 41.0015, lng: 39.7178 };
-export const SITE_HOURS_HUMAN  = "Pzt–Cmt 09:00–19:00";
+export const SITE_HOURS_HUMAN  = "Pzt – Cmt: 09:00 – 19:00";
+export const SITE_ADDRESS_FULL =
+  "Cumhuriyet Mah. Sahil Cd. No:42, Merkez / Trabzon";
 export const SITE_PRICE_RANGE  = "₺₺";
 export const SITE_HERO_IMAGE   = `${SITE_URL}/mock/hero.jpg`;
 
@@ -131,6 +133,24 @@ export function buildBreadcrumbSchema(
       position:   i + 1,
       name:       item.name,
       item:       `${SITE_URL}${item.url}`,
+    })),
+  };
+}
+
+/* ── FAQPage ─────────────────────────────────────────────────── */
+export function buildFAQSchema(
+  faqs: { question: string; answer: string }[]
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map(f => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: f.answer,
+      },
     })),
   };
 }

@@ -13,6 +13,12 @@ import Home from "@/pages/Home";
 import Catalog from "@/pages/Catalog";
 import ProductDetail from "@/pages/ProductDetail";
 import About from "@/pages/About";
+import Contact from "@/pages/Contact";
+import FAQ from "@/pages/FAQ";
+import Privacy from "@/pages/Privacy";
+import Shipping from "@/pages/Shipping";
+import StorePolicy from "@/pages/StorePolicy";
+import CategoryInfo from "@/pages/CategoryInfo";
 import NotFound from "@/pages/not-found";
 
 import { AdminAuthProvider, useAdminAuth } from "@/admin/context/AdminAuthContext";
@@ -77,7 +83,14 @@ function StoreFront() {
           <Route path="/urunler" component={Catalog} />
           <Route path="/urunler/:kategori" component={Catalog} />
           <Route path="/urun/:slug" component={ProductDetail} />
+          <Route path="/kategori/:slug" component={CategoryInfo} />
           <Route path="/hakkimizda" component={About} />
+          <Route path="/iletisim" component={Contact} />
+          <Route path="/sss" component={FAQ} />
+          <Route path="/kvkk" component={Privacy} />
+          <Route path="/gizlilik" component={Privacy} />
+          <Route path="/teslimat" component={Shipping} />
+          <Route path="/magaza-politikasi" component={StorePolicy} />
           <Route component={NotFound} />
         </Switch>
       </main>

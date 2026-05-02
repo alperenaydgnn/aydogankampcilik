@@ -2,22 +2,28 @@ import { Link } from "wouter";
 import { Trees, MapPin, Phone, Mail, Instagram, Facebook, MessageCircle, Clock } from "lucide-react";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
 import { useSiteSettings } from "@/lib/useSiteSettings";
+import {
+  SITE_PHONE_HUMAN,
+  SITE_EMAIL,
+  SITE_ADDRESS_FULL,
+  SITE_HOURS_HUMAN,
+} from "@/lib/schemas";
 
 export function Footer() {
   const settings = useSiteSettings();
   const buildWhatsAppLink = useBuildWhatsAppLink();
-  const phone = settings.phone ?? "+90 555 111 22 33";
+  const phone = settings.phone ?? SITE_PHONE_HUMAN;
   const phoneHref = `tel:${(phone ?? "").replace(/\s+/g, "")}`;
-  const email = settings.email ?? "bilgi@saricamaydogan.com";
-  const address = settings.address ?? "Atatürk Cad. No:123 Merkez / Trabzon";
-  const hours = settings.working_hours ?? "Pzt – Cmt: 09:00 – 19:30";
+  const email = settings.email ?? SITE_EMAIL;
+  const address = settings.address ?? SITE_ADDRESS_FULL;
+  const hours = settings.working_hours ?? SITE_HOURS_HUMAN;
   const instagram = settings.social?.instagram;
   const facebook = settings.social?.facebook;
 
   return (
     <footer className="footer-surface text-primary-foreground pt-16 pb-8">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-14">
           <div className="space-y-5 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 group">
               <div className="p-2 rounded-xl bg-white/8 group-hover:bg-secondary/20 transition-colors">
@@ -70,6 +76,7 @@ export function Footer() {
                 { name: "Anasayfa", href: "/" },
                 { name: "Tüm Ürünler", href: "/urunler" },
                 { name: "Hakkımızda", href: "/hakkimizda" },
+                { name: "İletişim", href: "/iletisim" },
               ].map((l) => (
                 <li key={l.href}>
                   <Link
@@ -92,6 +99,28 @@ export function Footer() {
                 { name: "Olta & Makine", href: "/urunler/olta-ve-makine" },
                 { name: "Kamp Aksesuarları", href: "/urunler/kamp-aksesuarlari" },
                 { name: "Aydınlatma", href: "/urunler/aydinlatma" },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="text-primary-foreground/55 hover:text-secondary text-sm transition-colors duration-150 inline-flex items-center gap-2 group"
+                  >
+                    <span className="w-1 h-1 rounded-full bg-secondary/40 group-hover:bg-secondary transition-colors" />
+                    {l.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-serif text-base font-semibold mb-5 text-primary-foreground/90">Kurumsal</h3>
+            <ul className="space-y-2.5">
+              {[
+                { name: "Sık Sorulan Sorular", href: "/sss" },
+                { name: "Teslimat & Sipariş", href: "/teslimat" },
+                { name: "Mağaza Politikası", href: "/magaza-politikasi" },
+                { name: "KVKK & Gizlilik", href: "/kvkk" },
               ].map((l) => (
                 <li key={l.href}>
                   <Link
