@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, Check, Loader2 } from "lucide-react";
-import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { useBuildWhatsAppLink } from "@/lib/whatsapp";
 import { trackWhatsAppClick, WhatsAppTrackingData } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
@@ -113,6 +113,7 @@ export function WhatsAppButton({
   onClick,
 }: WhatsAppButtonProps) {
   const [state, setState] = useState<FeedbackState>("idle");
+  const buildWhatsAppLink = useBuildWhatsAppLink();
 
   const handleClick = (e: React.MouseEvent) => {
     onClick?.(e);

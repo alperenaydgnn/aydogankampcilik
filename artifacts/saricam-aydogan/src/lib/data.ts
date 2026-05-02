@@ -120,6 +120,27 @@ export async function getCategories(): Promise<Category[]> {
   return mockCategories;
 }
 
+/**
+ * Admin-only category fetch: bypasses the `active=true` filter so soft-deleted
+ * categories remain manageable from the admin panel and product form select.
+ */
+export async function getAllCategoriesForAdmin(): Promise<Category[]> {
+  const supabase = getSupabase();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('sort_order', { ascending: true })
+      .order('name', { ascending: true });
+    if (error) {
+      console.warn('Supabase getAllCategoriesForAdmin failed:', error.message);
+      return mockCategories;
+    }
+    return (data ?? []).map((row) => mapCategory(row as DBCategory));
+  }
+  return mockCategories;
+}
+
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const supabase = getSupabase();
   if (supabase) {

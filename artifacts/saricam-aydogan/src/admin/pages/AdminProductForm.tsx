@@ -14,7 +14,7 @@ import { ImageUrlList } from "@/admin/components/ImageUrlList";
 import { ImageUpload } from "@/admin/components/ImageUpload";
 import { useToast } from "@/hooks/use-toast";
 import { getSupabase } from "@/lib/supabase";
-import { getCategories, getTags } from "@/lib/data";
+import { getAllCategoriesForAdmin, getTags } from "@/lib/data";
 import { Category, Tag, mockProducts } from "@/lib/mockData";
 import type { DBProductImage, DBProductWithRelations } from "@/lib/database.types";
 
@@ -89,7 +89,7 @@ export default function AdminProductForm() {
   const [slugManual, setSlugManual] = useState(false);
 
   useEffect(() => {
-    getCategories().then(setCategories);
+    getAllCategoriesForAdmin().then(setCategories);
     getTags().then(setAllTags);
   }, []);
 

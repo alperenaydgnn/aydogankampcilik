@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { useToast } from "@/hooks/use-toast";
 import { getSupabase } from "@/lib/supabase";
-import { getCategories } from "@/lib/data";
+import { getAllCategoriesForAdmin } from "@/lib/data";
 import { Category, Product } from "@/lib/mockData";
 import { mockProducts } from "@/lib/mockData";
 import type { DBProductWithRelations } from "@/lib/database.types";
@@ -75,7 +75,7 @@ export default function AdminProducts() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [cats, prods] = await Promise.all([getCategories(), loadProducts()]);
+    const [cats, prods] = await Promise.all([getAllCategoriesForAdmin(), loadProducts()]);
     setCategories(cats);
     setProducts(prods);
     setLoading(false);

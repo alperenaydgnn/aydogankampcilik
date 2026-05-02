@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { Trees, Menu, X, Phone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { useBuildWhatsAppLink } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -15,6 +15,7 @@ export function Header() {
   const [location] = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const buildWhatsAppLink = useBuildWhatsAppLink();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
