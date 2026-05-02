@@ -46,8 +46,8 @@ export default function AdminProducts() {
       .select(ADMIN_PRODUCT_SELECT)
       .order("created_at", { ascending: false });
     if (error) {
-      console.warn("admin loadProducts:", error.message);
-      return mockProducts;
+      toast({ variant: "destructive", title: "Ürünler yüklenemedi", description: error.message });
+      return [];
     }
     return (data as DBProductWithRelations[]).map((row) => ({
       id: row.id,

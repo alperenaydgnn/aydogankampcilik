@@ -92,8 +92,10 @@ function mapProduct(row: DBProductWithRelations): Product {
   };
 }
 
-const PRODUCT_SELECT =
-  '*, category:categories(*), product_images(*), product_tags(tag:tags(*))';
+// `!inner` forces the join to drop rows whose category is inactive, so a
+// product under a soft-deleted category never leaks to public listings.
+const PRODUCT_SELECT_PUBLIC =
+  '*, category:categories!inner(*), product_images(*), product_tags(tag:tags(*))';
 
 /* ------------------------------------------------------------------ */
 /*  Categories                                                         */
@@ -148,7 +150,7 @@ export async function getProducts(options: ProductQuery = {}): Promise<Product[]
   if (supabase) {
     let query = supabase
       .from('products')
-      .select(PRODUCT_SELECT)
+      .select(PRODUCT_SELECT_PUBLIC)
       .eq('active', true)
       .order('featured', { ascending: false })
       .order('created_at', { ascending: false });
@@ -218,7 +220,7 @@ export async function getRelatedProducts(
   if (supabase) {
     const { data, error } = await supabase
       .from('products')
-      .select(PRODUCT_SELECT)
+      .select(PRODUCT_SELECT_PUBLIC)
       .eq('active', true)
       .eq('category_id', product.category_id)
       .neq('id', product.id)
@@ -243,7 +245,7 @@ export async function getProductBySlug(
   if (supabase) {
     const { data, error } = await supabase
       .from('products')
-      .select(PRODUCT_SELECT)
+      .select(PRODUCT_SELECT_PUBLIC)
       .eq('slug', slug)
       .eq('active', true)
       .maybeSingle();
