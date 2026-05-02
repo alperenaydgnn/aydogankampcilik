@@ -127,8 +127,8 @@
   --ring:                  149 43% 17%;
 
   /* Typography */
-  --app-font-sans:  'Plus Jakarta Sans', system-ui, sans-serif;
-  --app-font-serif: 'Fraunces', Georgia, serif;
+  --app-font-sans:  'Inter', system-ui, -apple-system, sans-serif;
+  --app-font-serif: 'Inter', system-ui, -apple-system, sans-serif;
   --app-font-mono:  'JetBrains Mono', Menlo, monospace;
 
   /* Base radius — bumped to 0.75rem for 2xl feel */
