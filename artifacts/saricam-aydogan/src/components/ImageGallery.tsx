@@ -82,6 +82,8 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
               className="absolute inset-0 w-full h-full object-cover"
               draggable={false}
+              loading={current === 0 ? "eager" : "lazy"}
+              onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
             />
           </AnimatePresence>
 
@@ -142,7 +144,7 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
                 )}
                 aria-label={`Görsel ${idx + 1}`}
               >
-                <img src={img} alt={`${alt} küçük resim ${idx + 1}`} className="w-full h-full object-cover" />
+                <img src={img} alt={`${alt} küçük resim ${idx + 1}`} className="w-full h-full object-cover" loading="lazy" onError={e => { (e.currentTarget as HTMLImageElement).style.opacity = "0"; }} />
               </button>
             ))}
           </div>
@@ -207,7 +209,9 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
                 transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                 className="max-w-[90vw] max-h-[85vh] object-contain rounded-xl shadow-2xl"
                 draggable={false}
+                loading="lazy"
                 onClick={e => e.stopPropagation()}
+                onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
               />
             </AnimatePresence>
 
@@ -243,7 +247,7 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
                       current === idx ? "border-white scale-110" : "border-white/25 opacity-55 hover:opacity-80"
                     )}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" onError={e => { (e.currentTarget as HTMLImageElement).style.opacity = "0"; }} />
                   </button>
                 ))}
               </div>

@@ -15,8 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SpecsEditor } from "@/admin/components/SpecsEditor";
-import { ImageUrlList } from "@/admin/components/ImageUrlList";
-import { ImageUpload } from "@/admin/components/ImageUpload";
+import { ProductImageManager, ProductImageState, ImagesChangeFn } from "@/admin/components/ProductImageManager";
 import { useToast } from "@/hooks/use-toast";
 import { getSupabase } from "@/lib/supabase";
 import { getAllCategoriesForAdmin, getTags } from "@/lib/data";
@@ -49,7 +48,7 @@ interface FormState {
   whatsapp_message: string;
   meta_title: string;
   meta_description: string;
-  images: string[];
+  images: ProductImageState[];
   tag_ids: string[];
   featured: boolean;
   is_new: boolean;
@@ -156,10 +155,18 @@ export default function AdminProductForm() {
           .maybeSingle();
         if (!error && data) {
           const row = data as DBProductWithRelations;
-          const imgs = (row.product_images ?? [])
+          const imgs: ProductImageState[] = (row.product_images ?? [])
             .slice()
             .sort((a, b) => (a.is_primary === b.is_primary ? a.sort_order - b.sort_order : a.is_primary ? -1 : 1))
-            .map((img) => img.url);
+            .map((img) => ({
+              key: img.id,
+              id: img.id,
+              url: img.url,
+              alt_text: img.alt_text ?? "",
+              is_primary: img.is_primary,
+              uploading: false,
+              progress: 100,
+            }));
           setForm({
             name: row.name,
             slug: row.slug,
@@ -203,7 +210,14 @@ export default function AdminProductForm() {
           stock: String(p.stock ?? 0),
           specs: p.specs ?? {},
           whatsapp_message: p.whatsapp_message ?? "",
-          images: p.images ?? [],
+          images: (p.images ?? []).map((url, i) => ({
+            key: `mock_${i}_${url.slice(-8)}`,
+            url,
+            alt_text: "",
+            is_primary: i === 0,
+            uploading: false,
+            progress: 100,
+          })),
           tag_ids: (p.tags ?? []).map((t) => t.id),
           featured: p.featured,
           is_new: !!p.is_new,
@@ -229,6 +243,10 @@ export default function AdminProductForm() {
   const handleSlugChange = (slug: string) => {
     setSlugManual(true);
     set("slug", slugify(slug));
+  };
+
+  const handleImagesChange = (v: ImagesChangeFn) => {
+    setForm(f => ({ ...f, images: typeof v === "function" ? v(f.images) : v }));
   };
 
   const toggleTag = (tagId: string) => {
@@ -266,6 +284,13 @@ export default function AdminProductForm() {
         setActiveTab("genel");
       }
       toast({ variant: "destructive", title: "Lütfen hataları düzeltin", description: "Kırmızıyla işaretlenen alanları kontrol et." });
+      return;
+    }
+
+    const hasUploading = form.images.some(img => img.uploading);
+    if (hasUploading) {
+      toast({ variant: "destructive", title: "Görseller hâlâ yükleniyor", description: "Lütfen tüm yüklemeler tamamlanana kadar bekleyin." });
+      setSaving(false);
       return;
     }
 
@@ -314,7 +339,8 @@ export default function AdminProductForm() {
         savedId = data.id;
       }
 
-      const cleanImages = form.images.map((u) => u.trim()).filter(Boolean);
+      const cleanImages = form.images.filter(img => !img.uploading && !img.error && img.url.trim());
+      const hasPrimaryImg = cleanImages.some(img => img.is_primary);
       const { error: delImgErr } = await supabase.from("product_images").delete().eq("product_id", savedId!);
       if (delImgErr) {
         toast({ variant: "destructive", title: "Görseller temizlenemedi", description: delImgErr.message });
@@ -322,12 +348,12 @@ export default function AdminProductForm() {
         return;
       }
       if (cleanImages.length > 0) {
-        const rows: Omit<DBProductImage, "id" | "created_at">[] = cleanImages.map((url, i) => ({
+        const rows: Omit<DBProductImage, "id" | "created_at">[] = cleanImages.map((img, i) => ({
           product_id: savedId!,
-          url,
+          url: img.url.trim(),
           sort_order: i,
-          is_primary: i === 0,
-          alt_text: form.name,
+          is_primary: img.is_primary || (!hasPrimaryImg && i === 0),
+          alt_text: img.alt_text || form.name,
         }));
         const { error: insImgErr } = await supabase.from("product_images").insert(rows as DBProductImage[]);
         if (insImgErr) {
@@ -694,57 +720,10 @@ export default function AdminProductForm() {
               <SectionHeader
                 icon={ImageIcon}
                 title="Ürün Görselleri"
-                description="Supabase Storage'a yükle veya harici URL ekle. İlk görsel ana görsel olur."
+                description="Görselleri yükle, sırala ve ana görseli seç. Sürükle-bırak ile yeniden sıralayabilirsin."
               />
-
-              <ImageUpload onUpload={(url) => set("images", [...form.images, url])} />
-
-              <Separator />
-
-              {form.images.length === 0 ? (
-                <div className="text-center py-8 border-2 border-dashed border-border rounded-xl">
-                  <ImageIcon className="w-10 h-10 mx-auto mb-3 text-muted-foreground/30" />
-                  <p className="text-sm text-muted-foreground">Henüz görsel eklenmedi</p>
-                  <p className="text-xs text-muted-foreground/60 mt-1">Yukarıdan yükle ya da URL listesinden ekle</p>
-                </div>
-              ) : (
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <Label className="text-sm">Görsel Sırası</Label>
-                    <span className="text-xs text-muted-foreground">{form.images.length} görsel · ilk = ana görsel</span>
-                  </div>
-                  <ImageUrlList value={form.images} onChange={(v) => set("images", v)} />
-                </div>
-              )}
+              <ProductImageManager value={form.images} onChange={handleImagesChange} />
             </div>
-
-            {form.images.length > 0 && (
-              <div className="bg-background rounded-2xl border border-border p-6">
-                <p className="text-sm font-medium mb-3">Önizleme</p>
-                <div className="flex flex-wrap gap-3">
-                  {form.images.slice(0, 5).map((url, i) => (
-                    <div key={i} className="relative group">
-                      <img
-                        src={url}
-                        alt={`Görsel ${i + 1}`}
-                        className="w-20 h-20 object-cover rounded-xl border border-border"
-                        onError={(e) => { (e.target as HTMLImageElement).src = "/mock/product-1.jpg"; }}
-                      />
-                      {i === 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[9px] font-bold px-1 py-0.5 rounded-full">
-                          ANA
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                  {form.images.length > 5 && (
-                    <div className="w-20 h-20 rounded-xl border border-border bg-muted flex items-center justify-center text-sm text-muted-foreground font-medium">
-                      +{form.images.length - 5}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
           </TabsContent>
 
           {/* ── Tab 3: Teknik Özellikler ─────────────────────────────────── */}

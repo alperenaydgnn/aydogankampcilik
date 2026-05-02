@@ -98,6 +98,18 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
               alt={product.name}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
               loading="lazy"
+              decoding="async"
+              onError={e => {
+                const img = e.currentTarget as HTMLImageElement;
+                img.style.display = "none";
+                const parent = img.parentElement;
+                if (parent && !parent.querySelector(".img-fallback")) {
+                  const fb = document.createElement("div");
+                  fb.className = "img-fallback absolute inset-0 flex items-center justify-center bg-muted";
+                  fb.innerHTML = `<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' class='text-muted-foreground/30'><rect x='3' y='3' width='18' height='18' rx='2'/><circle cx='8.5' cy='8.5' r='1.5'/><path d='m21 15-5-5L5 21'/></svg>`;
+                  parent.appendChild(fb);
+                }
+              }}
             />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
           </AspectRatio>
