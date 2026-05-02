@@ -110,10 +110,12 @@ export async function getCategories(): Promise<Category[]> {
       .eq('active', true)
       .order('sort_order', { ascending: true })
       .order('name', { ascending: true });
-    if (!error && data && data.length > 0) {
-      return (data as DBCategory[]).map(mapCategory);
+    if (error) {
+      console.warn('Supabase getCategories failed:', error.message);
+      return mockCategories;
     }
-    if (error) console.warn('Supabase getCategories failed:', error.message);
+    // Supabase is authoritative: return whatever it has, even an empty list.
+    return (data ?? []).map((row) => mapCategory(row as DBCategory));
   }
   return mockCategories;
 }
@@ -127,8 +129,12 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
       .eq('slug', slug)
       .eq('active', true)
       .maybeSingle();
-    if (!error && data) return mapCategory(data as DBCategory);
-    if (error) console.warn('Supabase getCategoryBySlug failed:', error.message);
+    if (error) {
+      console.warn('Supabase getCategoryBySlug failed:', error.message);
+      return mockCategories.find((c) => c.slug === slug) ?? null;
+    }
+    // Supabase is the source of truth; do not substitute mock rows on miss.
+    return data ? mapCategory(data as DBCategory) : null;
   }
   return mockCategories.find((c) => c.slug === slug) ?? null;
 }
@@ -179,11 +185,15 @@ export async function getProducts(options: ProductQuery = {}): Promise<Product[]
     }
 
     const { data, error } = await query;
-    if (!error && data) return (data as DBProductWithRelations[]).map(mapProduct);
-    if (error) console.warn('Supabase getProducts failed:', error.message);
+    if (error) {
+      console.warn('Supabase getProducts failed:', error.message);
+      // Fall through to the mock list only when Supabase actually errored.
+    } else {
+      return (data ?? []).map((row) => mapProduct(row as DBProductWithRelations));
+    }
   }
 
-  // ---- mock fallback ---------------------------------------------------
+  // ---- mock fallback (Supabase unconfigured or errored) ----------------
   let list = mockProducts.filter((p) => p.active !== false);
 
   if (options.categorySlug) {
@@ -225,8 +235,11 @@ export async function getRelatedProducts(
       .eq('category_id', product.category_id)
       .neq('id', product.id)
       .limit(limit);
-    if (!error && data) return (data as DBProductWithRelations[]).map(mapProduct);
-    if (error) console.warn('Supabase getRelatedProducts failed:', error.message);
+    if (error) {
+      console.warn('Supabase getRelatedProducts failed:', error.message);
+    } else {
+      return (data ?? []).map((row) => mapProduct(row as DBProductWithRelations));
+    }
   }
   return mockProducts
     .filter(
@@ -249,15 +262,18 @@ export async function getProductBySlug(
       .eq('slug', slug)
       .eq('active', true)
       .maybeSingle();
-    if (!error && data) {
+    if (error) {
+      console.warn('Supabase getProductBySlug failed:', error.message);
+      // Fall through to the mock lookup only when Supabase actually errored.
+    } else if (!data) {
+      return null;
+    } else {
       const row = data as DBProductWithRelations;
       const product = mapProduct(row);
-      const category = row.category
-        ? mapCategory(row.category)
-        : mockCategories.find((c) => c.id === product.category_id);
-      if (category) return { product, category };
+      // The `!inner` join guarantees `category` is present on a successful row.
+      const category = row.category ? mapCategory(row.category) : null;
+      return category ? { product, category } : null;
     }
-    if (error) console.warn('Supabase getProductBySlug failed:', error.message);
   }
 
   const product = mockProducts.find((p) => p.slug === slug && p.active !== false);
@@ -275,8 +291,11 @@ export async function getTags(): Promise<Tag[]> {
   const supabase = getSupabase();
   if (supabase) {
     const { data, error } = await supabase.from('tags').select('*').order('name');
-    if (!error && data) return (data as DBTag[]).map(mapTag);
-    if (error) console.warn('Supabase getTags failed:', error.message);
+    if (error) {
+      console.warn('Supabase getTags failed:', error.message);
+      return [];
+    }
+    return (data ?? []).map((row) => mapTag(row as DBTag));
   }
   return [];
 }
@@ -289,14 +308,16 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   const supabase = getSupabase();
   if (supabase) {
     const { data, error } = await supabase.from('site_settings').select('*');
-    if (!error && data && data.length > 0) {
-      const out: SiteSettings = {};
-      for (const row of data as DBSiteSetting[]) {
-        out[row.key] = row.value as never;
-      }
-      return out;
+    if (error) {
+      console.warn('Supabase getSiteSettings failed:', error.message);
+      return mockSiteSettings;
     }
-    if (error) console.warn('Supabase getSiteSettings failed:', error.message);
+    // Supabase is authoritative once configured: an empty table yields {}.
+    const out: SiteSettings = {};
+    for (const row of (data ?? []) as DBSiteSetting[]) {
+      out[row.key] = row.value as never;
+    }
+    return out;
   }
   return mockSiteSettings;
 }
