@@ -1,4 +1,19 @@
 import { getSupabase } from './supabase';
+
+const DIACRITIC_MAP: Record<string, string> = {
+  ç: 'c', Ç: 'c', ğ: 'g', Ğ: 'g',
+  ı: 'i', I: 'i', İ: 'i', i: 'i',
+  ö: 'o', Ö: 'o', ş: 's', Ş: 's',
+  ü: 'u', Ü: 'u',
+};
+
+function stripDiacritics(input: string): string {
+  // Mirrors Postgres `unaccent()` for the Turkish letters used by our index.
+  let s = input.replace(/[çÇğĞıIİöÖşŞüÜ]/g, (c) => DIACRITIC_MAP[c] ?? c);
+  // Catch any remaining combining marks (e.g. composed accents from copy-paste).
+  s = s.normalize('NFKD').replace(/\p{Diacritic}/gu, '');
+  return s.toLowerCase();
+}
 import {
   mockCategories,
   mockProducts,
@@ -147,9 +162,9 @@ export async function getProducts(options: ProductQuery = {}): Promise<Product[]
     if (options.featuredOnly) query = query.eq('featured', true);
 
     if (options.search?.trim()) {
-      const term = options.search.trim();
-      // Use the indexed full-text search column when available; falls back to
-      // ilike automatically if textSearch returns no results (handled below).
+      // The DB index is built over `unaccent(...)`, so we must strip the
+      // same diacritics from the user's query for "çadır" to match "cadir".
+      const term = stripDiacritics(options.search.trim());
       query = query.textSearch('search_vector', term, {
         type: 'websearch',
         config: 'simple',
