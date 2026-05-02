@@ -53,6 +53,14 @@ function mapTag(row: DBTag): Tag {
   return { id: row.id, name: row.name, slug: row.slug, color: row.color };
 }
 
+/**
+ * Map a Supabase `products` row (with joined `product_images`/`product_tags`)
+ * to the app-level `Product` shape. Images are intentionally flattened to a
+ * sorted `string[]` (primary first, then by `sort_order`) — every consumer of
+ * `Product` only needs the URL list. If a future feature needs per-image
+ * metadata (alt, dimensions, role), expose `product_images` as a separate
+ * field on `Product` rather than reshaping `images`.
+ */
 function mapProduct(row: DBProductWithRelations): Product {
   const images = (row.product_images ?? [])
     .slice()
