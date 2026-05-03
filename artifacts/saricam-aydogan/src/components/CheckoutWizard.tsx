@@ -64,6 +64,14 @@ export function CheckoutWizard() {
     try { localStorage.setItem(FORM_STORAGE, JSON.stringify(form)); } catch { /* ignore */ }
   }, [form]);
 
+  // ESC to close
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
   if (items.length === 0 && open) {
     onClose();
     return null;

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Minus, Trash2, ShoppingBag, Sparkles } from "lucide-react";
@@ -8,6 +9,15 @@ import { trackEvent } from "@/lib/analytics";
 
 export function CartDrawer() {
   const { isOpen, close, items, setQty, remove, subtotal, combo, total, count, hasNumericPrices, clear, openCheckout } = useCart();
+  const panelRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", onKey);
+    const t = setTimeout(() => panelRef.current?.focus(), 50);
+    return () => { document.removeEventListener("keydown", onKey); clearTimeout(t); };
+  }, [isOpen, close]);
 
   const startCheckout = () => {
     trackEvent({ event: "checkout_start", source: "cart_drawer", item_count: count, subtotal });
@@ -30,12 +40,15 @@ export function CartDrawer() {
           />
           <motion.aside
             key="panel"
+            ref={panelRef as any}
+            tabIndex={-1}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed top-0 right-0 bottom-0 z-[71] w-full sm:max-w-md bg-background flex flex-col shadow-2xl"
+            className="fixed top-0 right-0 bottom-0 z-[71] w-full sm:max-w-md bg-background flex flex-col shadow-2xl outline-none"
             role="dialog"
+            aria-modal="true"
             aria-label="Sepetiniz"
           >
             <header className="flex items-center justify-between px-6 py-5 border-b border-foreground/10">

@@ -4,8 +4,9 @@ import {
   Search, Filter, SlidersHorizontal, LayoutGrid, List,
   ChevronLeft, ChevronRight, ArrowRight,
   X, ChevronDown, ChevronUp, Star, Sparkles, ArrowUpDown,
-  AlertTriangle, MessageCircle,
+  AlertTriangle, MessageCircle, ShoppingBag,
 } from "lucide-react";
+import { useCart } from "@/lib/cart";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { getCategories, getProducts } from "@/lib/data";
@@ -150,6 +151,7 @@ function ProductRow({ product, index, categoryName }: {
 }) {
   const isOOS = product.stock_status === "out_of_stock";
   const waMessage = buildProductMessage(product, { name: categoryName || "Kamp & Balık" });
+  const { add } = useCart();
 
   return (
     <motion.article
@@ -189,6 +191,9 @@ function ProductRow({ product, index, categoryName }: {
                 <AlertTriangle className="w-2.5 h-2.5" /> Son Stoklar
               </span>
             )}
+            {product.stock_status === "in_stock" && (
+              <span className="text-emerald-700">Stokta</span>
+            )}
             {product.stock_status === "out_of_stock" && (
               <span className="text-rose-700">Tükendi</span>
             )}
@@ -217,22 +222,30 @@ function ProductRow({ product, index, categoryName }: {
               İncele <ArrowRight className="w-3 h-3" />
             </Link>
             {!isOOS && (
-              <WhatsAppButton
-                message={waMessage}
-                tracking={{
-                  event: "product_order",
-                  source: "product_card",
-                  product_id: product.id,
-                  product_name: product.name,
-                  product_slug: product.slug,
-                  price_numeric: product.price_numeric ?? undefined,
-                  category_name: categoryName,
-                }}
-                size="sm"
-                rounded="pill"
-                label="Sipariş"
-                onClick={e => e.stopPropagation()}
-              />
+              <>
+                <button
+                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); add(product, 1); }}
+                  className="inline-flex items-center gap-1.5 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-secondary border-b border-secondary/40 hover:border-secondary pb-1 transition"
+                >
+                  Sepete Ekle <ShoppingBag className="w-3 h-3" />
+                </button>
+                <WhatsAppButton
+                  message={waMessage}
+                  tracking={{
+                    event: "product_order",
+                    source: "product_card",
+                    product_id: product.id,
+                    product_name: product.name,
+                    product_slug: product.slug,
+                    price_numeric: product.price_numeric ?? undefined,
+                    category_name: categoryName,
+                  }}
+                  size="sm"
+                  rounded="pill"
+                  label="Sipariş"
+                  onClick={e => e.stopPropagation()}
+                />
+              </>
             )}
           </div>
         </div>

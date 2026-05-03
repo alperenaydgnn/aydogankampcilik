@@ -27,9 +27,15 @@ export function CallbackFab() {
 
   useEffect(() => {
     if (sessionStorage.getItem(DISMISS_KEY) === "1") return;
-    const t = setTimeout(() => setHidden(false), 8000);
-    return () => clearTimeout(t);
+    setHidden(false);
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
   const valid = name.trim().length >= 2 && /^[0-9+\s()-]{10,}$/.test(phone.trim());
 

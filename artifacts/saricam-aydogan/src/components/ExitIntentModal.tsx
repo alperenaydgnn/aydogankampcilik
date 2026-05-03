@@ -49,6 +49,13 @@ export function ExitIntentModal() {
 
   const close = () => setOpen(false);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
   const goCheckout = () => {
     trackEvent({ event: "exit_intent_cta", source: "exit_intent_modal", item_count: count });
     setOpen(false);
