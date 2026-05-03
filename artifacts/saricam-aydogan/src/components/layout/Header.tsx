@@ -8,6 +8,8 @@ import { useWishlist } from "@/lib/wishlist";
 import { trackEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { SearchOverlay } from "@/components/SearchOverlay";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useT } from "@/lib/i18n";
 
 function IconButton({
   onClick, ariaLabel, onDark, badge, children,
@@ -34,8 +36,9 @@ function IconButton({
 }
 
 function SearchButton({ onDark, onClick }: { onDark: boolean; onClick: () => void }) {
+  const t = useT();
   return (
-    <IconButton onClick={onClick} ariaLabel="Akıllı arama" onDark={onDark}>
+    <IconButton onClick={onClick} ariaLabel={t("header.search")} onDark={onDark}>
       <Search className="w-[18px] h-[18px]" strokeWidth={1.75} />
     </IconButton>
   );
@@ -44,10 +47,11 @@ function SearchButton({ onDark, onClick }: { onDark: boolean; onClick: () => voi
 function WishlistButton({ onDark }: { onDark: boolean }) {
   const { count } = useWishlist();
   const [, setLocation] = useLocation();
+  const t = useT();
   return (
     <IconButton
       onClick={() => { setLocation("/favoriler"); trackEvent({ event: "wishlist_open", source: "header", item_count: count }); }}
-      ariaLabel={`Favoriler (${count})`}
+      ariaLabel={`${t("header.wishlist")} (${count})`}
       onDark={onDark}
       badge={count}
     >
@@ -59,6 +63,7 @@ function WishlistButton({ onDark }: { onDark: boolean }) {
 function CartButton({ onDark }: { onDark: boolean }) {
   const { count, open } = useCart();
   const [bump, setBump] = useState(0);
+  const t = useT();
   useEffect(() => {
     if (count === 0) return;
     setBump(b => b + 1);
@@ -66,7 +71,7 @@ function CartButton({ onDark }: { onDark: boolean }) {
   return (
     <button
       onClick={() => { open(); trackEvent({ event: "cart_open", source: "header", item_count: count }); }}
-      aria-label={`Sepet (${count} ürün)`}
+      aria-label={`${t("header.cart")} (${count})`}
       className={cn(
         "relative inline-flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-300 ease-out hover:scale-105",
         onDark
@@ -100,11 +105,11 @@ function CartButton({ onDark }: { onDark: boolean }) {
   );
 }
 
-const navLinks = [
-  { name: "Anasayfa", href: "/" },
-  { name: "Ürünler", href: "/urunler" },
-  { name: "Hakkımızda", href: "/hakkimizda" },
-  { name: "İletişim", href: "/iletisim" },
+const navLinkDefs = [
+  { key: "nav.home" as const, href: "/" },
+  { key: "nav.products" as const, href: "/urunler" },
+  { key: "nav.about" as const, href: "/hakkimizda" },
+  { key: "nav.contact" as const, href: "/iletisim" },
 ];
 
 export function Header() {
@@ -113,6 +118,8 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const buildWhatsAppLink = useBuildWhatsAppLink();
+  const t = useT();
+  const navLinks = navLinkDefs.map(l => ({ ...l, name: t(l.key) }));
 
   useEffect(() => {
     const onOpen = () => setSearchOpen(true);
@@ -213,19 +220,21 @@ export function Header() {
           })}
 
           <a
-            href={buildWhatsAppLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}
+            href={buildWhatsAppLink(t("cta.contactWa"))}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-cta-amber btn-cta !py-2 !px-5 !text-[0.7rem] !font-bold !uppercase !tracking-[0.18em]"
           >
-            Bize Ulaşın
+            {t("header.cta")}
           </a>
+
+          <LanguageSwitcher onDark={onDark} />
 
           <a
             href="https://www.instagram.com/aydogankamcilik/"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Instagram'da takip edin"
+            aria-label={t("header.instagram")}
             className={cn(
               "inline-flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-300 ease-out",
               "hover:scale-105 hover:-rotate-3",
@@ -253,7 +262,9 @@ export function Header() {
             onDark ? "text-white" : "text-foreground"
           )}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label="Menü"
+          aria-label={t("header.menu")}
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="mobile-menu-overlay"
         >
           <AnimatePresence mode="wait" initial={false}>
             {isMobileMenuOpen ? (
@@ -277,10 +288,17 @@ export function Header() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
+              id="mobile-menu-overlay"
+              role="dialog"
+              aria-modal="true"
+              aria-label={t("header.menu")}
               className="fixed inset-0 bg-background z-40 flex flex-col"
             >
               <div className="h-24" />
-              <nav className="flex-1 px-8 pt-12">
+              <div className="px-8 pt-6">
+                <LanguageSwitcher onDark={false} />
+              </div>
+              <nav className="flex-1 px-8 pt-6">
                 <ul className="space-y-2">
                   {navLinks.map((link, i) => (
                     <motion.li
@@ -313,13 +331,13 @@ export function Header() {
                 transition={{ delay: 0.35 }}
               >
                 <a
-                  href={buildWhatsAppLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}
+                  href={buildWhatsAppLink(t("cta.contactWa"))}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={closeMobile}
                   className="btn-cta-amber btn-cta w-full justify-center"
                 >
-                  WhatsApp'tan Ulaşın
+                  {t("mobile.whatsapp")}
                 </a>
 
                 <a
