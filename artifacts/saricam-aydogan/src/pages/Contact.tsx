@@ -28,8 +28,7 @@ export default function Contact() {
   const address = settings.address || SITE_ADDRESS_FULL;
   const hours = settings.working_hours || SITE_HOURS_HUMAN;
 
-  const mapBbox = `${SITE_GEO.lng - 0.012},${SITE_GEO.lat - 0.006},${SITE_GEO.lng + 0.012},${SITE_GEO.lat + 0.006}`;
-  const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${mapBbox}&layer=mapnik&marker=${SITE_GEO.lat},${SITE_GEO.lng}`;
+  const mapSrc = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d398.1262334465161!2d35.42229806811702!3d37.033411068169094!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1528930c59682bf9%3A0xb0bef0c68035282!2sAydo%C4%9Fan%20Kamp%20Ve%20Bal%C4%B1k%20Malzemeleri!5e0!3m2!1str!2str!4v1777825568723!5m2!1str!2str";
   const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${SITE_GEO.lat},${SITE_GEO.lng}`;
 
   return (
@@ -141,6 +140,7 @@ export default function Contact() {
                 src={mapSrc}
                 className="w-full h-[420px] lg:h-full border-0"
                 loading="lazy"
+                allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
