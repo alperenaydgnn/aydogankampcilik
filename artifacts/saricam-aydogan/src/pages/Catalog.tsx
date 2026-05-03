@@ -892,8 +892,8 @@ export default function Catalog() {
 
             {/* Results */}
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-                {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-10">
+                {[...Array(24)].map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : paged.length === 0 ? (
               <EmptyState
@@ -905,9 +905,9 @@ export default function Catalog() {
             ) : (
               <>
                 {p.view === "grid" ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-10">
                     {paged.map((product, i) => (
-                      <ProductCard key={product.id} product={product} index={i} />
+                      <ProductCard key={product.id} product={product} index={i} compact />
                     ))}
                   </div>
                 ) : (
