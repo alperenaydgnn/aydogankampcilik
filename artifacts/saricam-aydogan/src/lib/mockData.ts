@@ -396,8 +396,8 @@ export const mockProducts: Product[] = [
 ];
 
 export const mockSiteSettings: SiteSettings = {
-  phone: '+90 555 123 4567',
-  whatsapp: '+905551234567',
+  phone: '+90 507 644 23 50',
+  whatsapp: '+905076442350',
   email: 'info@aydogankampcilik.com',
   address: 'Sarıçam Mah. Atatürk Cd. No:18, Sarıçam / Adana',
   map_url: 'https://maps.app.goo.gl/saricam-aydogan',

@@ -4,8 +4,8 @@
 
 export const SITE_URL  = "https://aydogankampcilik.com";
 export const SITE_NAME = "Aydoğan Kampçılık — Kamp & Balık Malzemeleri";
-export const SITE_PHONE       = "+905551234567";
-export const SITE_PHONE_HUMAN = "+90 555 123 45 67";
+export const SITE_PHONE       = "+905076442350";
+export const SITE_PHONE_HUMAN = "+90 507 644 23 50";
 export const SITE_EMAIL       = "info@aydogankampcilik.com";
 export const SITE_ADDRESS = {
   street:  "Sarıçam Mah. Atatürk Cd. No:18",

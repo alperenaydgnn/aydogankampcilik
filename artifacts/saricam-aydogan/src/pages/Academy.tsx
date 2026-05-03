@@ -125,9 +125,9 @@ const GUIDES = [
 /* YouTube video entries — video ID'leri buraya ekleyin */
 const VIDEOS: { id: string; title: string; desc: string; thumb?: string }[] = [
   {
-    id: "dQw4w9WgXcQ",
-    title: "Çadır Kurma — Adım Adım",
-    desc: "Tunnel çadır nasıl kurulur, kazık ve halat düzeni.",
+    id: "tS78ICcR1aU",
+    title: "6 Kişilik Manuel Çadır Kurulumu",
+    desc: "Manuel çadır nasıl kurulur, kazık ve halat düzeni.",
   },
   {
     id: "dQw4w9WgXcQ",

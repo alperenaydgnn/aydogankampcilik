@@ -1,6 +1,6 @@
 import { useSiteSettings } from "./useSiteSettings";
 
-const DEFAULT_NUMBER = "905551112233";
+const DEFAULT_NUMBER = "905076442350";
 const SITE_URL = "https://aydogankampcilik.com";
 
 export function getWhatsAppNumberStatic(): string {
