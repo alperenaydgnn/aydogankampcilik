@@ -104,7 +104,13 @@ export type FunnelEventType =
   | 'compare_share'
   | 'search_open'
   | 'search_query'
-  | 'search_inquiry';
+  | 'search_inquiry'
+  | 'whatsapp_click'
+  | 'push_optin'
+  | 'push_optout'
+  | 'pwa_install_shown'
+  | 'pwa_install_accepted'
+  | 'pwa_install_dismissed';
 
 export interface FunnelEventData {
   event: FunnelEventType;

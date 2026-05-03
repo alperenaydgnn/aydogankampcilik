@@ -40,6 +40,8 @@ import { CartToast } from "@/components/CartToast";
 import { CheckoutWizard } from "@/components/CheckoutWizard";
 import { CallbackFab } from "@/components/CallbackFab";
 import { ExitIntentModal } from "@/components/ExitIntentModal";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { InstallPrompt } from "@/components/InstallPrompt";
 
 const AdminLayout = lazy(() => import("@/admin/components/AdminLayout").then(m => ({ default: m.AdminLayout })));
 const AdminLogin = lazy(() => import("@/admin/pages/AdminLogin"));
@@ -154,17 +156,21 @@ function StoreFront() {
       <ScrollToTop />
       <RouteProgress />
       <Header />
-      <main id="main-content" tabIndex={-1} className="flex-grow">
+      <main id="main-content" tabIndex={-1} className="flex-grow pb-16 md:pb-0">
         <AnimatedRoutes />
       </main>
       <Footer />
-      <WhatsAppFab />
+      <div className="hidden md:block">
+        <WhatsAppFab />
+      </div>
       <CallbackFab />
       <CartDrawer />
       <CheckoutWizard />
       <CartToast />
       <ExitIntentModal />
       <CompareBar />
+      <MobileBottomNav />
+      <InstallPrompt />
     </div>
   );
 }

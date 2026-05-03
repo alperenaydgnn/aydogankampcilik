@@ -29,6 +29,7 @@ import {
 } from "@/lib/search";
 import { useRecentlyViewed } from "@/lib/recentlyViewed";
 import { PineTrail } from "@/components/BrandIllustration";
+import { NotificationOptIn } from "@/components/NotificationOptIn";
 
 const PRICE_SLIDER_MIN = 0;
 const PRICE_SLIDER_MAX = 10000;
@@ -1169,6 +1170,9 @@ export default function Catalog() {
                 />
               </div>
             )}
+
+            {/* Push notification opt-in */}
+            <NotificationOptIn className="mb-12" source="catalog" />
 
             {/* Toolbar — minimal */}
             <div className="flex flex-wrap items-baseline justify-between gap-4 mb-12 pb-6 border-b border-foreground/15">

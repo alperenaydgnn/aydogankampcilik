@@ -11,6 +11,7 @@ import { Product, Category, StockStatus, formatPriceLabel } from "@/lib/mockData
 import { SEO } from "@/lib/seo";
 import { buildBreadcrumbSchema, SITE_URL, SITE_NAME, SITE_PHONE } from "@/lib/schemas";
 import { ImageGallery } from "@/components/ImageGallery";
+import { ProductReviews } from "@/components/ProductReviews";
 import { ProductCard } from "@/components/ProductCard";
 import { RecommendationStrip } from "@/components/RecommendationStrip";
 import { WhatsAppButton, OutOfStockButton } from "@/components/WhatsAppButton";
@@ -790,6 +791,13 @@ export default function ProductDetail() {
               />
               <FAQAccordion items={faqs} />
             </motion.section>
+
+            {/* Customer reviews + photo gallery */}
+            <ProductReviews
+              productSlug={product.slug}
+              productImages={product.images}
+              productName={product.name}
+            />
 
             {/* Cross-sell strips */}
             {crossSell.length > 0 && (

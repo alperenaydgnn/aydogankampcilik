@@ -14,6 +14,8 @@ import { useWishlist } from "@/lib/wishlist";
 import { useCompare, COMPARE_MAX } from "@/lib/compare";
 import { trackEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+import { haptics } from "@/lib/haptics";
+import { SwipeableProductCard } from "@/components/SwipeableProductCard";
 
 function CardOverlayActions({ product }: { product: Product }) {
   const wishlist = useWishlist();
@@ -24,15 +26,18 @@ function CardOverlayActions({ product }: { product: Product }) {
   const onLike = (e: React.MouseEvent) => {
     e.preventDefault(); e.stopPropagation();
     const added = wishlist.toggle(product);
+    haptics.tap();
     trackEvent({ event: added ? "wishlist_add" : "wishlist_remove", source: "product_card", product_id: product.id, product_name: product.name });
   };
   const onCompare = (e: React.MouseEvent) => {
     e.preventDefault(); e.stopPropagation();
     const r = compare.toggle(product);
     if (r.reason === "max") {
+      haptics.warn();
       trackEvent({ event: "compare_limit", source: "product_card", product_id: product.id });
       return;
     }
+    haptics.tap();
     trackEvent({ event: r.added ? "compare_add" : "compare_remove", source: "product_card", product_id: product.id, product_name: product.name });
   };
 
@@ -89,6 +94,7 @@ function AddToCartPill({ product, category, compact, fullWidth }: {
       category_name: category?.name,
     });
     setAdded(true);
+    haptics.success();
     setTimeout(() => setAdded(false), 1400);
   };
   return (
@@ -173,6 +179,7 @@ export function ProductCard({ product, index = 0, compact = false }: { product: 
     : `Merhaba! 👋\n\n📦 *${product.name}* ürünü hakkında bilgi almak istiyorum.\n\nStok teyidi alabilir miyim?`;
 
   return (
+    <SwipeableProductCard product={product}>
     <motion.article
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -345,5 +352,6 @@ export function ProductCard({ product, index = 0, compact = false }: { product: 
         </div>
       </motion.div>
     </motion.article>
+    </SwipeableProductCard>
   );
 }

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Çevrimdışı — Sarıçam Aydoğan</title>
+  <style>
+    :root { color-scheme: light; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      background: #f3ede2;
+      color: #1b4332;
+      font-family: ui-serif, Georgia, "Times New Roman", serif;
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .card { max-width: 28rem; text-align: center; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .65rem; font-weight: 700; letter-spacing: .22em;
+      text-transform: uppercase; color: #b97804; margin-bottom: 1rem;
+    }
+    .eyebrow::before { content: ""; width: 24px; height: 1px; background: #1b4332; opacity: .4; }
+    h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.05; margin: 0 0 1rem; font-weight: 400; }
+    h1 em { color: #e09e07; font-style: italic; font-weight: 300; }
+    p { font-size: 1rem; line-height: 1.6; opacity: .7; margin: 0 0 2rem; font-weight: 300; }
+    a {
+      display: inline-block; font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .7rem; font-weight: 700; letter-spacing: .2em;
+      text-transform: uppercase; color: #1b4332; text-decoration: none;
+      border-bottom: 1px solid currentColor; padding-bottom: .25rem;
+    }
+    svg { display: block; margin: 0 auto 2rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden>
+      <circle cx="60" cy="60" r="48" fill="none" stroke="#1b4332" stroke-width="1.6" opacity=".25" stroke-dasharray="2 4"/>
+      <polygon points="60,28 38,62 82,62" fill="#1b4332"/>
+      <polygon points="60,46 32,86 88,86" fill="#1b4332"/>
+      <rect x="55" y="86" width="10" height="14" fill="#e09e07"/>
+    </svg>
+    <span class="eyebrow">Çevrimdışı</span>
+    <h1>Bağlantı <em>yok.</em></h1>
+    <p>İnternet bağlantınızı kontrol edin. Daha önce ziyaret ettiğiniz sayfalar hâlâ erişilebilir.</p>
+    <a href="/">Ana Sayfaya Dön</a>
+  </div>
+</body>
+</html>
