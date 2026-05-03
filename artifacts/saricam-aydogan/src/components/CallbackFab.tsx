@@ -78,7 +78,7 @@ export function CallbackFab() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -30 }}
             transition={{ type: "spring", stiffness: 220, damping: 22 }}
-            className="fixed bottom-6 left-6 z-[60] flex items-center gap-2"
+            className="fixed bottom-24 right-6 z-[60] flex items-center gap-2"
           >
             <button
               onClick={() => { setOpen(true); trackEvent({ event: "callback_open", source: "callback_fab" }); }}

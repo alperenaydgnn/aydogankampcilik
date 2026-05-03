@@ -7,6 +7,7 @@ import {
   AlertTriangle, MessageCircle, ShoppingBag,
 } from "lucide-react";
 import { useCart } from "@/lib/cart";
+import { trackEvent } from "@/lib/analytics";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { getCategories, getProducts } from "@/lib/data";
@@ -224,7 +225,19 @@ function ProductRow({ product, index, categoryName }: {
             {!isOOS && (
               <>
                 <button
-                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); add(product, 1); }}
+                  onClick={(e) => {
+                    e.stopPropagation(); e.preventDefault();
+                    add(product, 1);
+                    trackEvent({
+                      event: "cart_add",
+                      source: "product_row",
+                      product_id: product.id,
+                      product_name: product.name,
+                      product_slug: product.slug,
+                      price_numeric: product.price_numeric ?? undefined,
+                      category_name: categoryName,
+                    });
+                  }}
                   className="inline-flex items-center gap-1.5 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-secondary border-b border-secondary/40 hover:border-secondary pb-1 transition"
                 >
                   Sepete Ekle <ShoppingBag className="w-3 h-3" />

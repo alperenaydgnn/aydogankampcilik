@@ -21,6 +21,7 @@ interface CheckoutForm {
   phone: string;
   delivery: DeliveryMethod;
   city: string;
+  district: string;
   address: string;
   payment: PaymentMethod;
   note: string;
@@ -43,7 +44,7 @@ export function CheckoutWizard() {
   const buildWA = useBuildWhatsAppLink();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<CheckoutForm>({
-    name: "", phone: "", delivery: "kargo", city: "", address: "", payment: "havale", note: "",
+    name: "", phone: "", delivery: "kargo", city: "", district: "", address: "", payment: "havale", note: "",
   });
 
   // Hydrate form from localStorage
@@ -72,15 +73,18 @@ export function CheckoutWizard() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
+  useEffect(() => {
+    if (open && items.length === 0) onClose();
+  }, [open, items.length, onClose]);
+
   if (items.length === 0 && open) {
-    onClose();
     return null;
   }
 
   const canNext = (() => {
     if (step === 0) return items.length > 0;
     if (step === 1) return form.name.trim().length >= 2 && /^[0-9+\s()-]{10,}$/.test(form.phone.trim());
-    if (step === 2) return form.delivery === "magaza" || (form.city.trim().length >= 2 && form.address.trim().length >= 5);
+    if (step === 2) return form.delivery === "magaza" || (form.city.trim().length >= 2 && form.district.trim().length >= 2 && form.address.trim().length >= 5);
     if (step === 3) return !!form.payment;
     return true;
   })();
@@ -121,6 +125,7 @@ export function CheckoutWizard() {
     } else {
       lines.push("Kargo ile teslimat istiyorum.");
       lines.push(`Şehir: ${form.city}`);
+      lines.push(`İlçe: ${form.district}`);
       lines.push(`Adres: ${form.address}`);
     }
     lines.push("", `*💳 Ödeme Tercihi: ${PAYMENT_LABELS[form.payment].label}*`);
@@ -318,15 +323,26 @@ export function CheckoutWizard() {
 
                     {form.delivery === "kargo" && (
                       <>
-                        <Field label="Şehir" required>
-                          <input
-                            type="text"
-                            value={form.city}
-                            onChange={e => update("city", e.target.value)}
-                            placeholder="Ör. Trabzon"
-                            className="checkout-input"
-                          />
-                        </Field>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Field label="Şehir" required>
+                            <input
+                              type="text"
+                              value={form.city}
+                              onChange={e => update("city", e.target.value)}
+                              placeholder="Ör. Trabzon"
+                              className="checkout-input"
+                            />
+                          </Field>
+                          <Field label="İlçe" required>
+                            <input
+                              type="text"
+                              value={form.district}
+                              onChange={e => update("district", e.target.value)}
+                              placeholder="Ör. Akçaabat"
+                              className="checkout-input"
+                            />
+                          </Field>
+                        </div>
                         <Field label="Açık Adres" required>
                           <textarea
                             value={form.address}

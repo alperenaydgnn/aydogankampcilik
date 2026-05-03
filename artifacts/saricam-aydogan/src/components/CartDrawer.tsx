@@ -9,7 +9,7 @@ import { trackEvent } from "@/lib/analytics";
 
 export function CartDrawer() {
   const { isOpen, close, items, setQty, remove, subtotal, combo, total, count, hasNumericPrices, clear, openCheckout } = useCart();
-  const panelRef = useRef<HTMLElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -38,9 +38,9 @@ export function CartDrawer() {
             className="fixed inset-0 z-[70] bg-foreground/40 backdrop-blur-[2px]"
             aria-hidden
           />
-          <motion.aside
+          <motion.div
             key="panel"
-            ref={panelRef as any}
+            ref={panelRef}
             tabIndex={-1}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -204,7 +204,7 @@ export function CartDrawer() {
                 </button>
               </footer>
             )}
-          </motion.aside>
+          </motion.div>
         </>
       )}
     </AnimatePresence>
