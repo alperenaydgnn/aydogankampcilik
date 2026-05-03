@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, ChevronLeft, ChevronRight, ShoppingBag, User, Truck, Send } from "lucide-react";
+import { X, Check, ChevronLeft, ChevronRight, ShoppingBag, User, Truck, CreditCard, Send } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatPriceLabel } from "@/lib/mockData";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
@@ -8,6 +8,13 @@ import { trackEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 type DeliveryMethod = "kargo" | "magaza";
+type PaymentMethod = "havale" | "kapida" | "kart";
+
+const PAYMENT_LABELS: Record<PaymentMethod, { label: string; hint: string }> = {
+  havale: { label: "Havale / EFT",       hint: "Sipariş onayında IBAN paylaşılır" },
+  kapida: { label: "Kapıda Ödeme",       hint: "Nakit veya kart ile teslimde" },
+  kart:   { label: "Kredi Kartı (Link)", hint: "WhatsApp'tan güvenli ödeme linki" },
+};
 
 interface CheckoutForm {
   name: string;
@@ -15,6 +22,7 @@ interface CheckoutForm {
   delivery: DeliveryMethod;
   city: string;
   address: string;
+  payment: PaymentMethod;
   note: string;
 }
 
@@ -22,17 +30,20 @@ const STEPS = [
   { key: "review",   label: "Sepet",     icon: ShoppingBag },
   { key: "contact",  label: "İletişim",  icon: User },
   { key: "delivery", label: "Teslimat",  icon: Truck },
+  { key: "payment",  label: "Ödeme",     icon: CreditCard },
   { key: "confirm",  label: "Onay",      icon: Send },
 ] as const;
 
 const FORM_STORAGE = "saricam-checkout-form-v1";
 
-export function CheckoutWizard({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { items, subtotal, combo, total, hasNumericPrices, clear, count } = useCart();
+export function CheckoutWizard() {
+  const { items, subtotal, combo, total, hasNumericPrices, clear, count, isCheckoutOpen, closeCheckout } = useCart();
+  const open = isCheckoutOpen;
+  const onClose = closeCheckout;
   const buildWA = useBuildWhatsAppLink();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<CheckoutForm>({
-    name: "", phone: "", delivery: "kargo", city: "", address: "", note: "",
+    name: "", phone: "", delivery: "kargo", city: "", address: "", payment: "havale", note: "",
   });
 
   // Hydrate form from localStorage
@@ -62,6 +73,7 @@ export function CheckoutWizard({ open, onClose }: { open: boolean; onClose: () =
     if (step === 0) return items.length > 0;
     if (step === 1) return form.name.trim().length >= 2 && /^[0-9+\s()-]{10,}$/.test(form.phone.trim());
     if (step === 2) return form.delivery === "magaza" || (form.city.trim().length >= 2 && form.address.trim().length >= 5);
+    if (step === 3) return !!form.payment;
     return true;
   })();
 
@@ -103,6 +115,7 @@ export function CheckoutWizard({ open, onClose }: { open: boolean; onClose: () =
       lines.push(`Şehir: ${form.city}`);
       lines.push(`Adres: ${form.address}`);
     }
+    lines.push("", `*💳 Ödeme Tercihi: ${PAYMENT_LABELS[form.payment].label}*`);
     if (form.note.trim()) {
       lines.push("", "*📝 Not:*");
       lines.push(form.note.trim());
@@ -121,6 +134,7 @@ export function CheckoutWizard({ open, onClose }: { open: boolean; onClose: () =
       subtotal,
       total,
       delivery: form.delivery,
+      payment: form.payment,
       has_combo: !!combo,
     });
     window.open(url, "_blank", "noopener,noreferrer");
@@ -330,6 +344,44 @@ export function CheckoutWizard({ open, onClose }: { open: boolean; onClose: () =
                 )}
 
                 {step === 3 && (
+                  <div className="space-y-3">
+                    <p className="text-xs text-foreground/55 font-light leading-relaxed mb-2">
+                      Tercih ettiğiniz ödeme yöntemini seçin. Detaylar WhatsApp üzerinden iletilir.
+                    </p>
+                    <div className="grid grid-cols-1 gap-2.5">
+                      {(Object.keys(PAYMENT_LABELS) as PaymentMethod[]).map(m => {
+                        const cfg = PAYMENT_LABELS[m];
+                        const active = form.payment === m;
+                        return (
+                          <button
+                            key={m}
+                            type="button"
+                            onClick={() => update("payment", m)}
+                            className={cn(
+                              "flex items-center justify-between gap-3 border p-4 text-left transition",
+                              active
+                                ? "border-secondary bg-secondary/5"
+                                : "border-foreground/15 hover:border-foreground/30"
+                            )}
+                          >
+                            <div>
+                              <p className="font-serif font-light text-base text-primary">{cfg.label}</p>
+                              <p className="text-xs text-foreground/55 font-light mt-0.5">{cfg.hint}</p>
+                            </div>
+                            <span className={cn(
+                              "w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center",
+                              active ? "border-secondary" : "border-foreground/25"
+                            )}>
+                              {active && <span className="w-2 h-2 rounded-full bg-secondary" />}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {step === 4 && (
                   <div className="space-y-4 text-sm">
                     <p className="text-foreground/65 font-light leading-relaxed">
                       Aşağıdaki sipariş bilgileriniz <span className="font-medium text-secondary">WhatsApp üzerinden</span> ekibimize iletilecek. Mesajı görüp düzenleyebilirsiniz; "Gönder" dediğinizde WhatsApp açılır.

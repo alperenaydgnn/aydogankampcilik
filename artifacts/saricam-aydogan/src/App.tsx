@@ -28,6 +28,8 @@ import { AdminAuthProvider, useAdminAuth } from "@/admin/context/AdminAuthContex
 import { SiteSettingsProvider } from "@/lib/SiteSettingsContext";
 import { CartProvider } from "@/lib/cart";
 import { CartDrawer } from "@/components/CartDrawer";
+import { CartToast } from "@/components/CartToast";
+import { CheckoutWizard } from "@/components/CheckoutWizard";
 import { CallbackFab } from "@/components/CallbackFab";
 import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { AdminLayout } from "@/admin/components/AdminLayout";
@@ -138,6 +140,8 @@ function StoreFront() {
       <WhatsAppFab />
       <CallbackFab />
       <CartDrawer />
+      <CheckoutWizard />
+      <CartToast />
       <ExitIntentModal />
     </div>
   );

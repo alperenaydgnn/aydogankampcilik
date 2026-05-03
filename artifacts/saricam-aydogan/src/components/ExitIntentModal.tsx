@@ -8,7 +8,7 @@ import { formatPriceLabel } from "@/lib/mockData";
 const SHOWN_KEY = "saricam-exit-intent-shown-v1";
 
 export function ExitIntentModal() {
-  const { items, count, total, hasNumericPrices, open: openCart } = useCart();
+  const { items, count, total, hasNumericPrices, openCheckout } = useCart();
   const [open, setOpen] = useState(false);
   const [armed, setArmed] = useState(false);
 
@@ -52,7 +52,7 @@ export function ExitIntentModal() {
   const goCheckout = () => {
     trackEvent({ event: "exit_intent_cta", source: "exit_intent_modal", item_count: count });
     setOpen(false);
-    openCart();
+    openCheckout();
   };
 
   return (
@@ -109,7 +109,7 @@ export function ExitIntentModal() {
                     onClick={goCheckout}
                     className="btn-cta-amber btn-cta inline-flex items-center justify-center gap-2 !text-[0.7rem] !font-bold !uppercase !tracking-[0.2em]"
                   >
-                    Siparişi Tamamla <ArrowRight className="w-3.5 h-3.5" />
+                    Şimdi Gönder <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={close}

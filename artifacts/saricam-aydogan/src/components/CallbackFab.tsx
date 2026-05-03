@@ -7,11 +7,20 @@ import { cn } from "@/lib/utils";
 
 const DISMISS_KEY = "saricam-callback-dismissed";
 
+const TOPICS = [
+  "Genel bilgi",
+  "Ürün hakkında",
+  "Stok / kargo",
+  "Toplu sipariş",
+  "Diğer",
+] as const;
+
 export function CallbackFab() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [time, setTime] = useState("Hemen");
+  const [topic, setTopic] = useState<string>(TOPICS[0]);
+  const [productNote, setProductNote] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [hidden, setHidden] = useState(true);
   const buildWA = useBuildWhatsAppLink();
@@ -26,22 +35,24 @@ export function CallbackFab() {
 
   const submit = () => {
     if (!valid) return;
-    const msg = [
+    const lines: string[] = [
       "Merhaba! 👋 Geri arama talep ediyorum.",
       "",
       `Ad Soyad: ${name.trim()}`,
       `Telefon: ${phone.trim()}`,
-      `Tercih edilen zaman: ${time}`,
-      "",
-      "Lütfen müsait olduğunuzda iletişime geçer misiniz? Teşekkürler.",
-    ].join("\n");
-    trackEvent({ event: "callback_request", source: "callback_fab", time_window: time });
-    window.open(buildWA(msg), "_blank", "noopener,noreferrer");
+      `Konu: ${topic}`,
+    ];
+    if (productNote.trim()) {
+      lines.push(`Ürün / Detay: ${productNote.trim()}`);
+    }
+    lines.push("", "Lütfen müsait olduğunuzda iletişime geçer misiniz? Teşekkürler.");
+    trackEvent({ event: "callback_request", source: "callback_fab", time_window: topic });
+    window.open(buildWA(lines.join("\n")), "_blank", "noopener,noreferrer");
     setSubmitted(true);
     setTimeout(() => {
       setOpen(false);
       setSubmitted(false);
-      setName(""); setPhone(""); setTime("Hemen");
+      setName(""); setPhone(""); setTopic(TOPICS[0]); setProductNote("");
     }, 1800);
   };
 
@@ -54,7 +65,6 @@ export function CallbackFab() {
 
   return (
     <>
-      {/* Floating chip — bottom-left */}
       <AnimatePresence>
         {!open && !hidden && (
           <motion.div
@@ -85,7 +95,6 @@ export function CallbackFab() {
         )}
       </AnimatePresence>
 
-      {/* Modal */}
       <AnimatePresence>
         {open && (
           <>
@@ -131,29 +140,23 @@ export function CallbackFab() {
                       </p>
                       <label className="block">
                         <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-foreground/70 mb-1.5 block">Adınız</span>
-                        <input
-                          type="text" value={name} onChange={e => setName(e.target.value)}
-                          placeholder="Ör. Ahmet Yılmaz" autoFocus
-                          className="checkout-input"
-                        />
+                        <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Ör. Ahmet Yılmaz" autoFocus className="checkout-input" />
                       </label>
                       <label className="block">
                         <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-foreground/70 mb-1.5 block">Telefon</span>
-                        <input
-                          type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-                          placeholder="0555 123 45 67"
-                          className="checkout-input"
-                        />
+                        <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="0555 123 45 67" className="checkout-input" />
                       </label>
                       <label className="block">
-                        <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-foreground/70 mb-1.5 block">Tercih Edilen Zaman</span>
-                        <select value={time} onChange={e => setTime(e.target.value)} className="checkout-input">
-                          <option>Hemen</option>
-                          <option>Bugün öğleden sonra</option>
-                          <option>Yarın sabah</option>
-                          <option>Yarın öğleden sonra</option>
-                          <option>Hafta sonu</option>
+                        <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-foreground/70 mb-1.5 block">Konu</span>
+                        <select value={topic} onChange={e => setTopic(e.target.value)} className="checkout-input">
+                          {TOPICS.map(t => <option key={t}>{t}</option>)}
                         </select>
+                      </label>
+                      <label className="block">
+                        <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-foreground/70 mb-1.5 block">
+                          Ürün / Detay <span className="text-foreground/45 font-medium">(opsiyonel)</span>
+                        </span>
+                        <input type="text" value={productNote} onChange={e => setProductNote(e.target.value)} placeholder="Hangi ürün hakkında? Ek bilgi?" className="checkout-input" />
                       </label>
                       <button
                         onClick={submit}

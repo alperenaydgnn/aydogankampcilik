@@ -89,7 +89,7 @@ function StockBadge({ status, stock }: { status: StockStatus; stock?: number }) 
       ? `Son ${stock} adet`
       : cfg.label;
   return (
-    <span className={cn("inline-flex items-center gap-1 text-[0.65rem] font-bold uppercase tracking-[0.15em]", cfg.cls)}>
+    <span className={cn("inline-flex items-center gap-1 text-[0.65rem] font-bold uppercase tracking-[0.15em]", cfg.cls)} aria-label={label}>
       {Icon && <Icon className="w-2.5 h-2.5" />}
       {label}
     </span>
@@ -231,7 +231,7 @@ export function ProductCard({ product, index = 0, compact = false }: { product: 
                 Stokta
               </span>
             ))}
-            {compact && product.stock_status === "low_stock" && (
+            {compact && product.stock_status && product.stock_status !== "in_stock" && (
               <StockBadge status={product.stock_status} stock={product.stock} />
             )}
           </div>

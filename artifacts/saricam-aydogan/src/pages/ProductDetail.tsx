@@ -3,16 +3,19 @@ import { useParams, Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import {
-  ChevronDown, ChevronRight, Sparkles, Star,
+  ChevronDown, ChevronRight, Sparkles, Star, ShoppingBag, Plus, Check,
 } from "lucide-react";
-import { getProductBySlug, getRelatedProducts } from "@/lib/data";
-import { Product, Category, StockStatus } from "@/lib/mockData";
+import { getProductBySlug, getRelatedProducts, getProducts } from "@/lib/data";
+import { Product, Category, StockStatus, formatPriceLabel } from "@/lib/mockData";
 import { SEO } from "@/lib/seo";
 import { buildBreadcrumbSchema, SITE_URL, SITE_NAME, SITE_PHONE } from "@/lib/schemas";
 import { ImageGallery } from "@/components/ImageGallery";
 import { ProductCard } from "@/components/ProductCard";
 import { WhatsAppButton, OutOfStockButton } from "@/components/WhatsAppButton";
 import { buildProductMessage, buildStockNotifyMessage } from "@/lib/whatsapp";
+import { useCart } from "@/lib/cart";
+import { COMBOS } from "@/lib/combos";
+import { trackEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import NotFound from "./not-found";
 
@@ -65,10 +68,101 @@ function getFaqs(categoryId: string): FAQ[] {
 
 /* ── Stock config — editorial hairline ───────────────── */
 const stockConfig: Record<StockStatus, { label: string; tone: string; dot: string }> = {
-  in_stock:    { label: "Stokta mevcut",        tone: "text-emerald-700", dot: "bg-emerald-600" },
-  low_stock:   { label: "Son stoklar",          tone: "text-amber-700",   dot: "bg-amber-500" },
-  out_of_stock:{ label: "Şu an stokta yok",      tone: "text-rose-700",    dot: "bg-rose-500" },
+  in_stock:    { label: "Stokta mevcut",   tone: "text-emerald-700", dot: "bg-emerald-600" },
+  low_stock:   { label: "Son stoklar",     tone: "text-amber-700",   dot: "bg-amber-500" },
+  out_of_stock:{ label: "Tükendi",         tone: "text-rose-700",    dot: "bg-rose-500" },
 };
+
+function getStockLabel(status: StockStatus, stock?: number): string {
+  if (status === "low_stock" && stock && stock > 0 && stock <= 10) return `Son ${stock} adet`;
+  return stockConfig[status].label;
+}
+
+/* ── Product-detail combo card ──────────────────────── */
+function ProductDetailComboCard({ product }: { product: Product }) {
+  const { add } = useCart();
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [added, setAdded] = useState(false);
+
+  useEffect(() => {
+    getProducts({ limit: 50 }).then(setAllProducts);
+  }, []);
+
+  const matchingCombo = COMBOS.find(c => c.productIds.includes(product.id));
+  if (!matchingCombo) return null;
+
+  const items = matchingCombo.productIds
+    .map(id => allProducts.find(p => p.id === id))
+    .filter(Boolean) as Product[];
+
+  if (items.length !== matchingCombo.productIds.length) return null;
+  if (!items.every(p => p.price_numeric)) return null;
+
+  const subtotal = items.reduce((s, p) => s + (p.price_numeric ?? 0), 0);
+  const discountPct = matchingCombo.discountPct ?? 0;
+  const discount = matchingCombo.discountAmount ?? Math.round(subtotal * (discountPct / 100));
+  const total = subtotal - discount;
+  const others = items.filter(p => p.id !== product.id);
+
+  const addAll = () => {
+    items.forEach(p => add(p, 1));
+    trackEvent({
+      event: "combo_add",
+      source: "product_detail_combo_card",
+      combo_id: matchingCombo.id,
+      item_count: items.length,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
+
+  return (
+    <div className="border-t border-foreground/15 pt-8">
+      <div className="flex items-center gap-2 mb-3">
+        <Sparkles className="w-3.5 h-3.5 text-secondary" strokeWidth={2} />
+        <span className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-secondary">
+          Birlikte Al, %{discountPct} İndirim
+        </span>
+      </div>
+      <h3 className="font-serif font-light text-2xl text-primary tracking-tight mb-4">
+        {matchingCombo.name}
+      </h3>
+      <p className="text-sm text-foreground/65 font-light leading-relaxed mb-5">
+        Bu ürünle birlikte:{" "}
+        <span className="text-foreground/85">
+          {others.map(p => p.name).join(", ")}
+        </span>
+      </p>
+      <div className="flex items-baseline justify-between border-y border-foreground/10 py-4 mb-5">
+        <div>
+          <p className="text-[0.65rem] uppercase tracking-[0.2em] text-foreground/55 font-semibold mb-1">Toplam</p>
+          <div className="flex items-baseline gap-3">
+            <span className="font-serif font-light text-2xl text-primary tabular-nums">{formatPriceLabel(total)}</span>
+            <span className="text-sm text-foreground/40 line-through tabular-nums">{formatPriceLabel(subtotal)}</span>
+          </div>
+        </div>
+        <span className="text-xs font-bold uppercase tracking-[0.2em] text-secondary bg-secondary/10 px-3 py-1.5">
+          −{formatPriceLabel(discount)}
+        </span>
+      </div>
+      <button
+        onClick={addAll}
+        className={cn(
+          "w-full inline-flex items-center justify-center gap-2 px-5 py-3 border-2 transition text-xs font-bold uppercase tracking-[0.2em]",
+          added
+            ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+            : "border-secondary text-secondary hover:bg-secondary hover:text-white"
+        )}
+      >
+        {added ? (
+          <><Check className="w-4 h-4" strokeWidth={2.4} /> Kombo Eklendi</>
+        ) : (
+          <><Plus className="w-4 h-4" strokeWidth={2.2} /> Komboyu Sepete Ekle</>
+        )}
+      </button>
+    </div>
+  );
+}
 
 /* ── FAQ accordion — editorial hairline ──────────────── */
 function FAQAccordion({ items }: { items: FAQ[] }) {
@@ -203,9 +297,25 @@ export default function ProductDetail() {
   const { product, category } = data;
   const stockStatus = product.stock_status ?? "in_stock";
   const stock = stockConfig[stockStatus];
+  const stockLabel = getStockLabel(stockStatus, product.stock);
   const isOOS = stockStatus === "out_of_stock";
   const faqs = getFaqs(product.category_id);
   const productUrl = `${SITE_URL}/urun/${product.slug}`;
+  const { add: addToCart } = useCart();
+  const [justAdded, setJustAdded] = useState(false);
+
+  const handleAdd = () => {
+    addToCart(product, 1);
+    trackEvent({
+      event: "cart_add",
+      source: "product_detail",
+      product_id: product.id,
+      product_name: product.name,
+      price_numeric: product.price_numeric ?? undefined,
+    });
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 2000);
+  };
 
   const waMessage = buildProductMessage(product, category);
 
@@ -292,23 +402,36 @@ export default function ProductDetail() {
                 </p>
               </div>
               {!isOOS ? (
-                <WhatsAppButton
-                  message={waMessage}
-                  tracking={{
-                    event: "product_order",
-                    source: "product_detail_sticky",
-                    product_id: product.id,
-                    product_name: product.name,
-                    product_slug: product.slug,
-                    category_id: product.category_id,
-                    category_name: category.name,
-                    price_numeric: product.price_numeric ?? undefined,
-                  }}
-                  size="sm"
-                  rounded="pill"
-                  label="Sipariş Ver"
-                  className="shrink-0"
-                />
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={handleAdd}
+                    aria-label={justAdded ? "Sepete eklendi" : "Sepete ekle"}
+                    className={cn(
+                      "h-10 w-10 rounded-full border-2 flex items-center justify-center transition",
+                      justAdded
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-600"
+                        : "border-foreground/25 text-foreground hover:border-secondary hover:text-secondary"
+                    )}
+                  >
+                    {justAdded ? <Check className="w-4 h-4" strokeWidth={2.4} /> : <ShoppingBag className="w-4 h-4" strokeWidth={1.75} />}
+                  </button>
+                  <WhatsAppButton
+                    message={waMessage}
+                    tracking={{
+                      event: "product_order",
+                      source: "product_detail_sticky",
+                      product_id: product.id,
+                      product_name: product.name,
+                      product_slug: product.slug,
+                      category_id: product.category_id,
+                      category_name: category.name,
+                      price_numeric: product.price_numeric ?? undefined,
+                    }}
+                    size="sm"
+                    rounded="pill"
+                    label="Sipariş Ver"
+                  />
+                </div>
               ) : (
                 <span className="text-xs uppercase tracking-[0.18em] font-semibold text-rose-700 px-4 py-2 border border-rose-700/30">
                   Tükendi
@@ -392,7 +515,7 @@ export default function ProductDetail() {
                 {/* Stock indicator — hairline */}
                 <div className={cn("flex items-center gap-2.5 text-xs uppercase tracking-[0.18em] font-semibold", stock.tone)}>
                   <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", stock.dot, stockStatus === "in_stock" && "animate-pulse")} />
-                  {stock.label}
+                  {stockLabel}
                 </div>
               </div>
 
@@ -401,10 +524,26 @@ export default function ProductDetail() {
                 {product.description}
               </p>
 
-              {/* WhatsApp CTA — bare editorial */}
+              {/* WhatsApp + Cart CTA — bare editorial */}
               <div ref={mainCTARef} className="space-y-4">
                 {!isOOS ? (
                   <>
+                    <button
+                      onClick={handleAdd}
+                      className={cn(
+                        "w-full inline-flex items-center justify-center gap-2.5 px-6 py-4 border-2 transition text-sm font-bold uppercase tracking-[0.2em]",
+                        justAdded
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                          : "border-foreground text-foreground hover:bg-foreground hover:text-background"
+                      )}
+                      aria-live="polite"
+                    >
+                      {justAdded ? (
+                        <><Check className="w-4 h-4" strokeWidth={2.4} /> Sepete Eklendi</>
+                      ) : (
+                        <><Plus className="w-4 h-4" strokeWidth={2.2} /> Sepete Ekle</>
+                      )}
+                    </button>
                     <WhatsAppButton
                       message={waMessage}
                       tracking={{
@@ -421,7 +560,7 @@ export default function ProductDetail() {
                       fullWidth
                     />
                     <p className="text-xs uppercase tracking-[0.18em] text-foreground/55 leading-relaxed text-center">
-                      WhatsApp üzerinden stok teyidi alın · Güvenle sipariş verin
+                      Sepete ekleyin veya WhatsApp ile direkt sipariş verin
                     </p>
                   </>
                 ) : (
@@ -461,6 +600,9 @@ export default function ProductDetail() {
                   </div>
                 ))}
               </div>
+
+              {/* Combo bundle card — only when product is in a combo */}
+              <ProductDetailComboCard product={product} />
 
               {/* Specs — editorial table */}
               {product.specs && Object.keys(product.specs).length > 0 && (

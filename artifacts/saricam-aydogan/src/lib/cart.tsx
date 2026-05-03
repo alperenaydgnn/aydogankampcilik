@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState, ReactNode } from "react";
 import type { Product, StockStatus } from "./mockData";
 import { findActiveCombo, COMBOS, ComboMatch } from "./combos";
+import { trackEvent } from "./analytics";
 
 const STORAGE_KEY = "saricam-cart-v1";
 
@@ -47,22 +48,39 @@ function reducer(state: CartItem[], action: Action): CartItem[] {
   }
 }
 
+export interface AddedToast {
+  item: CartItem;
+  totalCount: number;
+  at: number;
+}
+
 interface CartContextValue {
   items: CartItem[];
   add: (product: Product, qty?: number) => void;
   remove: (id: string) => void;
   setQty: (id: string, qty: number) => void;
   clear: () => void;
+
+  // Drawer
   isOpen: boolean;
   open: () => void;
   close: () => void;
   toggle: () => void;
+
+  // Checkout wizard
+  isCheckoutOpen: boolean;
+  openCheckout: () => void;
+  closeCheckout: () => void;
+
+  // Toast for "added"
+  toast: AddedToast | null;
+  dismissToast: () => void;
+
   count: number;
   subtotal: number;
   combo: ComboMatch | null;
   total: number;
   hasNumericPrices: boolean;
-  lastAdded: CartItem | null;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -70,8 +88,9 @@ const CartContext = createContext<CartContextValue | null>(null);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, dispatch] = useReducer(reducer, []);
   const [isOpen, setIsOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
-  const [lastAdded, setLastAdded] = useState<CartItem | null>(null);
+  const [toast, setToast] = useState<AddedToast | null>(null);
 
   // Hydrate from localStorage once
   useEffect(() => {
@@ -93,6 +112,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } catch { /* ignore */ }
   }, [items, hydrated]);
 
+  // Cross-tab sync via `storage` event
+  useEffect(() => {
+    function onStorage(e: StorageEvent) {
+      if (e.key !== STORAGE_KEY || e.newValue == null) return;
+      try {
+        const parsed = JSON.parse(e.newValue);
+        if (Array.isArray(parsed)) dispatch({ type: "hydrate", items: parsed });
+      } catch { /* ignore */ }
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  // Auto-dismiss toast after 4s
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(t);
+  }, [toast]);
+
   const add = useCallback((product: Product, qty: number = 1) => {
     if (product.stock_status === "out_of_stock") return;
     const item: CartItem = {
@@ -107,25 +146,48 @@ export function CartProvider({ children }: { children: ReactNode }) {
       category_id: product.category_id,
     };
     dispatch({ type: "add", item });
-    setLastAdded({ ...item });
-    setIsOpen(true);
-  }, []);
+    // Compute next count for accurate toast (state hasn't updated yet)
+    const exists = items.find(i => i.id === item.id);
+    const nextCount = items.reduce((s, i) => s + i.qty, 0) + (exists ? qty : qty);
+    setToast({ item, totalCount: nextCount, at: Date.now() });
+  }, [items]);
 
-  const remove = useCallback((id: string) => dispatch({ type: "remove", id }), []);
+  const remove = useCallback((id: string) => {
+    const it = items.find(i => i.id === id);
+    if (it) {
+      trackEvent({
+        event: "cart_remove",
+        source: "cart",
+        product_id: it.id,
+        product_name: it.name,
+      });
+    }
+    dispatch({ type: "remove", id });
+  }, [items]);
+
   const setQty = useCallback((id: string, qty: number) => dispatch({ type: "setQty", id, qty }), []);
   const clear = useCallback(() => dispatch({ type: "clear" }), []);
   const open = useCallback(() => setIsOpen(true), []);
   const close = useCallback(() => setIsOpen(false), []);
   const toggle = useCallback(() => setIsOpen(o => !o), []);
+  const openCheckout = useCallback(() => { setIsOpen(false); setIsCheckoutOpen(true); }, []);
+  const closeCheckout = useCallback(() => setIsCheckoutOpen(false), []);
+  const dismissToast = useCallback(() => setToast(null), []);
 
   const value = useMemo<CartContextValue>(() => {
     const count = items.reduce((s, i) => s + i.qty, 0);
     const subtotal = items.reduce((s, i) => s + (i.price_numeric ? i.price_numeric * i.qty : 0), 0);
     const combo = findActiveCombo(items.map(i => i.id), COMBOS, subtotal);
     const total = Math.max(0, subtotal - (combo?.discount ?? 0));
-    const hasNumericPrices = items.every(i => !!i.price_numeric);
-    return { items, add, remove, setQty, clear, isOpen, open, close, toggle, count, subtotal, combo, total, hasNumericPrices, lastAdded };
-  }, [items, isOpen, add, remove, setQty, clear, open, close, toggle, lastAdded]);
+    const hasNumericPrices = items.length > 0 && items.every(i => !!i.price_numeric);
+    return {
+      items, add, remove, setQty, clear,
+      isOpen, open, close, toggle,
+      isCheckoutOpen, openCheckout, closeCheckout,
+      toast, dismissToast,
+      count, subtotal, combo, total, hasNumericPrices,
+    };
+  }, [items, isOpen, isCheckoutOpen, toast, add, remove, setQty, clear, open, close, toggle, openCheckout, closeCheckout, dismissToast]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

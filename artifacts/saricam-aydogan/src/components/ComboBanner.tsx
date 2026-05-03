@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 import { COMBOS } from "@/lib/combos";
@@ -10,11 +10,33 @@ import { cn } from "@/lib/utils";
 
 export function ComboBanner() {
   const [products, setProducts] = useState<Product[]>([]);
-  const { add, open } = useCart();
+  const { add } = useCart();
+  const seenRef = useRef<Set<string>>(new Set());
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     getProducts({ limit: 50 }).then(setProducts);
   }, []);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || products.length === 0) return;
+    const io = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const id = (entry.target as HTMLElement).dataset.comboId;
+          if (id && !seenRef.current.has(id)) {
+            seenRef.current.add(id);
+            trackEvent({ event: "combo_view", source: "combo_banner", combo_id: id });
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+    el.querySelectorAll<HTMLElement>("[data-combo-id]").forEach(node => io.observe(node));
+    return () => io.disconnect();
+  }, [products]);
 
   const enriched = COMBOS.map(combo => {
     const items = combo.productIds
@@ -28,7 +50,7 @@ export function ComboBanner() {
   if (enriched.length === 0) return null;
 
   return (
-    <section className="section bg-background" aria-labelledby="combo-heading">
+    <section ref={sectionRef} className="section bg-background" aria-labelledby="combo-heading">
       <div className="container mx-auto px-6 md:px-10">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12 md:mb-16">
           <div className="max-w-2xl">
@@ -46,6 +68,7 @@ export function ComboBanner() {
           {enriched.map(({ combo, items, subtotal, discounted }, i) => (
             <motion.article
               key={combo.id}
+              data-combo-id={combo.id}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
@@ -105,7 +128,6 @@ export function ComboBanner() {
                     onClick={() => {
                       items.forEach(p => add(p));
                       trackEvent({ event: "combo_add", source: "combo_banner", combo_id: combo.id, item_count: items.length });
-                      open();
                     }}
                     className={cn(
                       "inline-flex items-center gap-1.5 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-secondary border-b border-secondary/40 hover:border-secondary pb-1 transition"
