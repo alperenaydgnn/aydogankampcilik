@@ -130,27 +130,27 @@ const VIDEOS: { id: string; title: string; desc: string; thumb?: string }[] = [
     desc: "Manuel çadır nasıl kurulur, kazık ve halat düzeni.",
   },
   {
-    id: "dQw4w9WgXcQ",
+    id: "uWw_f7CQQLg",
     title: "Palomar Düğümü Nasıl Atılır?",
     desc: "En sağlam olta düğümü tekniği — 2 dakikada öğrenin.",
   },
   {
-    id: "dQw4w9WgXcQ",
+    id: "VYvwwREgLSU",
     title: "Yem Hazırlama Teknikleri",
     desc: "Solucan, mısır, ekmek hamuru — her yem için doğru kancalama.",
   },
   {
-    id: "dQw4w9WgXcQ",
+    id: "oWIQTNpZqE8",
     title: "Uyku Tulumu Seçimi",
     desc: "Sentetik mi, tüy mü? Konfor sıcaklığı nasıl okunur?",
   },
   {
-    id: "dQw4w9WgXcQ",
+    id: "DjrQfSFWot4",
     title: "Kamp Mutfağı Kurulumu",
     desc: "Taşınabilir gaz ocağı, tencere sistemi ve yakıt hesabı.",
   },
   {
-    id: "dQw4w9WgXcQ",
+    id: "VF2LZfed1B8",
     title: "Doğru Kamp Yeri Bulmak",
     desc: "Harita okuma, alan değerlendirme ve rüzgar yönü analizi.",
   },
@@ -611,9 +611,8 @@ export default function Academy() {
               <div className="flex items-start gap-3 mb-8 p-4 border border-secondary/30 bg-secondary/5">
                 <Youtube className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
                 <p className="text-sm text-foreground/70 font-light">
-                  Video kütüphanesi — kendi YouTube videolarınızı eklemek için
-                  video ID'lerini paylaşabilirsiniz. Her kart, YouTube embed
-                  olarak doğrudan yüklenir.
+                  Video kütüphanesi — Kafanıza takılan sorular için Whatsapp'tan
+                  yardım alabilirsiniz.
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
