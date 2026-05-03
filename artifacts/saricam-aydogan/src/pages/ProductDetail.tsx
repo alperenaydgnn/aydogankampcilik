@@ -236,6 +236,8 @@ export default function ProductDetail() {
   const [related, setRelated] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [showStickyCTA, setShowStickyCTA] = useState(false);
+  const { add: addToCart } = useCart();
+  const [justAdded, setJustAdded] = useState(false);
   const mainCTARef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -301,8 +303,6 @@ export default function ProductDetail() {
   const isOOS = stockStatus === "out_of_stock";
   const faqs = getFaqs(product.category_id);
   const productUrl = `${SITE_URL}/urun/${product.slug}`;
-  const { add: addToCart } = useCart();
-  const [justAdded, setJustAdded] = useState(false);
 
   const handleAdd = () => {
     addToCart(product, 1);
