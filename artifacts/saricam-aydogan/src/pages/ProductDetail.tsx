@@ -99,8 +99,8 @@ function ProductDetailComboCard({ product }: { product: Product }) {
   if (!items.every(p => p.price_numeric)) return null;
 
   const subtotal = items.reduce((s, p) => s + (p.price_numeric ?? 0), 0);
-  const discountPct = matchingCombo.discountPct ?? 0;
-  const discount = matchingCombo.discountAmount ?? Math.round(subtotal * (discountPct / 100));
+  const discountPct = matchingCombo.discountPct;
+  const discount = Math.round((subtotal * discountPct) / 100);
   const total = subtotal - discount;
   const others = items.filter(p => p.id !== product.id);
 

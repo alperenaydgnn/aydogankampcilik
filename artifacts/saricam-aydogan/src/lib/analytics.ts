@@ -95,6 +95,8 @@ export interface FunnelEventData {
   source: string;
   product_id?: string;
   product_name?: string;
+  product_slug?: string;
+  category_id?: string;
   category_name?: string;
   combo_id?: string;
   step?: string;
@@ -102,8 +104,10 @@ export interface FunnelEventData {
   subtotal?: number;
   total?: number;
   delivery?: string;
+  payment?: string;
   has_combo?: boolean;
   time_window?: string;
+  price_numeric?: number;
 }
 
 export function trackEvent(data: FunnelEventData): void {
