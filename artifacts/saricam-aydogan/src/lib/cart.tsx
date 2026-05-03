@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState, ReactNode } from "react";
 import type { Product, StockStatus } from "./mockData";
-import { findActiveCombo, COMBOS, ComboMatch } from "./combos";
+import { findActiveCombo, ComboMatch } from "./combos";
 import { trackEvent } from "./analytics";
 
 const STORAGE_KEY = "saricam-cart-v1";
@@ -177,7 +177,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const value = useMemo<CartContextValue>(() => {
     const count = items.reduce((s, i) => s + i.qty, 0);
     const subtotal = items.reduce((s, i) => s + (i.price_numeric ? i.price_numeric * i.qty : 0), 0);
-    const combo = findActiveCombo(items.map(i => i.id), COMBOS, subtotal);
+    const combo = findActiveCombo(items);
     const total = Math.max(0, subtotal - (combo?.discount ?? 0));
     const hasNumericPrices = items.length > 0 && items.every(i => !!i.price_numeric);
     return {

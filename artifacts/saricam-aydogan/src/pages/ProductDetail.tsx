@@ -88,21 +88,21 @@ function ProductDetailComboCard({ product }: { product: Product }) {
     getProducts({ limit: 50 }).then(setAllProducts);
   }, []);
 
-  const matchingCombo = COMBOS.find(c => c.productIds.includes(product.id));
+  const matchingCombo = COMBOS.find(c => c.productSlugs.includes(product.slug));
   if (!matchingCombo) return null;
 
-  const items = matchingCombo.productIds
-    .map(id => allProducts.find(p => p.id === id))
+  const items = matchingCombo.productSlugs
+    .map(slug => allProducts.find(p => p.slug === slug))
     .filter(Boolean) as Product[];
 
-  if (items.length !== matchingCombo.productIds.length) return null;
+  if (items.length !== matchingCombo.productSlugs.length) return null;
   if (!items.every(p => p.price_numeric)) return null;
 
   const subtotal = items.reduce((s, p) => s + (p.price_numeric ?? 0), 0);
   const discountPct = matchingCombo.discountPct;
   const discount = Math.round((subtotal * discountPct) / 100);
   const total = subtotal - discount;
-  const others = items.filter(p => p.id !== product.id);
+  const others = items.filter(p => p.slug !== product.slug);
 
   const addAll = () => {
     items.forEach(p => add(p, 1));

@@ -39,12 +39,12 @@ export function ComboBanner() {
   }, [products]);
 
   const enriched = COMBOS.map(combo => {
-    const items = combo.productIds
-      .map(id => products.find(p => p.id === id))
+    const items = combo.productSlugs
+      .map(slug => products.find(p => p.slug === slug))
       .filter((p): p is Product => !!p);
     const subtotal = items.reduce((s, p) => s + (p.price_numeric ?? 0), 0);
     const discounted = Math.round(subtotal * (1 - combo.discountPct / 100));
-    return { combo, items, subtotal, discounted, complete: items.length === combo.productIds.length };
+    return { combo, items, subtotal, discounted, complete: items.length === combo.productSlugs.length };
   }).filter(c => c.complete && c.subtotal > 0);
 
   if (enriched.length === 0) return null;
