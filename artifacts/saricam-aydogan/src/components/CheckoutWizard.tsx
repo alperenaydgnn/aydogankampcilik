@@ -169,6 +169,8 @@ export function CheckoutWizard() {
       has_combo: !!combo,
     });
     window.open(url, "_blank", "noopener,noreferrer");
+    try { localStorage.removeItem(FORM_STORAGE); } catch { /* ignore */ }
+    setForm({ name: "", phone: "", delivery: "kargo", city: "", district: "", address: "", payment: "havale", note: "" });
     clear();
     onClose();
   };
