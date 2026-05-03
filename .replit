@@ -39,3 +39,6 @@ externalPort = 3000
 
 [userenv.development]
 VITE_ADMIN_PASSWORD = "admin123"
+
+[nix]
+channel = "stable-25_05"

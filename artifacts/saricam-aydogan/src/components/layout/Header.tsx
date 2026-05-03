@@ -108,6 +108,8 @@ function CartButton({ onDark }: { onDark: boolean }) {
 const navLinkDefs = [
   { key: "nav.home" as const, href: "/" },
   { key: "nav.products" as const, href: "/urunler" },
+  { key: "nav.blog" as const, href: "/blog" },
+  { key: "nav.map" as const, href: "/harita" },
   { key: "nav.about" as const, href: "/hakkimizda" },
   { key: "nav.contact" as const, href: "/iletisim" },
 ];
@@ -161,7 +163,7 @@ export function Header() {
 
         {/* Left — Mobile Menu Toggle on small, Nav on desktop */}
         <nav className="hidden lg:flex items-center gap-7">
-          {navLinks.slice(0, 2).map((link) => {
+          {navLinks.slice(0, 3).map((link) => {
             const isActive = location === link.href || (link.href === "/urunler" && location.startsWith("/urunler"));
             return (
               <Link
@@ -200,7 +202,7 @@ export function Header() {
 
         {/* Right — Desktop nav + CTA */}
         <div className="hidden lg:flex items-center justify-end gap-7">
-          {navLinks.slice(2).map((link) => {
+          {navLinks.slice(3).map((link) => {
             const isActive = location === link.href;
             return (
               <Link

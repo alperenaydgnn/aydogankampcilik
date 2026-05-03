@@ -8,6 +8,8 @@ export const translations = {
     // Nav
     "nav.home": "Anasayfa",
     "nav.products": "Ürünler",
+    "nav.blog": "Blog",
+    "nav.map": "Harita",
     "nav.about": "Hakkımızda",
     "nav.contact": "İletişim",
 
@@ -56,6 +58,8 @@ export const translations = {
 
     "nav.home": "Home",
     "nav.products": "Products",
+    "nav.blog": "Blog",
+    "nav.map": "Map",
     "nav.about": "About",
     "nav.contact": "Contact",
 

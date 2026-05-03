@@ -902,3 +902,72 @@
   border-color: hsl(var(--secondary));
   box-shadow: 0 0 0 3px hsl(var(--secondary) / 0.12);
 }
+
+/* ─── Blog markdown — editorial typography ─────────────── */
+.prose-editorial {
+  color: hsl(var(--foreground) / 0.85);
+  font-weight: 300;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.prose-editorial > * + * { margin-top: 1.25rem; }
+.prose-editorial h2 {
+  font-family: var(--font-serif, Georgia, serif);
+  font-weight: 300;
+  font-size: 1.875rem;
+  letter-spacing: -0.01em;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  color: hsl(var(--primary));
+  line-height: 1.2;
+}
+.prose-editorial h3 {
+  font-family: var(--font-serif, Georgia, serif);
+  font-weight: 400;
+  font-size: 1.4rem;
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
+  color: hsl(var(--primary));
+}
+.prose-editorial p { margin: 0; }
+.prose-editorial a {
+  color: hsl(var(--secondary));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.prose-editorial ul, .prose-editorial ol { padding-left: 1.5rem; }
+.prose-editorial ul { list-style: disc; }
+.prose-editorial ol { list-style: decimal; }
+.prose-editorial li { margin: 0.4rem 0; }
+.prose-editorial strong { font-weight: 600; color: hsl(var(--foreground)); }
+.prose-editorial blockquote {
+  border-left: 2px solid hsl(var(--secondary));
+  padding: 0.25rem 1.25rem;
+  font-style: italic;
+  color: hsl(var(--foreground) / 0.7);
+  margin: 1.5rem 0;
+}
+.prose-editorial code {
+  background: hsl(var(--foreground) / 0.06);
+  padding: 0.1rem 0.4rem;
+  font-size: 0.92em;
+  border-radius: 2px;
+}
+.prose-editorial pre {
+  background: hsl(var(--foreground) / 0.04);
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px solid hsl(var(--foreground) / 0.08);
+}
+.prose-editorial table { width: 100%; border-collapse: collapse; }
+.prose-editorial th, .prose-editorial td {
+  border-bottom: 1px solid hsl(var(--foreground) / 0.1);
+  padding: 0.6rem 0.4rem;
+  text-align: left;
+}
+.prose-editorial hr {
+  border: none;
+  border-top: 1px solid hsl(var(--foreground) / 0.1);
+  margin: 2rem 0;
+}

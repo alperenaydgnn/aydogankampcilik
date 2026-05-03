@@ -26,6 +26,10 @@ const CategoryInfo = lazy(() => import("@/pages/CategoryInfo"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 const Compare = lazy(() => import("@/pages/Compare"));
 const Favorites = lazy(() => import("@/pages/Favorites"));
+const Blog = lazy(() => import("@/pages/Blog"));
+const BlogPost = lazy(() => import("@/pages/BlogPost"));
+const Events = lazy(() => import("@/pages/Events"));
+const CampMap = lazy(() => import("@/pages/CampMap"));
 
 import { AdminAuthProvider, useAdminAuth } from "@/admin/context/AdminAuthContext";
 import { SiteSettingsProvider } from "@/lib/SiteSettingsContext";
@@ -141,6 +145,10 @@ function AnimatedRoutes() {
             <Route path="/gizlilik" component={Privacy} />
             <Route path="/teslimat" component={Shipping} />
             <Route path="/magaza-politikasi" component={StorePolicy} />
+            <Route path="/blog" component={Blog} />
+            <Route path="/blog/:slug" component={BlogPost} />
+            <Route path="/etkinlikler" component={Events} />
+            <Route path="/harita" component={CampMap} />
             <Route component={NotFound} />
           </Switch>
         </Suspense>

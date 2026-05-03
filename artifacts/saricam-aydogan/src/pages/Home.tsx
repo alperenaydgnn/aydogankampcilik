@@ -19,6 +19,8 @@ import { HeroSlider } from "@/components/HeroSlider";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
 import { useSiteSettings } from "@/lib/useSiteSettings";
 import { mockSiteSettings } from "@/lib/mockData";
+import { WeatherWidget } from "@/components/WeatherWidget";
+import { WeekendPickWidget } from "@/components/WeekendPickWidget";
 
 /* ─── Main component (Meridian editorial) ─────────────────── */
 export default function Home() {
@@ -308,6 +310,14 @@ export default function Home() {
             </motion.div>
           </div>
         </div>
+      </section>
+
+      {/* ════════════════════════════════════════
+          § WEEKEND PICK + WEATHER WIDGETS
+      ════════════════════════════════════════ */}
+      <WeekendPickWidget />
+      <section className="section-md bg-background border-t border-foreground/10">
+        <WeatherWidget />
       </section>
 
       {/* ════════════════════════════════════════
