@@ -27,7 +27,7 @@ const faqSections: FAQSection[] = [
     items: [
       {
         q: "Nasıl sipariş verebilirim?",
-        a: "Sitemizdeki ürün sayfasında \"WhatsApp'tan Sipariş Ver\" butonuna tıklayarak doğrudan bizimle iletişime geçebilirsiniz. Ürün adı, fiyatı ve stok durumu otomatik olarak mesajınızla birlikte gönderilir. Mağazamıza uğrayarak da sipariş verebilirsiniz.",
+        a: 'Sitemizdeki ürün sayfasında "WhatsApp\'tan Sipariş Ver" butonuna tıklayarak doğrudan bizimle iletişime geçebilirsiniz. Ürün adı, fiyatı ve stok durumu otomatik olarak mesajınızla birlikte gönderilir. Mağazamıza uğrayarak da sipariş verebilirsiniz.',
       },
       {
         q: "Ödeme seçenekleri nelerdir?",
@@ -61,7 +61,7 @@ const faqSections: FAQSection[] = [
       },
       {
         q: "Adana'da aynı gün teslim mümkün mü?",
-        a: "Adana şehir merkezindeyseniz mağazadan elden teslim alabilir veya aynı gün motokurye ile gönderim için bizimle WhatsApp'tan iletişime geçebilirsiniz.",
+        a: "Adana şehir merkezindeyseniz mağazadan elden teslim alabilir veya bizimle WhatsApp'tan iletişime geçebilirsiniz.",
       },
     ],
   },
@@ -125,7 +125,9 @@ export default function FAQ() {
   const buildWhatsAppLink = useBuildWhatsAppLink();
   const [open, setOpen] = useState<string | null>("0-0");
 
-  const allFaqs = faqSections.flatMap(s => s.items.map(i => ({ question: i.q, answer: i.a })));
+  const allFaqs = faqSections.flatMap((s) =>
+    s.items.map((i) => ({ question: i.q, answer: i.a })),
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -136,13 +138,17 @@ export default function FAQ() {
         keywords="sık sorulan sorular, kamp malzemeleri sipariş, kargo, iade, ödeme, Aydoğan Kampçılık SSS"
       />
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(buildFAQSchema(allFaqs))}</script>
-        <script type="application/ld+json">{JSON.stringify(
-          buildBreadcrumbSchema([
-            { name: "Ana Sayfa", url: "/" },
-            { name: "Sık Sorulan Sorular", url: "/sss" },
-          ])
-        )}</script>
+        <script type="application/ld+json">
+          {JSON.stringify(buildFAQSchema(allFaqs))}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(
+            buildBreadcrumbSchema([
+              { name: "Ana Sayfa", url: "/" },
+              { name: "Sık Sorulan Sorular", url: "/sss" },
+            ]),
+          )}
+        </script>
       </Helmet>
 
       <PageHero
@@ -161,7 +167,10 @@ export default function FAQ() {
         <div className="container px-6 max-w-4xl">
           {faqSections.map((section, sIdx) => (
             <div key={sIdx} className={cn(sIdx > 0 && "mt-24 md:mt-32")}>
-              <SectionHeading title={section.title} italicAccent={section.italicAccent} />
+              <SectionHeading
+                title={section.title}
+                italicAccent={section.italicAccent}
+              />
 
               <div className="border-t border-border/60">
                 {section.items.map((item, iIdx) => {
@@ -180,7 +189,7 @@ export default function FAQ() {
                         <ChevronDown
                           className={cn(
                             "w-5 h-5 text-foreground/40 shrink-0 transition-transform duration-300 group-hover:text-secondary",
-                            isOpen && "rotate-180 text-secondary"
+                            isOpen && "rotate-180 text-secondary",
                           )}
                         />
                       </button>
@@ -190,7 +199,10 @@ export default function FAQ() {
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                            transition={{
+                              duration: 0.3,
+                              ease: [0.22, 1, 0.36, 1],
+                            }}
                             className="overflow-hidden"
                           >
                             <p className="pb-7 md:pb-8 -mt-1 text-foreground/65 leading-relaxed font-light max-w-3xl">
@@ -211,17 +223,22 @@ export default function FAQ() {
       {/* CTA — Dark editorial band */}
       <section className="section-sm bg-[#111111] text-white">
         <div className="container px-6 max-w-4xl text-center">
-          <span className="eyebrow justify-center text-secondary">Hâlâ sorunuz mu var</span>
+          <span className="eyebrow justify-center text-secondary">
+            Hâlâ sorunuz mu var
+          </span>
           <h2 className="editorial-heading text-4xl md:text-5xl lg:text-6xl text-white mb-8">
             Cevabınızı bulamadınız mı.
             <br />
             <em className="italic font-light text-white/70">Yazın yeter.</em>
           </h2>
           <p className="text-white/55 text-base md:text-lg font-light mb-12 max-w-xl mx-auto leading-relaxed">
-            WhatsApp'tan ulaşın. Sorunuzu kişisel olarak ve mümkün olduğunca hızlı yanıtlıyoruz.
+            WhatsApp'tan ulaşın. Sorunuzu kişisel olarak ve mümkün olduğunca
+            hızlı yanıtlıyoruz.
           </p>
           <a
-            href={buildWhatsAppLink("Merhaba, sitede cevabını bulamadığım bir sorum var.")}
+            href={buildWhatsAppLink(
+              "Merhaba, sitede cevabını bulamadığım bir sorum var.",
+            )}
             target="_blank"
             rel="noopener noreferrer"
             className="link-hairline text-white border-white/40 hover:text-secondary"

@@ -20,27 +20,32 @@ import { useBuildWhatsAppLink } from "@/lib/whatsapp";
 import { useSiteSettings } from "@/lib/useSiteSettings";
 import { mockSiteSettings } from "@/lib/mockData";
 import { WeatherWidget } from "@/components/WeatherWidget";
-import { WeekendPickWidget } from "@/components/WeekendPickWidget";
 
 /* ─── Main component (Meridian editorial) ─────────────────── */
 export default function Home() {
-  const [products, setProducts]     = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading]       = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([getProducts({ limit: 24 }), getCategories()]).then(([p, c]) => {
-      setProducts(p);
-      setCategories(c);
-      setLoading(false);
-    });
+    Promise.all([getProducts({ limit: 24 }), getCategories()]).then(
+      ([p, c]) => {
+        setProducts(p);
+        setCategories(c);
+        setLoading(false);
+      },
+    );
   }, []);
 
-  const base       = import.meta.env.BASE_URL.replace(/\/$/, "");
-  const settings   = useSiteSettings();
-  const buildWA    = useBuildWhatsAppLink();
-  const whatsappGeneral  = buildWA("Merhaba, kamp ve balık malzemeleri hakkında bilgi almak istiyorum.");
-  const whatsappLocation = buildWA("Merhaba, mağazanıza gelmek istiyorum. Konum ve çalışma saatlerinizi paylaşır mısınız?");
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const settings = useSiteSettings();
+  const buildWA = useBuildWhatsAppLink();
+  const whatsappGeneral = buildWA(
+    "Merhaba, kamp ve balık malzemeleri hakkında bilgi almak istiyorum.",
+  );
+  const whatsappLocation = buildWA(
+    "Merhaba, mağazanıza gelmek istiyorum. Konum ve çalışma saatlerinizi paylaşır mısınız?",
+  );
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -51,9 +56,15 @@ export default function Home() {
         keywords="kamp malzemeleri, balık malzemeleri, olta ekipmanları, kamp çadırı, balıkçı malzemeleri, outdoor ekipmanları, Adana, Sarıçam, Toros"
       />
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(buildLocalBusinessSchema())}</script>
-        <script type="application/ld+json">{JSON.stringify(buildOrganizationSchema())}</script>
-        <script type="application/ld+json">{JSON.stringify(buildWebSiteSchema())}</script>
+        <script type="application/ld+json">
+          {JSON.stringify(buildLocalBusinessSchema())}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(buildOrganizationSchema())}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(buildWebSiteSchema())}
+        </script>
       </Helmet>
 
       {/* ════════════════════════════════════════
@@ -68,7 +79,8 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           <HeroSlider
             images={
-              Array.isArray(settings.hero_images) && settings.hero_images.length > 0
+              Array.isArray(settings.hero_images) &&
+              settings.hero_images.length > 0
                 ? settings.hero_images
                 : (mockSiteSettings.hero_images ?? [`${base}/mock/hero.jpg`])
             }
@@ -96,11 +108,16 @@ export default function Home() {
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={{
+                duration: 0.9,
+                delay: 0.3,
+                ease: [0.22, 1, 0.36, 1],
+              }}
               className="font-serif font-light text-white leading-[1.02] tracking-tight"
               style={{ fontSize: "clamp(2.8rem, 8vw, 7rem)" }}
             >
-              Torosların eteklerinden doğaya.<br />
+              Torosların eteklerinden doğaya.
+              <br />
               <em className="italic font-light text-white/75">Hazır mıyız.</em>
             </motion.h1>
 
@@ -137,7 +154,9 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.8 }}
         >
-          <span className="text-[0.65rem] font-bold uppercase tracking-[0.3em]">Keşfet</span>
+          <span className="text-[0.65rem] font-bold uppercase tracking-[0.3em]">
+            Keşfet
+          </span>
           <motion.div
             className="w-px h-12 bg-white/40"
             animate={{ scaleY: [1, 0.3, 1], transformOrigin: "top" }}
@@ -157,8 +176,10 @@ export default function Home() {
             </div>
             <div className="md:col-span-9">
               <p className="font-serif font-light text-2xl md:text-4xl lg:text-5xl text-primary leading-[1.15] tracking-tight">
-                Aydoğan Kampçılık, Toros dağlarının eteklerinde <em className="italic text-secondary">test edilmiş</em> ekipmanları sizinle buluşturuyor.
-                Yağmurda su almayan, soğukta sıcak tutan, rüzgarda savrulmayan ürünler.
+                Aydoğan Kampçılık, Toros dağlarının eteklerinde{" "}
+                <em className="italic text-secondary">test edilmiş</em>{" "}
+                ekipmanları sizinle buluşturuyor. Yağmurda su almayan, soğukta
+                sıcak tutan, rüzgarda savrulmayan ürünler.
               </p>
             </div>
           </div>
@@ -168,30 +189,41 @@ export default function Home() {
       {/* ════════════════════════════════════════
           § CATEGORIES — Editorial 4-up
       ════════════════════════════════════════ */}
-      <section className="section bg-background" aria-labelledby="categories-heading">
+      <section
+        className="section bg-background"
+        aria-labelledby="categories-heading"
+      >
         <div className="container mx-auto px-6 md:px-10">
           {/* Header row */}
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16 md:mb-24">
             <div className="max-w-2xl">
               <span className="eyebrow">/ 02 — Koleksiyonlar</span>
-              <h2 id="categories-heading" className="editorial-heading text-4xl md:text-6xl">
-                Doğanın her köşesi için <em className="italic text-secondary">ekipman.</em>
+              <h2
+                id="categories-heading"
+                className="editorial-heading text-4xl md:text-6xl"
+              >
+                Doğanın her köşesi için{" "}
+                <em className="italic text-secondary">ekipman.</em>
               </h2>
             </div>
-            <Link href="/urunler" className="link-hairline self-start md:self-end">
+            <Link
+              href="/urunler"
+              className="link-hairline self-start md:self-end"
+            >
               Tüm Kategoriler <ArrowUpRight className="w-3 h-3" />
             </Link>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
             {categories.length === 0
-              ? [1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+              ? [1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                   <div key={i} className="aspect-[3/4] skeleton" />
                 ))
-              : categories.slice(0, 8).map((cat, i) => (
-                  <CategoryCard key={cat.id} category={cat} index={i} />
-                ))
-            }
+              : categories
+                  .slice(0, 8)
+                  .map((cat, i) => (
+                    <CategoryCard key={cat.id} category={cat} index={i} />
+                  ))}
           </div>
         </div>
       </section>
@@ -208,11 +240,18 @@ export default function Home() {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16 md:mb-24">
             <div className="max-w-2xl">
               <span className="eyebrow">/ 03 — Öne Çıkanlar</span>
-              <h2 id="products-heading" className="editorial-heading text-4xl md:text-6xl">
-                Adana ve Toros'ta denenmiş, <em className="italic text-secondary">tercih edilen.</em>
+              <h2
+                id="products-heading"
+                className="editorial-heading text-4xl md:text-6xl"
+              >
+                Adana ve Toros'ta denenmiş,{" "}
+                <em className="italic text-secondary">tercih edilen.</em>
               </h2>
             </div>
-            <Link href="/urunler" className="link-hairline self-start md:self-end">
+            <Link
+              href="/urunler"
+              className="link-hairline self-start md:self-end"
+            >
               Tüm Ürünler <ArrowUpRight className="w-3 h-3" />
             </Link>
           </div>
@@ -225,7 +264,9 @@ export default function Home() {
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-10">
-              {products.map((p, i) => <ProductCard key={p.id} product={p} index={i} compact />)}
+              {products.map((p, i) => (
+                <ProductCard key={p.id} product={p} index={i} compact />
+              ))}
             </div>
           )}
         </div>
@@ -239,7 +280,10 @@ export default function Home() {
       {/* ════════════════════════════════════════
           § BRAND STORY — Split editorial
       ════════════════════════════════════════ */}
-      <section className="section bg-background" aria-labelledby="story-heading">
+      <section
+        className="section bg-background"
+        aria-labelledby="story-heading"
+      >
         <div className="container mx-auto px-6 md:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-20 items-center">
             {/* Left: Image */}
@@ -261,9 +305,13 @@ export default function Home() {
               </div>
               <div className="absolute -bottom-6 -left-6 md:-bottom-10 md:-left-10 bg-background pl-4 pt-4 md:pl-8 md:pt-8">
                 <div className="flex items-baseline gap-3">
-                  <span className="font-serif font-light text-5xl md:text-7xl text-primary tracking-tight">15</span>
+                  <span className="font-serif font-light text-5xl md:text-7xl text-primary tracking-tight">
+                    15
+                  </span>
                   <span className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-foreground/60 leading-tight">
-                    Yıllık<br />Tecrübe
+                    Yıllık
+                    <br />
+                    Tecrübe
                   </span>
                 </div>
               </div>
@@ -278,24 +326,31 @@ export default function Home() {
               className="lg:col-span-5"
             >
               <span className="eyebrow">/ 04 — Hikayemiz</span>
-              <h2 id="story-heading" className="editorial-heading text-4xl md:text-5xl mb-8">
-                Adana'dan Türkiye'ye <em className="italic text-secondary">doğanın ekipmanı.</em>
+              <h2
+                id="story-heading"
+                className="editorial-heading text-4xl md:text-5xl mb-8"
+              >
+                Adana'dan Türkiye'ye{" "}
+                <em className="italic text-secondary">doğanın ekipmanı.</em>
               </h2>
               <div className="space-y-5 text-foreground/65 leading-relaxed font-light">
                 <p>
-                  Aydoğan Kampçılık, Adana Sarıçam ilçesinde kamp malzemeleri, balık
-                  malzemeleri ve outdoor ekipmanları alanında hizmet vermektedir. Toros
-                  dağlarının eteklerinde geçirdiğimiz deneyimler, her ürünümüzü bizzat
-                  test etmemizi sağlamıştır.
+                  Aydoğan Kampçılık, Adana Sarıçam ilçesinde kamp malzemeleri,
+                  balık malzemeleri ve outdoor ekipmanları alanında hizmet
+                  vermektedir. Toros dağlarının eteklerinde geçirdiğimiz
+                  deneyimler, her ürünümüzü bizzat test etmemizi sağlamıştır.
                 </p>
                 <p>
                   Kamp çadırından olta takımına, av malzemelerinden aydınlatma
-                  ekipmanlarına kadar geniş ürün yelpazemizle outdoor tutkunlarının
-                  yanındayız.
+                  ekipmanlarına kadar geniş ürün yelpazemizle outdoor
+                  tutkunlarının yanındayız.
                 </p>
               </div>
               <div className="mt-10 flex flex-col sm:flex-row gap-5 items-start">
-                <Link href="/hakkimizda" className="btn-cta-amber btn-cta !text-[0.7rem] !font-bold !uppercase !tracking-[0.2em]">
+                <Link
+                  href="/hakkimizda"
+                  className="btn-cta-amber btn-cta !text-[0.7rem] !font-bold !uppercase !tracking-[0.2em]"
+                >
                   Hakkımızda
                 </Link>
                 <a
@@ -313,9 +368,8 @@ export default function Home() {
       </section>
 
       {/* ════════════════════════════════════════
-          § WEEKEND PICK + WEATHER WIDGETS
+          § WEATHER WIDGET
       ════════════════════════════════════════ */}
-      <WeekendPickWidget />
       <section className="section-md bg-background border-t border-foreground/10">
         <WeatherWidget />
       </section>
@@ -327,23 +381,44 @@ export default function Home() {
         <div className="container mx-auto px-6 md:px-10">
           <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-foreground/10">
             {[
-              { num: "01", title: "Tecrübe", desc: "Adana ve Toros bölgesinde yılların getirdiği derin deneyim, doğru ekipman tavsiyeleri." },
-              { num: "02", title: "Garanti",  desc: "Yalnızca güvenilir markaların kaliteli ürünleri. Satış öncesi kontrol." },
-              { num: "03", title: "Danışman", desc: "Müşteri değil dost olarak. WhatsApp'tan 7/24 sorularınızı yanıtlıyoruz." },
+              {
+                num: "01",
+                title: "Tecrübe",
+                desc: "Adana ve Toros bölgesinde yılların getirdiği derin deneyim, doğru ekipman tavsiyeleri.",
+              },
+              {
+                num: "02",
+                title: "Garanti",
+                desc: "Yalnızca güvenilir markaların kaliteli ürünleri. Satış öncesi kontrol.",
+              },
+              {
+                num: "03",
+                title: "Danışman",
+                desc: "Müşteri değil dost olarak. WhatsApp'tan sorularınızı hızlıca yanıtlıyoruz.",
+              },
             ].map((v, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                transition={{
+                  delay: i * 0.1,
+                  duration: 0.6,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
                 className="px-0 md:px-10 py-10 md:py-12 first:pl-0 last:pr-0"
               >
-                <span className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-secondary">{v.num}</span>
+                <span className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-secondary">
+                  {v.num}
+                </span>
                 <h3 className="font-serif font-light text-2xl md:text-3xl text-primary tracking-tight mt-4 mb-4">
-                  {v.title}<span className="italic text-secondary">.</span>
+                  {v.title}
+                  <span className="italic text-secondary">.</span>
                 </h3>
-                <p className="text-foreground/60 text-sm font-light leading-relaxed">{v.desc}</p>
+                <p className="text-foreground/60 text-sm font-light leading-relaxed">
+                  {v.desc}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -371,7 +446,8 @@ export default function Home() {
               Sıradaki Macera
             </span>
             <h2 className="font-serif font-light text-white leading-[1.05] tracking-tight text-4xl md:text-6xl lg:text-7xl">
-              Doğa sizi çağırıyor.<br />
+              Doğa sizi çağırıyor.
+              <br />
               <em className="italic text-white/70">Hazırlayalım.</em>
             </h2>
             <p className="mt-8 text-white/65 text-base md:text-lg font-light max-w-2xl leading-relaxed">
