@@ -231,9 +231,14 @@ export function ProductCard({ product, index = 0, compact = false }: { product: 
                 Stokta
               </span>
             ))}
-            {compact && product.stock_status && product.stock_status !== "in_stock" && (
+            {compact && (product.stock_status && product.stock_status !== "in_stock" ? (
               <StockBadge status={product.stock_status} stock={product.stock} />
-            )}
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[0.6rem] font-bold uppercase tracking-[0.15em] text-emerald-700">
+                <span className="w-1 h-1 rounded-full bg-emerald-600" />
+                Stokta
+              </span>
+            ))}
           </div>
 
           {/* Hairline that grows on hover */}

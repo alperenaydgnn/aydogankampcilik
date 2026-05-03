@@ -13,10 +13,26 @@ export function CartDrawer() {
 
   useEffect(() => {
     if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { close(); return; }
+      if (e.key !== "Tab" || !panelRef.current) return;
+      const focusables = panelRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
     document.addEventListener("keydown", onKey);
     const t = setTimeout(() => panelRef.current?.focus(), 50);
-    return () => { document.removeEventListener("keydown", onKey); clearTimeout(t); };
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      clearTimeout(t);
+      previouslyFocused?.focus?.();
+    };
   }, [isOpen, close]);
 
   const startCheckout = () => {

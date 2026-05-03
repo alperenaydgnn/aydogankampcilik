@@ -106,13 +106,17 @@ function applyFilters(products: Product[], params: Params): Product[] {
     });
   }
 
-  // Slider range — overrides preset bounds when provided
+  // Slider range — overrides preset bounds when provided.
+  // When max is at the slider ceiling, treat it as unbounded (no upper limit).
   if (params.price_min != null || params.price_max != null) {
     const lo = params.price_min ?? PRICE_SLIDER_MIN;
     const hi = params.price_max ?? PRICE_SLIDER_MAX;
+    const unboundedTop = hi >= PRICE_SLIDER_MAX;
     list = list.filter(p => {
       if (!p.price_numeric) return false;
-      return p.price_numeric >= lo && p.price_numeric <= hi;
+      if (p.price_numeric < lo) return false;
+      if (!unboundedTop && p.price_numeric > hi) return false;
+      return true;
     });
   }
 
