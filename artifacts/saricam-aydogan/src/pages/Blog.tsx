@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Sparkles, Clock, ChevronRight } from "lucide-react";
+import { Sparkles, Clock, ChevronRight, Calendar } from "lucide-react";
 import { getBlogPosts, type BlogPost, type BlogCategory } from "@/lib/blog";
 import { SEO } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -136,6 +136,12 @@ export default function Blog() {
                 <div className="flex items-center gap-3 text-[0.65rem] uppercase tracking-[0.2em] font-bold text-foreground/55 mb-3">
                   <span className="text-secondary">{p.category}</span>
                   <span className="inline-flex items-center gap-1"><Clock className="w-3 h-3" /> {p.readingMinutes} dk</span>
+                  {p.publishedAt && (
+                    <span className="inline-flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(p.publishedAt).toLocaleDateString("tr-TR", { day: "2-digit", month: "short", year: "numeric" })}
+                    </span>
+                  )}
                 </div>
                 <Link href={`/blog/${p.slug}`}>
                   <h3 className="font-serif font-light text-2xl md:text-[1.7rem] text-primary tracking-tight leading-snug line-clamp-2 group-hover:text-secondary transition-colors">

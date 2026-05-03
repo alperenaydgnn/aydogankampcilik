@@ -67,11 +67,6 @@ export default function BlogPostPage() {
               <p className="text-foreground/65 leading-relaxed font-light text-base md:text-lg">
                 {post.excerpt}
               </p>
-              {post.aiModel && (
-                <div className="mt-6 pt-6 border-t border-foreground/10 text-[0.65rem] uppercase tracking-[0.18em] font-bold text-foreground/45">
-                  Yapay zeka destekli içerik · {post.aiModel}
-                </div>
-              )}
             </motion.div>
           </div>
         </header>
