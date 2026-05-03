@@ -94,10 +94,6 @@ export const campSpots: CampSpot[] = [
   { id: "kumbet-yaylasi", name: "Kümbet Yaylası", region: "Giresun", kind: "yayla", lat: 40.450, lon: 38.470, altitude: 1900, difficulty: "kolay", bestSeason: "Haziran–Eylül", description: "Karadeniz yaylacılık geleneğinin kalbinde serin kamp.", features: ["yayla", "serin"], recommendedGear: ["3-mevsim çadır", "+5°C tulum"], water: true },
   { id: "ordu-boztepe", name: "Ordu Boztepe Ormanı", region: "Ordu", kind: "orman", lat: 40.980, lon: 37.880, altitude: 500, difficulty: "kolay", bestSeason: "Mayıs–Eylül", description: "Şehre yakın orman içi piknik ve kamp noktaları.", features: ["orman", "şehre yakın"], recommendedGear: ["3-mevsim çadır"], parking: true },
 
-  /* ── TRABZON ─────────────────────────────────── */
-  { id: "uzungol", name: "Uzungöl", region: "Trabzon / Çaykara", kind: "göl", lat: 40.618, lon: 40.277, altitude: 1090, difficulty: "kolay", bestSeason: "Mayıs–Ekim", description: "Doğu Karadeniz'in en ünlü doğa harikası.", features: ["göl", "orman", "yayla"], recommendedGear: ["3-mevsim çadır"], parking: true, water: true },
-  { id: "zigana", name: "Zigana Yaylası", region: "Trabzon / Gümüşhane", kind: "yayla", lat: 40.700, lon: 39.400, altitude: 1850, difficulty: "kolay", bestSeason: "Haziran–Eylül", description: "Pontik Alplerin üzerinde, kar yağışlı geçit yaylası.", features: ["yayla", "panoramik"], recommendedGear: ["3-mevsim çadır", "+5°C tulum"], parking: true },
-
   /* ── GİRESUN / GÜMÜŞHANE ────────────────────── */
   { id: "limni-golu", name: "Limni Gölü", region: "Gümüşhane", kind: "göl", lat: 40.210, lon: 39.170, altitude: 2000, difficulty: "orta", bestSeason: "Temmuz–Eylül", description: "Yüksek dağ gölü; eşsiz kamp ve balıkçılık.", features: ["yüksek dağ", "göl", "balıkçılık"], recommendedGear: ["3-mevsim çadır", "+5°C tulum"], fishing: true },
   { id: "harşit-vadisi", name: "Harşit Vadisi", region: "Gümüşhane", kind: "dere", lat: 40.460, lon: 39.480, altitude: 600, difficulty: "orta", bestSeason: "Nisan–Ekim", description: "Derin vadi içinde nehir kenarı kamp.", features: ["vadi", "nehir"], recommendedGear: ["3-mevsim çadır"], water: true },
