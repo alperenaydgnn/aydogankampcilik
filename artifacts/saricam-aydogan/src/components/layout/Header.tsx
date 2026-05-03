@@ -162,7 +162,7 @@ export function Header() {
       <div className="container mx-auto px-6 md:px-10 grid grid-cols-2 lg:grid-cols-3 items-center gap-4">
 
         {/* Left — Mobile Menu Toggle on small, Nav on desktop */}
-        <nav className="hidden lg:flex items-center gap-7">
+        <nav className="hidden lg:flex items-center gap-5">
           {navLinks.slice(0, 3).map((link) => {
             const isActive = location === link.href || (link.href === "/urunler" && location.startsWith("/urunler"));
             return (
@@ -201,8 +201,8 @@ export function Header() {
         </Link>
 
         {/* Right — Desktop nav + CTA */}
-        <div className="hidden lg:flex items-center justify-end gap-7">
-          {navLinks.slice(3).map((link) => {
+        <div className="hidden lg:flex items-center justify-end gap-4">
+          {navLinks.slice(4).map((link) => {
             const isActive = location === link.href;
             return (
               <Link
