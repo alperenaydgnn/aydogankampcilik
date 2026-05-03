@@ -11,6 +11,9 @@ import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { buildCompareShareMessage } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/EmptyState";
+import { BalanceScale } from "@/components/BrandIllustration";
+import { BrandLoader } from "@/components/BrandLoader";
 
 export default function Compare() {
   const { slugs, remove, clear } = useCompare();
@@ -80,23 +83,22 @@ export default function Compare() {
         </div>
 
         {loading ? (
-          <div className="text-center text-foreground/55 py-20 italic font-serif">Yükleniyor…</div>
+          <div className="flex justify-center py-20">
+            <BrandLoader />
+          </div>
         ) : items.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            className="text-center py-24 border-y border-foreground/15"
-          >
-            <span className="eyebrow justify-center">Henüz Ürün Yok</span>
-            <h2 className="editorial-heading text-3xl md:text-4xl mb-6">
-              Karşılaştırmak için <em className="italic text-secondary">ürün ekleyin.</em>
-            </h2>
-            <p className="text-foreground/60 max-w-md mx-auto mb-10 font-light">
-              Katalog veya ürün sayfalarındaki "Karşılaştır" butonu ile en fazla {COMPARE_MAX} ürün seçebilirsiniz.
-            </p>
-            <Link href="/urunler" className="link-hairline justify-center hover:text-secondary">
-              Kataloğa Git <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </motion.div>
+          <EmptyState
+            illustration={<BalanceScale size={170} />}
+            eyebrow="Henüz Ürün Yok"
+            title="Karşılaştırmak için"
+            italicAccent="ürün ekleyin."
+            description={`Katalog veya ürün sayfalarındaki "Karşılaştır" butonu ile en fazla ${COMPARE_MAX} ürün seçebilirsiniz.`}
+            actions={(
+              <Link href="/urunler" className="link-hairline justify-center hover:text-secondary">
+                Kataloğa Git <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            )}
+          />
         ) : (
           <div className="overflow-x-auto -mx-6 px-6">
             <table className="w-full min-w-[640px] border-collapse">

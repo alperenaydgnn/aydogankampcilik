@@ -1,11 +1,24 @@
 import { Link } from "wouter";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Compass } from "lucide-react";
+import { motion } from "framer-motion";
+import { CompassLost } from "@/components/BrandIllustration";
 
 export default function NotFound() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-background px-6 pt-32 pb-24">
       <div className="max-w-2xl text-center">
-        <span className="eyebrow justify-center">Hata 404</span>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="inline-flex justify-center mb-10"
+        >
+          <CompassLost size={210} />
+        </motion.div>
+
+        <span className="eyebrow justify-center">
+          <Compass className="w-3 h-3" /> Hata 404
+        </span>
         <h1 className="editorial-heading text-5xl md:text-7xl mb-8">
           Yolumuzu.
           <br />

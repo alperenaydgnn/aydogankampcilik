@@ -32,7 +32,8 @@ import { SiteSettingsProvider } from "@/lib/SiteSettingsContext";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
 import { CompareProvider } from "@/lib/compare";
-import { I18nProvider, useT } from "@/lib/i18n";
+import { I18nProvider } from "@/lib/i18n";
+import { BrandLoader } from "@/components/BrandLoader";
 import { CompareBar } from "@/components/CompareBar";
 import { CartDrawer } from "@/components/CartDrawer";
 import { CartToast } from "@/components/CartToast";
@@ -50,16 +51,9 @@ const AdminSiteSettings = lazy(() => import("@/admin/pages/AdminSiteSettings"));
 const queryClient = new QueryClient();
 
 function RouteSpinner() {
-  const t = useT();
   return (
-    <div
-      className="min-h-[60vh] flex items-center justify-center"
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
-    >
-      <span className="sr-only">{t("loading.page")}</span>
-      <div className="h-10 w-10 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <BrandLoader size={72} />
     </div>
   );
 }

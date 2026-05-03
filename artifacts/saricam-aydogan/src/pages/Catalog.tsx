@@ -28,6 +28,7 @@ import {
   extractBrands, getProductBrand, getProductWeightKg, getProductCapacity, getProductSeason, getWaterproofMm,
 } from "@/lib/search";
 import { useRecentlyViewed } from "@/lib/recentlyViewed";
+import { PineTrail } from "@/components/BrandIllustration";
 
 const PRICE_SLIDER_MIN = 0;
 const PRICE_SLIDER_MAX = 10000;
@@ -356,8 +357,17 @@ function EmptyState({
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="text-center py-32 border-t border-b border-foreground/15"
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="text-center py-24 md:py-28 border-t border-b border-foreground/15"
     >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.92 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+        className="inline-flex justify-center mb-8"
+      >
+        <PineTrail size={150} />
+      </motion.div>
       <span className="eyebrow justify-center">Sonuç Yok</span>
       <h3 className="editorial-heading text-3xl md:text-4xl mb-6">
         {query

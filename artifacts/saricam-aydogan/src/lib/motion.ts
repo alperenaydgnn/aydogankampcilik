@@ -68,9 +68,19 @@ export const pressTap = {
   whileTap:   { scale: 0.97, y: 0, transition: { duration: 0.1, ease: easeOut } },
 };
 
-/** Page transition variants — gentle fade + tiny y motion. */
+/** Page transition variants — editorial fade + slight rise + soft blur. */
 export const pageVariants: Variants = {
-  initial: { opacity: 0, y: 8 },
-  enter:   { opacity: 1, y: 0, transition: { duration: 0.32, ease: easeOut } },
-  exit:    { opacity: 0, y: -4, transition: { duration: 0.18, ease: easeOut } },
+  initial: { opacity: 0, y: 14, filter: "blur(6px)" },
+  enter: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.42, ease: easeOut, when: "beforeChildren" },
+  },
+  exit: {
+    opacity: 0,
+    y: -6,
+    filter: "blur(4px)",
+    transition: { duration: 0.22, ease: easeOut },
+  },
 };

@@ -11,6 +11,9 @@ import { SEO } from "@/lib/seo";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { buildWishlistShareMessage } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/analytics";
+import { EmptyState } from "@/components/EmptyState";
+import { FishhookHeart } from "@/components/BrandIllustration";
+import { BrandLoader } from "@/components/BrandLoader";
 
 export default function Favorites() {
   const { items, count, clear, remove } = useWishlist();
@@ -72,23 +75,21 @@ export default function Favorites() {
         </div>
 
         {loading && count > 0 ? (
-          <div className="text-center text-foreground/55 py-20 italic font-serif">Yükleniyor…</div>
+          <div className="flex justify-center py-20">
+            <BrandLoader />
+          </div>
         ) : count === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            className="text-center py-24 border-y border-foreground/15"
-          >
-            <Heart className="w-10 h-10 text-foreground/20 mx-auto mb-6" strokeWidth={1.4} />
-            <h2 className="editorial-heading text-3xl md:text-4xl mb-6">
-              Henüz <em className="italic text-secondary">favori yok.</em>
-            </h2>
-            <p className="text-foreground/60 max-w-md mx-auto mb-10 font-light">
-              Ürün kartlarındaki kalp simgesiyle istediğiniz ürünleri kaydedin, daha sonra tek tıkla WhatsApp'tan paylaşın.
-            </p>
-            <Link href="/urunler" className="link-hairline justify-center hover:text-secondary">
-              Kataloğa Git <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </motion.div>
+          <EmptyState
+            illustration={<FishhookHeart size={160} />}
+            title="Henüz"
+            italicAccent="favori yok."
+            description="Ürün kartlarındaki kalp simgesiyle istediğiniz ürünleri kaydedin, daha sonra tek tıkla WhatsApp'tan paylaşın."
+            actions={(
+              <Link href="/urunler" className="link-hairline justify-center hover:text-secondary">
+                Kataloğa Git <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            )}
+          />
         ) : (
           <>
             {/* Show stale entries (removed from catalog) */}
