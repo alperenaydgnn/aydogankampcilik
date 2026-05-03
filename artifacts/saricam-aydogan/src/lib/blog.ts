@@ -202,7 +202,33 @@ function writeStore(posts: BlogPost[]) {
 }
 
 /* ── Public API ─────────────────────────────────────────── */
+async function fetchServerPosts(): Promise<BlogPost[]> {
+  try {
+    const r = await fetch("/api/blog/posts");
+    if (!r.ok) return [];
+    const j = await r.json();
+    return (j.posts ?? []) as BlogPost[];
+  } catch {
+    return [];
+  }
+}
+
+async function fetchServerPost(slug: string): Promise<BlogPost | null> {
+  try {
+    const r = await fetch(`/api/blog/posts/${encodeURIComponent(slug)}`);
+    if (!r.ok) return null;
+    const j = await r.json();
+    return (j.post ?? null) as BlogPost | null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getBlogPosts(): Promise<BlogPost[]> {
+  // 1. Server-generated posts (from cron scheduler)
+  const serverPosts = await fetchServerPosts();
+
+  // 2. Supabase (if configured)
   const sb = getSupabase();
   if (sb) {
     try {
@@ -212,16 +238,20 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
         .order("published_at", { ascending: false });
       if (!error && data) {
         const dbPosts: BlogPost[] = data.map(mapDbPost);
-        return mergePosts(dbPosts);
+        return mergePosts([...serverPosts, ...dbPosts]);
       }
     } catch {
       /* fall through */
     }
   }
-  return mergePosts([]);
+  return mergePosts(serverPosts);
 }
 
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {
+  // Try server first (fast single-post lookup)
+  const fromServer = await fetchServerPost(slug);
+  if (fromServer) return fromServer;
+  // Fall back to full list (covers seed + localStorage posts)
   const all = await getBlogPosts();
   return all.find((p) => p.slug === slug) ?? null;
 }
