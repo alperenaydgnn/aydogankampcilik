@@ -28,7 +28,6 @@ interface CheckoutForm {
 }
 
 const STEPS = [
-  { key: "review",   label: "Sepet",     icon: ShoppingBag },
   { key: "contact",  label: "İletişim",  icon: User },
   { key: "delivery", label: "Teslimat",  icon: Truck },
   { key: "payment",  label: "Ödeme",     icon: CreditCard },
@@ -100,10 +99,9 @@ export function CheckoutWizard() {
   }
 
   const canNext = (() => {
-    if (step === 0) return items.length > 0;
-    if (step === 1) return form.name.trim().length >= 2 && /^[0-9+\s()-]{10,}$/.test(form.phone.trim());
-    if (step === 2) return form.delivery === "magaza" || (form.city.trim().length >= 2 && form.district.trim().length >= 2 && form.address.trim().length >= 5);
-    if (step === 3) return !!form.payment;
+    if (step === 0) return form.name.trim().length >= 2 && /^[0-9+\s()-]{10,}$/.test(form.phone.trim());
+    if (step === 1) return form.delivery === "magaza" || (form.city.trim().length >= 2 && form.district.trim().length >= 2 && form.address.trim().length >= 5);
+    if (step === 2) return !!form.payment;
     return true;
   })();
 
@@ -252,47 +250,6 @@ export function CheckoutWizard() {
               {/* Body */}
               <div className="flex-1 overflow-y-auto px-6 py-6">
                 {step === 0 && (
-                  <div className="space-y-3">
-                    <p className="text-xs text-foreground/55 font-light mb-3">
-                      Sipariş özetinizi gözden geçirin. Bilgileri tamamladıktan sonra WhatsApp üzerinden ekibimize iletilecek.
-                    </p>
-                    <ul className="divide-y divide-foreground/10 border-y border-foreground/10">
-                      {items.map(it => (
-                        <li key={it.id} className="py-3 flex items-center justify-between gap-3 text-sm">
-                          <span className="font-light text-foreground/85 flex-1 min-w-0">
-                            <span className="line-clamp-1">{it.name}</span>
-                            <span className="text-foreground/45 text-xs"> × {it.qty}</span>
-                          </span>
-                          <span className={cn(
-                            "font-serif tabular-nums shrink-0",
-                            it.price_numeric ? "text-primary" : "text-foreground/55 italic text-xs"
-                          )}>
-                            {it.price_numeric ? formatPriceLabel(it.price_numeric * it.qty) : it.price_label}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                    {hasNumericPrices && (
-                      <div className="text-sm space-y-1.5 pt-2">
-                        <div className="flex justify-between text-foreground/65 font-light">
-                          <span>Ara Toplam</span><span className="tabular-nums">{formatPriceLabel(subtotal)}</span>
-                        </div>
-                        {combo && (
-                          <div className="flex justify-between text-secondary font-medium">
-                            <span>{combo.combo.name} indirimi</span>
-                            <span className="tabular-nums">−{combo.discountLabel}</span>
-                          </div>
-                        )}
-                        <div className="flex items-baseline justify-between pt-2 border-t border-foreground/10">
-                          <span className="text-[0.7rem] uppercase tracking-[0.2em] font-bold">Toplam</span>
-                          <span className="font-serif font-light text-2xl text-primary tabular-nums">{formatPriceLabel(total)}</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {step === 1 && (
                   <div className="space-y-5">
                     <Field label="Adınız Soyadınız" required>
                       <input
@@ -316,7 +273,7 @@ export function CheckoutWizard() {
                   </div>
                 )}
 
-                {step === 2 && (
+                {step === 1 && (
                   <div className="space-y-5">
                     <div>
                       <span className="eyebrow text-foreground/70">Teslimat Yöntemi</span>
@@ -390,7 +347,7 @@ export function CheckoutWizard() {
                   </div>
                 )}
 
-                {step === 3 && (
+                {step === 2 && (
                   <div className="space-y-3">
                     <p className="text-xs text-foreground/55 font-light leading-relaxed mb-2">
                       Tercih ettiğiniz ödeme yöntemini seçin. Detaylar WhatsApp üzerinden iletilir.
@@ -428,7 +385,7 @@ export function CheckoutWizard() {
                   </div>
                 )}
 
-                {step === 4 && (
+                {step === 3 && (
                   <div className="space-y-4 text-sm">
                     <p className="text-foreground/65 font-light leading-relaxed">
                       Aşağıdaki sipariş bilgileriniz <span className="font-medium text-secondary">WhatsApp üzerinden</span> ekibimize iletilecek. Mesajı görüp düzenleyebilirsiniz; "Gönder" dediğinizde WhatsApp açılır.

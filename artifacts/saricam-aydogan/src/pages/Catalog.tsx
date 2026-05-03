@@ -193,7 +193,8 @@ function ProductRow({ product, index, categoryName }: {
             )}
             {product.stock_status === "low_stock" && (
               <span className="inline-flex items-center gap-1 text-amber-700">
-                <AlertTriangle className="w-2.5 h-2.5" /> Son Stoklar
+                <AlertTriangle className="w-2.5 h-2.5" />
+                {product.stock && product.stock > 0 && product.stock <= 10 ? `Son ${product.stock} adet` : "Son Stoklar"}
               </span>
             )}
             {product.stock_status === "in_stock" && (

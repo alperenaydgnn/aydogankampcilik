@@ -53,14 +53,14 @@ export function CallbackFab() {
     };
   }, [open]);
 
-  const valid = name.trim().length >= 2 && /^[0-9+\s()-]{10,}$/.test(phone.trim());
+  const valid = /^[0-9+\s()-]{10,}$/.test(phone.trim());
 
   const submit = () => {
     if (!valid) return;
     const lines: string[] = [
       "Merhaba! 👋 Geri arama talep ediyorum.",
       "",
-      `Ad Soyad: ${name.trim()}`,
+      ...(name.trim() ? [`Ad Soyad: ${name.trim()}`] : []),
       `Telefon: ${phone.trim()}`,
       `Konu: ${topic}`,
     ];
@@ -168,7 +168,7 @@ export function CallbackFab() {
                         Bilgilerinizi bırakın, en kısa sürede sizi WhatsApp veya telefon ile arayalım.
                       </p>
                       <label className="block">
-                        <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-foreground/70 mb-1.5 block">Adınız</span>
+                        <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-foreground/70 mb-1.5 block">Adınız (opsiyonel)</span>
                         <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Ör. Ahmet Yılmaz" autoFocus className="checkout-input" />
                       </label>
                       <label className="block">
