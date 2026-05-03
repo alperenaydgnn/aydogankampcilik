@@ -2,8 +2,16 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import {
-  BookOpen, Play, BarChart2, ClipboardList, HelpCircle,
-  ChevronRight, Download, CheckCircle2, ArrowRight, Youtube,
+  BookOpen,
+  Play,
+  BarChart2,
+  ClipboardList,
+  HelpCircle,
+  ChevronRight,
+  Download,
+  CheckCircle2,
+  ArrowRight,
+  Youtube,
 } from "lucide-react";
 import { SEO } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -46,7 +54,7 @@ const GUIDES = [
   },
   {
     slug: "olta-kurma",
-    title: "İlk Oltanızı Nasıl Kurarşınız?",
+    title: "İlk Oltanızı Nasıl Kurarsınız?",
     emoji: "🎣",
     level: "Başlangıç",
     readMin: 6,
@@ -116,12 +124,36 @@ const GUIDES = [
 
 /* YouTube video entries — video ID'leri buraya ekleyin */
 const VIDEOS: { id: string; title: string; desc: string; thumb?: string }[] = [
-  { id: "dQw4w9WgXcQ", title: "Çadır Kurma — Adım Adım", desc: "Tunnel çadır nasıl kurulur, kazık ve halat düzeni." },
-  { id: "dQw4w9WgXcQ", title: "Palomar Düğümü Nasıl Atılır?", desc: "En sağlam olta düğümü tekniği — 2 dakikada öğrenin." },
-  { id: "dQw4w9WgXcQ", title: "Yem Hazırlama Teknikleri", desc: "Solucan, mısır, ekmek hamuru — her yem için doğru kancalama." },
-  { id: "dQw4w9WgXcQ", title: "Uyku Tulumu Seçimi", desc: "Sentetik mi, tüy mü? Konfor sıcaklığı nasıl okunur?" },
-  { id: "dQw4w9WgXcQ", title: "Kamp Mutfağı Kurulumu", desc: "Taşınabilir gaz ocağı, tencere sistemi ve yakıt hesabı." },
-  { id: "dQw4w9WgXcQ", title: "Doğru Kamp Yeri Bulmak", desc: "Harita okuma, alan değerlendirme ve rüzgar yönü analizi." },
+  {
+    id: "dQw4w9WgXcQ",
+    title: "Çadır Kurma — Adım Adım",
+    desc: "Tunnel çadır nasıl kurulur, kazık ve halat düzeni.",
+  },
+  {
+    id: "dQw4w9WgXcQ",
+    title: "Palomar Düğümü Nasıl Atılır?",
+    desc: "En sağlam olta düğümü tekniği — 2 dakikada öğrenin.",
+  },
+  {
+    id: "dQw4w9WgXcQ",
+    title: "Yem Hazırlama Teknikleri",
+    desc: "Solucan, mısır, ekmek hamuru — her yem için doğru kancalama.",
+  },
+  {
+    id: "dQw4w9WgXcQ",
+    title: "Uyku Tulumu Seçimi",
+    desc: "Sentetik mi, tüy mü? Konfor sıcaklığı nasıl okunur?",
+  },
+  {
+    id: "dQw4w9WgXcQ",
+    title: "Kamp Mutfağı Kurulumu",
+    desc: "Taşınabilir gaz ocağı, tencere sistemi ve yakıt hesabı.",
+  },
+  {
+    id: "dQw4w9WgXcQ",
+    title: "Doğru Kamp Yeri Bulmak",
+    desc: "Harita okuma, alan değerlendirme ve rüzgar yönü analizi.",
+  },
 ];
 
 const COMPARISONS = [
@@ -129,30 +161,70 @@ const COMPARISONS = [
     title: "Hangi Olta Makinesini Almalıyım?",
     emoji: "🎣",
     options: [
-      { name: "Ön Frenli Makara", best: "Genel tatlı su avcılığı", pros: ["Kolay kullanım", "Uygun fiyat", "Geniş misina kapasitesi"], cons: ["Kastinge uygun değil"] },
-      { name: "Baitcasting Makara", best: "Predatör & kastinq", pros: ["Hassas fren ayarı", "Güçlü volan", "Mesafe kontrolü"], cons: ["Öğrenme eğrisi yüksek"] },
-      { name: "Olta İpi Makarası", best: "Kanyon & derine dal", pros: ["Çok derin su", "Az sarma direnci"], cons: ["Hassas sunumda zayıf"] },
+      {
+        name: "Ön Frenli Makara",
+        best: "Genel tatlı su avcılığı",
+        pros: ["Kolay kullanım", "Uygun fiyat", "Geniş misina kapasitesi"],
+        cons: ["Kastinge uygun değil"],
+      },
+      {
+        name: "Baitcasting Makara",
+        best: "Predatör & kastinq",
+        pros: ["Hassas fren ayarı", "Güçlü volan", "Mesafe kontrolü"],
+        cons: ["Öğrenme eğrisi yüksek"],
+      },
+      {
+        name: "Olta İpi Makarası",
+        best: "Kanyon & derine dal",
+        pros: ["Çok derin su", "Az sarma direnci"],
+        cons: ["Hassas sunumda zayıf"],
+      },
     ],
   },
   {
     title: "3-Mevsim mi, 4-Mevsim Çadır mı?",
     emoji: "⛺",
     options: [
-      { name: "3-Mevsim Çadır", best: "İlkbahar–Sonbahar", pros: ["Hafif", "İyi havalandırma", "Uygun fiyat"], cons: ["Yoğun kışa dayanmaz"] },
-      { name: "4-Mevsim Çadır", best: "Tüm yıl / Kış / Yüksek irtifa", pros: ["Kar yüküne dayanır", "Rüzgar direnci yüksek"], cons: ["Ağır", "Pahalı", "Yaz aylarında sıcak"] },
+      {
+        name: "3-Mevsim Çadır",
+        best: "İlkbahar–Sonbahar",
+        pros: ["Hafif", "İyi havalandırma", "Uygun fiyat"],
+        cons: ["Yoğun kışa dayanmaz"],
+      },
+      {
+        name: "4-Mevsim Çadır",
+        best: "Tüm yıl / Kış / Yüksek irtifa",
+        pros: ["Kar yüküne dayanır", "Rüzgar direnci yüksek"],
+        cons: ["Ağır", "Pahalı", "Yaz aylarında sıcak"],
+      },
     ],
   },
   {
     title: "Şişme Mat mı, Köpük Mat mı?",
     emoji: "🛏️",
     options: [
-      { name: "Şişme Mat", best: "Konfor öncelikli kamp", pros: ["Yüksek konfor", "İnce ve kompakt", "R-değeri ayarlanabilir"], cons: ["Delinme riski", "Şişirme gerektirir"] },
-      { name: "Kapalı Hücreli Köpük Mat", best: "Dayanıklılık & hafiflik", pros: ["Kırılmaz", "Ucuz", "Nem geçirmez"], cons: ["Kalın ve hacimli", "Daha az konforlu"] },
+      {
+        name: "Şişme Mat",
+        best: "Konfor öncelikli kamp",
+        pros: ["Yüksek konfor", "İnce ve kompakt", "R-değeri ayarlanabilir"],
+        cons: ["Delinme riski", "Şişirme gerektirir"],
+      },
+      {
+        name: "Kapalı Hücreli Köpük Mat",
+        best: "Dayanıklılık & hafiflik",
+        pros: ["Kırılmaz", "Ucuz", "Nem geçirmez"],
+        cons: ["Kalın ve hacimli", "Daha az konforlu"],
+      },
     ],
   },
 ];
 
-const CHECKLISTS: { season: string; emoji: string; color: string; items: string[] }[] = [
+const CHECKLISTS: {
+  season: string;
+  emoji: string;
+  color: string;
+  items: string[];
+}[] = [
   {
     season: "Yaz Kampı",
     emoji: "☀️",
@@ -226,7 +298,6 @@ const CHECKLISTS: { season: string; emoji: string; color: string; items: string[
       "Kuru el mendili + el dezenfektanı",
       "Güneş koruyucu ve şapka",
       "Yedek misina makarası",
-      "Avlak ruhsatı fotokopisi",
       "Su geçirmez çanta veya kılıf",
     ],
   },
@@ -260,32 +331,59 @@ const QUIZ_STEPS = [
   },
 ];
 
-function getRecommendation(ans: string[]): { title: string; desc: string; gear: string[]; href: string } {
+function getRecommendation(ans: string[]): {
+  title: string;
+  desc: string;
+  gear: string[];
+  href: string;
+} {
   const [loc, size, season] = ans;
-  if (season === "winter") return {
-    title: "4-Mevsim Geodesic Çadır + −10°C Tulum",
-    desc: "Kış koşulları için en sağlam setup. Yüksek rüzgar ve kar yüküne dayanır.",
-    gear: ["4-mevsim geodesic çadır", "−10°C konfor tulumu", "R≥5 şişme mat", "Kar kazıkları"],
-    href: "/urunler/kamp-cadirlari",
-  };
-  if (season === "spring" && loc === "mountain") return {
-    title: "3-Mevsim Tunnel Çadır + +5°C Tulum",
-    desc: "Yayla geceleri için hafif ama korumalı setup. Yağmura karşı 3000mm+ su sütunu kritik.",
-    gear: ["+5°C konfor tulumu", "3-mevsim tunnel çadır", "R≥3 mat", "Yağmurluk"],
-    href: "/urunler/kamp-cadirlari",
-  };
-  if (size === "large") return {
-    title: "Büyük Cabin / Dome Çadır + Uyku Takımı",
-    desc: "5+ kişi için geniş hacimli cabin çadır; oturma alanı ve konforu yüksek.",
-    gear: ["Büyük dome çadır (5+ kişilik)", "+10°C tulum (her kişiye)", "Şişme mat takımı"],
-    href: "/urunler/kamp-cadirlari",
-  };
-  if (loc === "flat" && season === "summer") return {
-    title: "Yaz Çift Duvar Çadır + Battaniye Tulum",
-    desc: "Sahilde rüzgar ve nem için çift duvar, sıcak geceler için hafif uyku örtüsü yeterli.",
-    gear: ["Yaz çadırı (tam mesh iç)", "+10°C battaniye tulum", "Soğutucu çanta"],
-    href: "/urunler/kamp-cadirlari",
-  };
+  if (season === "winter")
+    return {
+      title: "4-Mevsim Geodesic Çadır + −10°C Tulum",
+      desc: "Kış koşulları için en sağlam setup. Yüksek rüzgar ve kar yüküne dayanır.",
+      gear: [
+        "4-mevsim geodesic çadır",
+        "−10°C konfor tulumu",
+        "R≥5 şişme mat",
+        "Kar kazıkları",
+      ],
+      href: "/urunler/kamp-cadirlari",
+    };
+  if (season === "spring" && loc === "mountain")
+    return {
+      title: "3-Mevsim Tunnel Çadır + +5°C Tulum",
+      desc: "Yayla geceleri için hafif ama korumalı setup. Yağmura karşı 3000mm+ su sütunu kritik.",
+      gear: [
+        "+5°C konfor tulumu",
+        "3-mevsim tunnel çadır",
+        "R≥3 mat",
+        "Yağmurluk",
+      ],
+      href: "/urunler/kamp-cadirlari",
+    };
+  if (size === "large")
+    return {
+      title: "Büyük Cabin / Dome Çadır + Uyku Takımı",
+      desc: "5+ kişi için geniş hacimli cabin çadır; oturma alanı ve konforu yüksek.",
+      gear: [
+        "Büyük dome çadır (5+ kişilik)",
+        "+10°C tulum (her kişiye)",
+        "Şişme mat takımı",
+      ],
+      href: "/urunler/kamp-cadirlari",
+    };
+  if (loc === "flat" && season === "summer")
+    return {
+      title: "Yaz Çift Duvar Çadır + Battaniye Tulum",
+      desc: "Sahilde rüzgar ve nem için çift duvar, sıcak geceler için hafif uyku örtüsü yeterli.",
+      gear: [
+        "Yaz çadırı (tam mesh iç)",
+        "+10°C battaniye tulum",
+        "Soğutucu çanta",
+      ],
+      href: "/urunler/kamp-cadirlari",
+    };
   return {
     title: "3-Mevsim Tunnel Çadır + +5°C Tulum",
     desc: "Her koşul için güvenilir, dengeli bir başlangıç seti.",
@@ -295,7 +393,7 @@ function getRecommendation(ans: string[]): { title: string; desc: string; gear: 
 }
 
 /* ── Checklist download ─────────────────────────────────────── */
-function downloadChecklist(cl: typeof CHECKLISTS[0]) {
+function downloadChecklist(cl: (typeof CHECKLISTS)[0]) {
   const text = [
     `AYDOĞAN KAMPÇILIK — ${cl.season.toUpperCase()} KONTROL LİSTESİ`,
     `${"─".repeat(50)}`,
@@ -303,7 +401,7 @@ function downloadChecklist(cl: typeof CHECKLISTS[0]) {
     ...cl.items.map((item, i) => `[ ] ${i + 1}. ${item}`),
     "",
     `─`.repeat(50),
-    "www.aydogankamcilik.com.tr",
+    "www.aydogankampcilik.com.tr",
   ].join("\n");
   const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -318,11 +416,27 @@ function downloadChecklist(cl: typeof CHECKLISTS[0]) {
 type Tab = "rehberler" | "videolar" | "karsilastirma" | "listeler" | "quiz";
 
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: "rehberler",    label: "Rehberler",      icon: <BookOpen className="w-3.5 h-3.5" /> },
-  { id: "videolar",     label: "Video Kütüphanesi", icon: <Play className="w-3.5 h-3.5" /> },
-  { id: "karsilastirma",label: "Karşılaştırma",  icon: <BarChart2 className="w-3.5 h-3.5" /> },
-  { id: "listeler",     label: "Kontrol Listeleri", icon: <ClipboardList className="w-3.5 h-3.5" /> },
-  { id: "quiz",         label: "Quiz",            icon: <HelpCircle className="w-3.5 h-3.5" /> },
+  {
+    id: "rehberler",
+    label: "Rehberler",
+    icon: <BookOpen className="w-3.5 h-3.5" />,
+  },
+  {
+    id: "videolar",
+    label: "Video Kütüphanesi",
+    icon: <Play className="w-3.5 h-3.5" />,
+  },
+  {
+    id: "karsilastirma",
+    label: "Karşılaştırma",
+    icon: <BarChart2 className="w-3.5 h-3.5" />,
+  },
+  {
+    id: "listeler",
+    label: "Kontrol Listeleri",
+    icon: <ClipboardList className="w-3.5 h-3.5" />,
+  },
+  { id: "quiz", label: "Quiz", icon: <HelpCircle className="w-3.5 h-3.5" /> },
 ];
 
 /* ════════════════════════════════════════════════════════════ */
@@ -331,9 +445,11 @@ export default function Academy() {
   const [openGuide, setOpenGuide] = useState<string | null>(null);
 
   /* Quiz state */
-  const [step, setStep]     = useState(0);
+  const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
-  const [result, setResult] = useState<ReturnType<typeof getRecommendation> | null>(null);
+  const [result, setResult] = useState<ReturnType<
+    typeof getRecommendation
+  > | null>(null);
 
   function pickAnswer(val: string) {
     const next = [...answers, val];
@@ -368,10 +484,13 @@ export default function Academy() {
           <h1 className="editorial-heading text-5xl md:text-6xl lg:text-7xl mt-4">
             Bil, hazırlan,
             <br />
-            <em className="italic font-light text-foreground/65">doğaya çık.</em>
+            <em className="italic font-light text-foreground/65">
+              doğaya çık.
+            </em>
           </h1>
           <p className="text-foreground/65 leading-relaxed font-light text-base md:text-lg max-w-2xl mt-6">
-            Başlangıç rehberlerinden video derslerine, mevsimlik ekipman listelerine ve kişisel öneri quiz'ine — her şey burada.
+            Başlangıç rehberlerinden video derslerine, mevsimlik ekipman
+            listelerine ve kişisel öneri quiz'ine — her şey burada.
           </p>
         </div>
       </section>
@@ -408,15 +527,19 @@ export default function Academy() {
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.25 }}
         >
-
           {/* ══ REHBERler ══ */}
           {tab === "rehberler" && (
             <section className="section container px-6 max-w-6xl">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {GUIDES.map((g) => (
-                  <div key={g.slug} className="border border-foreground/10 hover:border-secondary/50 transition-colors">
+                  <div
+                    key={g.slug}
+                    className="border border-foreground/10 hover:border-secondary/50 transition-colors"
+                  >
                     <button
-                      onClick={() => setOpenGuide(openGuide === g.slug ? null : g.slug)}
+                      onClick={() =>
+                        setOpenGuide(openGuide === g.slug ? null : g.slug)
+                      }
                       className="w-full text-left p-6"
                     >
                       <div className="flex items-start justify-between gap-3 mb-3">
@@ -428,10 +551,17 @@ export default function Academy() {
                       <h3 className="font-serif text-xl text-primary font-medium tracking-tight leading-snug mb-2">
                         {g.title}
                       </h3>
-                      <p className="text-sm text-foreground/60 font-light leading-relaxed mb-4">{g.desc}</p>
+                      <p className="text-sm text-foreground/60 font-light leading-relaxed mb-4">
+                        {g.desc}
+                      </p>
                       <div className="flex items-center justify-between text-[0.62rem] uppercase tracking-[0.16em] font-bold text-foreground/45">
                         <span>{g.readMin} dk okuma</span>
-                        <span className={cn("transition-transform duration-200", openGuide === g.slug ? "rotate-90" : "")}>
+                        <span
+                          className={cn(
+                            "transition-transform duration-200",
+                            openGuide === g.slug ? "rotate-90" : "",
+                          )}
+                        >
                           <ChevronRight className="w-3.5 h-3.5" />
                         </span>
                       </div>
@@ -449,7 +579,10 @@ export default function Academy() {
                           <div className="border-t border-foreground/10 px-6 py-5">
                             <ul className="space-y-3 mb-5">
                               {g.points.map((pt) => (
-                                <li key={pt} className="flex items-start gap-2.5 text-sm text-foreground/80 font-light leading-snug">
+                                <li
+                                  key={pt}
+                                  className="flex items-start gap-2.5 text-sm text-foreground/80 font-light leading-snug"
+                                >
                                   <CheckCircle2 className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
                                   {pt}
                                 </li>
@@ -459,7 +592,8 @@ export default function Academy() {
                               href={g.href}
                               className="link-hairline hover:text-secondary inline-flex items-center gap-1 text-[0.65rem]"
                             >
-                              İlgili ürünlere bak <ArrowRight className="w-3 h-3" />
+                              İlgili ürünlere bak{" "}
+                              <ArrowRight className="w-3 h-3" />
                             </Link>
                           </div>
                         </motion.div>
@@ -477,13 +611,17 @@ export default function Academy() {
               <div className="flex items-start gap-3 mb-8 p-4 border border-secondary/30 bg-secondary/5">
                 <Youtube className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
                 <p className="text-sm text-foreground/70 font-light">
-                  Video kütüphanesi — kendi YouTube videolarınızı eklemek için video ID'lerini paylaşabilirsiniz.
-                  Her kart, YouTube embed olarak doğrudan yüklenir.
+                  Video kütüphanesi — kendi YouTube videolarınızı eklemek için
+                  video ID'lerini paylaşabilirsiniz. Her kart, YouTube embed
+                  olarak doğrudan yüklenir.
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {VIDEOS.map((v, i) => (
-                  <div key={i} className="border border-foreground/10 overflow-hidden group hover:border-secondary/40 transition-colors">
+                  <div
+                    key={i}
+                    className="border border-foreground/10 overflow-hidden group hover:border-secondary/40 transition-colors"
+                  >
                     <div className="aspect-video bg-foreground/5 relative overflow-hidden">
                       <iframe
                         src={`https://www.youtube.com/embed/${v.id}`}
@@ -498,7 +636,9 @@ export default function Academy() {
                       <h3 className="font-serif text-base text-primary font-medium tracking-tight leading-snug mb-1">
                         {v.title}
                       </h3>
-                      <p className="text-xs text-foreground/55 font-light">{v.desc}</p>
+                      <p className="text-xs text-foreground/55 font-light">
+                        {v.desc}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -518,32 +658,57 @@ export default function Academy() {
                         {comp.title}
                       </h2>
                     </div>
-                    <div className={cn(
-                      "grid gap-6",
-                      comp.options.length === 2 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 md:grid-cols-3",
-                    )}>
+                    <div
+                      className={cn(
+                        "grid gap-6",
+                        comp.options.length === 2
+                          ? "grid-cols-1 md:grid-cols-2"
+                          : "grid-cols-1 md:grid-cols-3",
+                      )}
+                    >
                       {comp.options.map((opt) => (
-                        <div key={opt.name} className="border border-foreground/10 p-6">
-                          <h3 className="font-serif text-lg text-primary font-medium mb-1">{opt.name}</h3>
+                        <div
+                          key={opt.name}
+                          className="border border-foreground/10 p-6"
+                        >
+                          <h3 className="font-serif text-lg text-primary font-medium mb-1">
+                            {opt.name}
+                          </h3>
                           <p className="text-[0.65rem] uppercase tracking-[0.16em] font-bold text-secondary mb-4">
                             En iyi: {opt.best}
                           </p>
                           <div className="mb-3">
-                            <div className="text-[0.6rem] uppercase tracking-[0.16em] font-bold text-foreground/50 mb-2">Artıları</div>
+                            <div className="text-[0.6rem] uppercase tracking-[0.16em] font-bold text-foreground/50 mb-2">
+                              Artıları
+                            </div>
                             <ul className="space-y-1.5">
                               {opt.pros.map((p) => (
-                                <li key={p} className="flex items-start gap-2 text-sm text-foreground/80 font-light">
-                                  <span className="text-green-600 font-bold mt-0.5">+</span> {p}
+                                <li
+                                  key={p}
+                                  className="flex items-start gap-2 text-sm text-foreground/80 font-light"
+                                >
+                                  <span className="text-green-600 font-bold mt-0.5">
+                                    +
+                                  </span>{" "}
+                                  {p}
                                 </li>
                               ))}
                             </ul>
                           </div>
                           <div>
-                            <div className="text-[0.6rem] uppercase tracking-[0.16em] font-bold text-foreground/50 mb-2">Eksileri</div>
+                            <div className="text-[0.6rem] uppercase tracking-[0.16em] font-bold text-foreground/50 mb-2">
+                              Eksileri
+                            </div>
                             <ul className="space-y-1.5">
                               {opt.cons.map((c) => (
-                                <li key={c} className="flex items-start gap-2 text-sm text-foreground/80 font-light">
-                                  <span className="text-red-500 font-bold mt-0.5">−</span> {c}
+                                <li
+                                  key={c}
+                                  className="flex items-start gap-2 text-sm text-foreground/80 font-light"
+                                >
+                                  <span className="text-red-500 font-bold mt-0.5">
+                                    −
+                                  </span>{" "}
+                                  {c}
                                 </li>
                               ))}
                             </ul>
@@ -561,18 +726,27 @@ export default function Academy() {
           {tab === "listeler" && (
             <section className="section container px-6 max-w-5xl">
               <p className="text-foreground/60 font-light mb-10 text-sm max-w-xl">
-                Her liste TXT formatında indirilir; dilediğiniz notlar uygulamasına yapıştırabilir veya yazdırabilirsiniz.
+                Her liste TXT formatında indirilir; dilediğiniz notlar
+                uygulamasına yapıştırabilir veya yazdırabilirsiniz.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {CHECKLISTS.map((cl) => (
-                  <div key={cl.season} className="border border-foreground/10 p-6">
+                  <div
+                    key={cl.season}
+                    className="border border-foreground/10 p-6"
+                  >
                     <div className="flex items-center gap-3 mb-4">
                       <span className="text-2xl">{cl.emoji}</span>
-                      <h3 className="font-serif text-xl text-primary font-medium tracking-tight">{cl.season}</h3>
+                      <h3 className="font-serif text-xl text-primary font-medium tracking-tight">
+                        {cl.season}
+                      </h3>
                     </div>
                     <ul className="space-y-2 mb-6">
                       {cl.items.slice(0, 5).map((item) => (
-                        <li key={item} className="flex items-center gap-2.5 text-sm text-foreground/75 font-light">
+                        <li
+                          key={item}
+                          className="flex items-center gap-2.5 text-sm text-foreground/75 font-light"
+                        >
                           <span
                             className="w-1.5 h-1.5 rounded-full shrink-0"
                             style={{ background: cl.color }}
@@ -642,7 +816,10 @@ export default function Academy() {
 
                     {step > 0 && (
                       <button
-                        onClick={() => { setStep(s => s - 1); setAnswers(a => a.slice(0, -1)); }}
+                        onClick={() => {
+                          setStep((s) => s - 1);
+                          setAnswers((a) => a.slice(0, -1));
+                        }}
                         className="mt-6 text-xs uppercase tracking-[0.18em] font-bold text-foreground/45 hover:text-foreground transition-colors"
                       >
                         ← Geri
@@ -661,7 +838,9 @@ export default function Academy() {
                     <h2 className="font-serif text-2xl md:text-3xl text-primary font-medium tracking-tight mb-4 leading-snug">
                       {result.title}
                     </h2>
-                    <p className="text-base text-foreground/65 font-light leading-relaxed mb-6">{result.desc}</p>
+                    <p className="text-base text-foreground/65 font-light leading-relaxed mb-6">
+                      {result.desc}
+                    </p>
 
                     <div className="mb-8">
                       <div className="text-[0.62rem] uppercase tracking-[0.18em] font-bold text-foreground/50 mb-3">
@@ -669,7 +848,10 @@ export default function Academy() {
                       </div>
                       <ul className="space-y-2">
                         {result.gear.map((g) => (
-                          <li key={g} className="flex items-center gap-2.5 text-sm text-foreground/80 font-light">
+                          <li
+                            key={g}
+                            className="flex items-center gap-2.5 text-sm text-foreground/80 font-light"
+                          >
                             <CheckCircle2 className="w-4 h-4 text-secondary shrink-0" />
                             {g}
                           </li>
@@ -696,7 +878,6 @@ export default function Academy() {
               </div>
             </section>
           )}
-
         </motion.div>
       </AnimatePresence>
     </>
