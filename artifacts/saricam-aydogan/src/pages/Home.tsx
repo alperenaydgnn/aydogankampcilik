@@ -9,7 +9,7 @@ import {
   buildOrganizationSchema,
   buildWebSiteSchema,
 } from "@/lib/schemas";
-import { getFeaturedProducts, getCategories } from "@/lib/data";
+import { getProducts, getCategories } from "@/lib/data";
 import { Product, Category } from "@/lib/mockData";
 import { ProductCard } from "@/components/ProductCard";
 import { CategoryCard } from "@/components/CategoryCard";
@@ -26,7 +26,7 @@ export default function Home() {
   const [loading, setLoading]       = useState(true);
 
   useEffect(() => {
-    Promise.all([getFeaturedProducts(6), getCategories()]).then(([p, c]) => {
+    Promise.all([getProducts({ limit: 24 }), getCategories()]).then(([p, c]) => {
       setProducts(p);
       setCategories(c);
       setLoading(false);
@@ -215,14 +215,14 @@ export default function Home() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-14 md:gap-x-10 md:gap-y-20">
-              {[1, 2, 3, 4, 5, 6].map(i => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-10">
+              {Array.from({ length: 24 }).map((_, i) => (
                 <div key={i} className="aspect-[4/5] skeleton" />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-14 md:gap-x-10 md:gap-y-20">
-              {products.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-10">
+              {products.map((p, i) => <ProductCard key={p.id} product={p} index={i} compact />)}
             </div>
           )}
         </div>

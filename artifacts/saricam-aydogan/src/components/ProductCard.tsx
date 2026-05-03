@@ -51,7 +51,7 @@ function StockBadge({ status }: { status: StockStatus }) {
 }
 
 /* ── Main card (Editorial / Meridian) ─────────────────── */
-export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
+export function ProductCard({ product, index = 0, compact = false }: { product: Product; index?: number; compact?: boolean }) {
   const categories = useCategories();
   const category = categories.find(c => c.id === product.category_id);
   const isOOS = product.stock_status === "out_of_stock";
@@ -141,9 +141,9 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         </Link>
 
         {/* Editorial body */}
-        <div className="flex flex-col flex-1 pt-6 gap-3">
-          {/* Category eyebrow */}
-          {category && (
+        <div className={cn("flex flex-col flex-1 gap-3", compact ? "pt-3 gap-1.5" : "pt-6")}>
+          {/* Category eyebrow — hidden in compact to keep card tight */}
+          {category && !compact && (
             <span className="text-[0.65rem] font-bold uppercase tracking-[0.22em] text-foreground/45 inline-flex items-center gap-2">
               <span className="inline-block w-3 h-px bg-foreground/30 group-hover:w-6 group-hover:bg-secondary transition-all duration-500 ease-out" />
               {category.name}
@@ -153,8 +153,11 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
 
           {/* Title (Fraunces) — animated underline draw */}
           <Link href={`/urun/${product.slug}`} className="flex-1">
-            <h3 className="font-serif font-light text-xl md:text-2xl leading-snug text-primary tracking-tight line-clamp-2
-                           group-hover:text-secondary transition-colors duration-300 inline-block">
+            <h3 className={cn(
+              "font-serif font-light leading-snug text-primary tracking-tight line-clamp-2",
+              "group-hover:text-secondary transition-colors duration-300 inline-block",
+              compact ? "text-sm md:text-[0.95rem]" : "text-xl md:text-2xl"
+            )}>
               <span className="bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat bg-[length:0%_1px] bg-[position:0_100%]
                                group-hover:bg-[length:100%_1px] transition-[background-size] duration-700 ease-out">
                 {product.name}
@@ -163,57 +166,61 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           </Link>
 
           {/* Stock + Price row */}
-          <div className="flex items-baseline justify-between pt-2">
+          <div className={cn("flex items-baseline justify-between", compact ? "pt-0" : "pt-2")}>
             <span
               className={cn(
                 "font-serif",
                 product.price_numeric
-                  ? "text-primary text-lg font-medium tracking-tight"
-                  : "text-foreground/50 text-sm italic"
+                  ? cn("text-primary font-medium tracking-tight", compact ? "text-sm" : "text-lg")
+                  : cn("text-foreground/50 italic", compact ? "text-[0.7rem]" : "text-sm")
               )}
             >
               {product.price_label}
             </span>
-            {product.stock_status && product.stock_status !== "in_stock" ? (
+            {!compact && (product.stock_status && product.stock_status !== "in_stock" ? (
               <StockBadge status={product.stock_status} />
             ) : (
               <span className="inline-flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.18em] text-emerald-700">
                 <span className="w-1 h-1 rounded-full bg-emerald-600 animate-pulse-soft" />
                 Stokta
               </span>
-            )}
+            ))}
           </div>
 
           {/* Hairline that grows on hover */}
-          <div className="relative h-px w-full bg-foreground/10 mt-2 overflow-hidden">
-            <span aria-hidden
-              className="absolute inset-y-0 left-0 w-0 bg-secondary group-hover:w-full transition-[width] duration-700 ease-out" />
-          </div>
+          {!compact && (
+            <div className="relative h-px w-full bg-foreground/10 mt-2 overflow-hidden">
+              <span aria-hidden
+                className="absolute inset-y-0 left-0 w-0 bg-secondary group-hover:w-full transition-[width] duration-700 ease-out" />
+            </div>
+          )}
 
-          {/* CTA */}
-          <div className="pt-1">
-            {isOOS ? (
-              <OutOfStockButton size="sm" fullWidth />
-            ) : (
-              <WhatsAppButton
-                message={waMessage}
-                tracking={{
-                  event: "product_order",
-                  source: "product_card",
-                  product_id: product.id,
-                  product_name: product.name,
-                  product_slug: product.slug,
-                  category_id: product.category_id,
-                  category_name: category?.name,
-                  price_numeric: product.price_numeric ?? undefined,
-                }}
-                size="sm"
-                fullWidth
-                label="WhatsApp ile Sipariş"
-                onClick={e => e.stopPropagation()}
-              />
-            )}
-          </div>
+          {/* CTA — hidden in compact (arrow chip on image acts as CTA) */}
+          {!compact && (
+            <div className="pt-1">
+              {isOOS ? (
+                <OutOfStockButton size="sm" fullWidth />
+              ) : (
+                <WhatsAppButton
+                  message={waMessage}
+                  tracking={{
+                    event: "product_order",
+                    source: "product_card",
+                    product_id: product.id,
+                    product_name: product.name,
+                    product_slug: product.slug,
+                    category_id: product.category_id,
+                    category_name: category?.name,
+                    price_numeric: product.price_numeric ?? undefined,
+                  }}
+                  size="sm"
+                  fullWidth
+                  label="WhatsApp ile Sipariş"
+                  onClick={e => e.stopPropagation()}
+                />
+              )}
+            </div>
+          )}
         </div>
       </motion.div>
     </motion.article>
