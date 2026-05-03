@@ -161,11 +161,11 @@ export async function subscribePush(): Promise<PushState> {
     }
     try { localStorage.setItem(PUSH_KEY, "1"); } catch { /* noop */ }
     // Fire a welcome notification so the user sees confirmation
-    await reg.showNotification("Sarıçam Aydoğan", {
+    await reg.showNotification("Aydoğan Kampçılık", {
       body: "Bildirimler açıldı. Yeni ürün, kampanya ve stok haberlerini ileteceğiz.",
       icon: "/icons/icon-192.svg",
       badge: "/icons/icon-192.svg",
-      tag: "saricam-welcome",
+      tag: "aydogan-welcome",
     });
     return "subscribed";
   } catch (err) {

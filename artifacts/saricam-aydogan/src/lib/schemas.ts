@@ -2,22 +2,22 @@
    JSON-LD Schema builders — reusable structured data for all pages
    ───────────────────────────────────────────────────────────────── */
 
-export const SITE_URL  = "https://saricamaydogan.com";
-export const SITE_NAME = "Sarıçam Aydoğan Kamp & Balık Malzemeleri";
+export const SITE_URL  = "https://aydogankampcilik.com";
+export const SITE_NAME = "Aydoğan Kampçılık — Kamp & Balık Malzemeleri";
 export const SITE_PHONE       = "+905551234567";
 export const SITE_PHONE_HUMAN = "+90 555 123 45 67";
-export const SITE_EMAIL       = "info@saricamaydogan.com";
+export const SITE_EMAIL       = "info@aydogankampcilik.com";
 export const SITE_ADDRESS = {
-  street:  "Cumhuriyet Mah. Sahil Cd. No:42",
-  city:    "Trabzon",
-  region:  "Trabzon",
+  street:  "Sarıçam Mah. Atatürk Cd. No:18",
+  city:    "Adana",
+  region:  "Adana",
   country: "TR",
-  postal:  "61000",
+  postal:  "01320",
 };
-export const SITE_GEO          = { lat: 41.0015, lng: 39.7178 };
+export const SITE_GEO          = { lat: 37.0167, lng: 35.4500 };
 export const SITE_HOURS_HUMAN  = "Pzt – Cmt: 09:00 – 19:00";
 export const SITE_ADDRESS_FULL =
-  "Cumhuriyet Mah. Sahil Cd. No:42, Merkez / Trabzon";
+  "Sarıçam Mah. Atatürk Cd. No:18, Sarıçam / Adana";
 export const SITE_PRICE_RANGE  = "₺₺";
 export const SITE_HERO_IMAGE   = `${SITE_URL}/mock/hero.jpg`;
 
@@ -29,7 +29,7 @@ export function buildLocalBusinessSchema() {
     "@id": `${SITE_URL}/#business`,
     name: SITE_NAME,
     description:
-      "Trabzon'da kamp malzemeleri, balık malzemeleri ve outdoor ekipmanları mağazası. " +
+      "Adana Sarıçam'da kamp malzemeleri, balık malzemeleri ve outdoor ekipmanları mağazası. " +
       "Kamp çadırı, olta takımı, kamp feneri ve balıkçı malzemelerinde 15 yıllık tecrübe.",
     url: SITE_URL,
     telephone: SITE_PHONE,
@@ -69,10 +69,10 @@ export function buildLocalBusinessSchema() {
       width:  512,
       height: 512,
     },
-    hasMap: "https://maps.app.goo.gl/saricam-aydogan",
+    hasMap: "https://maps.app.goo.gl/aydogankampcilik",
     keywords:
       "kamp malzemeleri, balık malzemeleri, olta ekipmanları, kamp çadırı, " +
-      "balıkçı malzemeleri, outdoor ekipmanları, Trabzon",
+      "balıkçı malzemeleri, outdoor ekipmanları, Adana, Sarıçam, Toros",
     sameAs: [],
   };
 }

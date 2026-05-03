@@ -15,7 +15,7 @@ const NAMES = [
 
 const TITLES = [
   "Kalitesi tam beklediğim gibi",
-  "Trabzon'dan bir gün içinde geldi",
+  "Adana'dan bir gün içinde geldi",
   "Bayram tatilinde test ettim, harika",
   "Fiyat/performans şahane",
   "Olta arkadaşıma da aldım",
@@ -24,9 +24,9 @@ const TITLES = [
 ];
 
 const BODIES = [
-  "Ürünü Karadeniz sahilinde test ettim — gerçekten dayanıklı, kalitesi yüksek. Magaza ekibinin tavsiyesi doğru çıktı, başkalarına da öneririm.",
+  "Ürünü Seyhan kıyısında test ettim — gerçekten dayanıklı, kalitesi yüksek. Mağaza ekibinin tavsiyesi doğru çıktı, başkalarına da öneririm.",
   "Daha önce farklı markaları denedim ama bu kategoride en memnun kaldıklarımdan. Detaylar düşünülmüş, paketleme de özenliydi.",
-  "Online sipariş ettim, ertesi gün elimdeydi. WhatsApp'tan sorularıma birkaç dakika içinde cevap geldi. Teşekkürler Sarıçam Aydoğan.",
+  "Online sipariş ettim, ertesi gün elimdeydi. WhatsApp'tan sorularıma birkaç dakika içinde cevap geldi. Teşekkürler Aydoğan Kampçılık.",
   "Fiyatına göre çok başarılı bir ürün. Bir hafta yoğun kullandım, hiçbir sorun yaşamadım. Aradığını bilen herkese tavsiye ederim.",
   "Mağazaya gittim, tam istediğim ürünü vitrindekinden farklı bir varyantla gösterdiler — yardımcı olduğunuz için teşekkürler.",
   "Bayağı ağır kullanımda dahi yıpranma yok. Genelde 1-2 sezon sonra eskimeleri başlardı, bu seferki çok daha iyi.",

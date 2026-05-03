@@ -27,7 +27,7 @@ export const translations = {
     "mobile.instagram": "Instagram",
 
     // Footer
-    "footer.brandLine": "Karadeniz'in vahşi doğasına.",
+    "footer.brandLine": "Torosların eteklerinden doğaya.",
     "footer.brandLineEm": "Hazır mıyız.",
     "footer.cta": "WhatsApp'tan Yazın",
     "footer.col.discover": "Keşfet",
@@ -38,7 +38,7 @@ export const translations = {
     "footer.shipping": "Teslimat & Sipariş",
     "footer.policy": "Mağaza Politikası",
     "footer.privacy": "KVKK & Gizlilik",
-    "footer.copyright": "Trabzon — Doğanın Kalbinde",
+    "footer.copyright": "Adana Sarıçam — Doğanın Kapısı",
 
     // Categories (footer)
     "cat.tents": "Çadırlar",
@@ -74,7 +74,7 @@ export const translations = {
     "mobile.whatsapp": "Message on WhatsApp",
     "mobile.instagram": "Instagram",
 
-    "footer.brandLine": "Into the wild Black Sea.",
+    "footer.brandLine": "From Sarıçam to the wild.",
     "footer.brandLineEm": "Ready when you are.",
     "footer.cta": "Message on WhatsApp",
     "footer.col.discover": "Discover",
@@ -85,7 +85,7 @@ export const translations = {
     "footer.shipping": "Shipping & Orders",
     "footer.policy": "Store Policy",
     "footer.privacy": "Privacy & GDPR",
-    "footer.copyright": "Trabzon — Heart of nature",
+    "footer.copyright": "Adana Sarıçam — Gateway to Nature",
 
     "cat.tents": "Tents",
     "cat.fishing": "Rods & Reels",

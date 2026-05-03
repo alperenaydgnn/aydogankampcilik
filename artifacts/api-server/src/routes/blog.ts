@@ -6,18 +6,18 @@ import { loadPosts, getPostBySlug } from "../lib/postStore";
 const router: IRouter = Router();
 
 const CURATED_TOPICS = [
-  { slug: "kackar-yaylalarinda-yaz-kampi-rehberi", title: "Kaçkar Yaylalarında Yaz Kampı Rehberi", category: "rehber" },
-  { slug: "karadenizde-alabalik-tutmanin-puf-noktalari", title: "Karadeniz'de Alabalık Tutmanın Püf Noktaları", category: "balık" },
+  { slug: "adana-saricam-toros-kamp-rotalari", title: "Adana Sarıçam'dan Toros'a Kamp Rotaları", category: "rehber" },
+  { slug: "seyhan-barajinda-sazan-avcilik", title: "Seyhan Barajı'nda Sazan ve Yayın Avcılığı", category: "balık" },
   { slug: "ilk-kampinizi-kurarken-bilmeniz-gereken-10-sey", title: "İlk Kampınızı Kurarken Bilmeniz Gereken 10 Şey", category: "kamp" },
   { slug: "kis-kampi-icin-uyku-tulumu-secimi", title: "Kış Kampı İçin Uyku Tulumu Seçimi", category: "ekipman" },
-  { slug: "trabzon-uzungol-ve-cevresinde-kamp-noktalari", title: "Trabzon Uzungöl ve Çevresinde Kamp Noktaları", category: "rehber" },
+  { slug: "pozanti-ve-torosta-en-iyi-kamp-noktalari", title: "Pozantı ve Toros'ta En İyi Kamp Noktaları", category: "rehber" },
   { slug: "olta-takimi-secerken-dikkat-edilmesi-gerekenler", title: "Olta Takımı Seçerken Dikkat Edilmesi Gerekenler", category: "ekipman" },
   { slug: "dogada-su-aritma-yontemleri-ve-cihazlar", title: "Doğada Su Arıtma Yöntemleri ve Cihazlar", category: "outdoor" },
-  { slug: "sonbahar-balik-tutma-takvimi-karadeniz", title: "Sonbahar Balık Tutma Takvimi — Karadeniz", category: "balık" },
+  { slug: "sonbahar-balik-tutma-takvimi-seyhan-ceyhan", title: "Sonbahar Balık Tutma Takvimi — Seyhan ve Ceyhan", category: "balık" },
   { slug: "ailecek-kamp-icin-buyuk-cadir-onerileri", title: "Ailecek Kamp İçin Büyük Çadır Önerileri", category: "ekipman" },
-  { slug: "yagmurlu-havada-kamp-kurma-teknikleri", title: "Yağmurlu Havada Kamp Kurma Teknikleri", category: "kamp" },
-  { slug: "ayder-yaylasinda-haftasonu-kampi", title: "Ayder Yaylasında Hafta Sonu Kampı", category: "rehber" },
-  { slug: "lufer-sezonunda-en-iyi-spinning-takimlari", title: "Lüfer Sezonunda En İyi Spinning Takımları", category: "balık" },
+  { slug: "adana-yazinda-kamp-sicakla-basa-cikma", title: "Adana Yazında Kamp: Sıcakla Başa Çıkma Teknikleri", category: "kamp" },
+  { slug: "tufanbeyli-yaylasinda-haftasonu-kampi", title: "Tufanbeyli Yaylasında Hafta Sonu Kampı", category: "rehber" },
+  { slug: "cipura-levrek-sezonunda-en-iyi-spinning-takimlari", title: "Çipura ve Levrek Sezonunda En İyi Spinning Takımları", category: "balık" },
 ];
 
 /* ── GET /api/blog/topics ─────────────────────────────────── */

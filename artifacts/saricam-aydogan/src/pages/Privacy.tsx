@@ -11,9 +11,9 @@ export default function Privacy() {
     <div className="min-h-screen bg-background">
       <SEO
         title="KVKK & Gizlilik Politikası"
-        description="Sarıçam Aydoğan kişisel verilerin korunması ve gizlilik politikası. Verilerinizi nasıl topladığımız, kullandığımız ve koruduğumuz hakkında bilgi."
+        description="Aydoğan Kampçılık kişisel verilerin korunması ve gizlilik politikası. Verilerinizi nasıl topladığımız, kullandığımız ve koruduğumuz hakkında bilgi."
         url="/kvkk"
-        keywords="KVKK, gizlilik politikası, kişisel veriler, Sarıçam Aydoğan KVKK"
+        keywords="KVKK, gizlilik politikası, kişisel veriler, Aydoğan Kampçılık KVKK"
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(

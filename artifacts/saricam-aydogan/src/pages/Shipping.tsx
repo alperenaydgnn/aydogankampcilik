@@ -17,9 +17,9 @@ export default function Shipping() {
     <div className="min-h-screen bg-background">
       <SEO
         title="Teslimat & Sipariş Bilgileri"
-        description="Sarıçam Aydoğan kargo, teslimat ve sipariş bilgileri. Türkiye geneli kargo süreleri, ödeme seçenekleri ve hassas ürünlerde özel paketleme detayları."
+        description="Aydoğan Kampçılık kargo, teslimat ve sipariş bilgileri. Türkiye geneli kargo süreleri, ödeme seçenekleri ve hassas ürünlerde özel paketleme detayları."
         url="/teslimat"
-        keywords="kamp malzemeleri kargo, balık malzemeleri teslimat, Türkiye geneli kargo, kapıda ödeme, Trabzon Sarıçam Aydoğan"
+        keywords="kamp malzemeleri kargo, balık malzemeleri teslimat, Türkiye geneli kargo, kapıda ödeme, Adana Sarıçam Aydoğan Kampçılık"
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(
@@ -92,8 +92,8 @@ export default function Shipping() {
 
           <div className="border-t border-foreground/15">
             {[
-              { area: "Trabzon Şehir İçi",                     time: "Aynı gün — 1 iş günü", note: "Mağazadan elden veya motokurye seçeneği mevcut." },
-              { area: "Karadeniz Bölgesi & Komşu İller",       time: "1 – 2 iş günü",          note: "Anlaşmalı kargo firmaları ile hızlı teslimat." },
+              { area: "Adana Şehir İçi",                       time: "Aynı gün — 1 iş günü", note: "Mağazadan elden veya motokurye seçeneği mevcut." },
+              { area: "Akdeniz Bölgesi & Komşu İller",         time: "1 – 2 iş günü",          note: "Anlaşmalı kargo firmaları ile hızlı teslimat." },
               { area: "Türkiye Geneli",                        time: "1 – 3 iş günü",          note: "Doğu illeri ve adalar için 1 iş günü ek süre olabilir." },
             ].map((row) => (
               <div

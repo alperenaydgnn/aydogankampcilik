@@ -42,7 +42,7 @@ export default function Events() {
     <>
       <SEO
         title="Etkinlik Takvimi — Av yasakları, sezonlar, festivaller"
-        description="Karadeniz ve Türkiye geneli kamp festivalleri, balık-av sezonları, av yasakları takvimi. Mevsim önerileri ve ekipman bağlantıları."
+        description="Adana, Akdeniz ve Türkiye geneli kamp festivalleri, balık-av sezonları, av yasakları takvimi. Mevsim önerileri ve ekipman bağlantıları."
       />
 
       {/* Hero */}
@@ -57,7 +57,7 @@ export default function Events() {
             <em className="italic font-light text-foreground/65">ritmi.</em>
           </h1>
           <p className="text-foreground/65 leading-relaxed font-light text-base md:text-lg max-w-2xl mt-6">
-            Sezon başlangıçları, av yasakları, yayla şenlikleri ve doğa gözlemleri — Karadeniz odağında bir takvim.
+            Sezon başlangıçları, av yasakları, yayla şenlikleri ve doğa gözlemleri — Adana ve Toros odağında bir takvim.
           </p>
         </div>
       </section>

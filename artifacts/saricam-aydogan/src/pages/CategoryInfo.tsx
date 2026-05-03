@@ -25,9 +25,9 @@ const categoryGuides: Record<string, CategoryGuide> = {
   "cadirlar": {
     slug: "cadirlar",
     whyItMatters:
-      "Karadeniz'in iklimi, ülkenin geri kalanından farklı bir tempoda hareket eder. Lodos rüzgarı, ani yağışlar ve dağ ayazı; çadır seçimini doğrudan etkileyen unsurlardır. Doğru bir çadır, sadece bir gecelik konfor değil; kötü hava koşullarında güvenlik anlamına gelir.",
+      "Adana ve Toros iklimi, mevsime göre büyük farklılıklar gösterir. Yaz sıcağı, ani Toros yağışları ve dağ ayazı; çadır seçimini doğrudan etkileyen unsurlardır. Doğru bir çadır, sadece bir gecelik konfor değil; kötü hava koşullarında güvenlik anlamına gelir.",
     buyingTips: [
-      { title: "Su Sütunu Değeri",  desc: "3000 mm ve üzeri su sütunu Karadeniz yağışlarında güvenli kabul edilir. 5000 mm'lik modeller uzun yağmurlarda da kuru tutar." },
+      { title: "Su Sütunu Değeri",  desc: "3000 mm ve üzeri su sütunu Toros yağışlarında güvenli kabul edilir. 5000 mm'lik modeller uzun yağmurlarda da kuru tutar." },
       { title: "Kapasite",          desc: "Belirtilen kişi sayısının bir altını tercih edin. 4 kişilik çadır, 3 kişi için en konforlusudur — çanta ve ekipman için yer kalır." },
       { title: "Mevsim Sınıfı",     desc: "3 mevsim çadırlar bahar, yaz, güz; 4 mevsim çadırlar kış kampı ve yüksek rakım için uygundur." },
       { title: "Pol Malzemesi",     desc: "Alüminyum poller fiberglasa göre rüzgara çok daha dayanıklıdır. Uzun ömür için yatırıma değer." },
@@ -35,7 +35,7 @@ const categoryGuides: Record<string, CategoryGuide> = {
       { title: "Ağırlık & Hacim",   desc: "Trekking için 2 kg altı, araç kampı için ağırlık önemli değildir; alanı geniş seçin." },
     ],
     faqs: [
-      { q: "Karadeniz'de hangi çadır türü daha uygun?", a: "3 mevsim, alüminyum poll ve en az 3000 mm su sütunlu modeller bölgemizde rahatlıkla kullanılabilir. Yüksek rakımda kamp planlıyorsanız 4 mevsim modelleri tercih edin." },
+      { q: "Adana ve Toros'ta hangi çadır türü daha uygun?", a: "3 mevsim, alüminyum poll ve en az 3000 mm su sütunlu modeller bölgemizde rahatlıkla kullanılabilir. Yüksek rakımda kamp planlıyorsanız 4 mevsim modelleri tercih edin." },
       { q: "Çadır ne kadar dayanır?",                    a: "Bakımına özen gösterilen kaliteli bir kamp çadırı 8-10 sezon rahatlıkla kullanılabilir. Kuru kaldırılması ve UV'ye uzun süre maruz bırakılmaması ömrünü ikiye katlar." },
       { q: "Tek kişilik çadır almak yeterli mi?",        a: "Solo seyahat ediyorsanız evet; ancak kamp eşyalarınızı içeride tutmak isterseniz 2 kişilik bir trekking çadırı daha pratik olur." },
     ],
@@ -43,13 +43,13 @@ const categoryGuides: Record<string, CategoryGuide> = {
   "olta-ve-makine": {
     slug: "olta-ve-makine",
     whyItMatters:
-      "Olta-makine ikilisi, balık avının altyapısıdır. Yanlış kombinasyon size hem doğru atışı hem de kavrama gücünü sağlamaz. Karadeniz'de levrek, lüfer, palamut, mezgit gibi farklı türler farklı setler ister.",
+      "Olta-makine ikilisi, balık avının altyapısıdır. Yanlış kombinasyon size hem doğru atışı hem de kavrama gücünü sağlamaz. Seyhan ve Ceyhan havzasında sazan, yayın, levrek gibi farklı türler farklı setler ister.",
     buyingTips: [
       { title: "Aksiyon Türü",        desc: "Fast / Medium / Slow aksiyon kamışlar farklı tekniklere göre tasarlanır. Surf için fast, jigging için medium-fast yaygın tercihtir." },
       { title: "Kamış Boyu",          desc: "Kıyıdan surf için 3.5–4 m, kayıktan jigging için 1.8–2.1 m kamışlar idealdir." },
       { title: "Atış Ağırlığı (LB)",  desc: "Atacağınız kurşun ağırlığına uyumlu LB seçin. 50-100 g arası genel amaçlı kullanım için iyidir." },
       { title: "Makine Gear Oranı",   desc: "Yüksek gear (6.2:1 ve üzeri) hızlı sarım, düşük gear (4.8:1) yüksek tork sağlar. Hangi balığı hedeflediğinize göre seçin." },
-      { title: "Tuzlu Suya Dayanım",  desc: "Salt-water sınıfı makineler tuza karşı korumalı yataklara sahiptir. Karadeniz için bu özellik şarttır." },
+      { title: "Tuzlu Suya Dayanım",  desc: "Salt-water sınıfı makineler tuza karşı korumalı yataklara sahiptir. Akdeniz kıyı balıkçılığı için bu özellik şarttır." },
       { title: "Karbon vs Fiber",     desc: "Karbon kamışlar daha hassas, fiber kamışlar daha dayanıklıdır. Yeni başlayanlar için karışım kompozitler ideal." },
     ],
     faqs: [
@@ -115,14 +115,14 @@ const categoryGuides: Record<string, CategoryGuide> = {
   "olta-aksesuarlari": {
     slug: "olta-aksesuarlari",
     whyItMatters:
-      "Av başarısının %50'si doğru aksesuarda gizlidir. En iyi olta-makine takımı bile yanlış yem ve iğne ile beklenen sonucu vermez. Karadeniz'in farklı türlerine farklı aksesuar gerekir.",
+      "Av başarısının %50'si doğru aksesuarda gizlidir. En iyi olta-makine takımı bile yanlış yem ve iğne ile beklenen sonucu vermez. Adana ve Akdeniz'in farklı türlerine farklı aksesuar gerekir.",
     buyingTips: [
       { title: "Sahte Yem Türü",       desc: "Levrek için 8-12cm jig yem, lüfer için 5-8cm metal kaşık, palamut için canlı görünümlü swimbait verimlidir." },
       { title: "İğne Numarası",         desc: "Hedef balığa göre seçin: hamsi 14-16, mezgit 8-10, levrek 4-6, lüfer 2-4 numara iğne uygundur." },
       { title: "Misina Türü",           desc: "Mono ana ipek için 0.30-0.40 mm, fluoro carbon mahmuzlu uçlar (görünmez) için 0.20-0.30 mm yaygın." },
       { title: "Misina Çekme Kuvveti",  desc: "Atılacak yük + balık ağırlığının 1.5 katı çekme dayanımına sahip misina seçin." },
       { title: "Fırdöndü & Kanal Tela", desc: "Misinayı dolanmaktan korur, set ömrünü uzatır. Paslanmaz çelik modeller tuzlu suya uygundur." },
-      { title: "İğne Malzemesi",        desc: "Karbon çelik iğneler keskindir ama paslanır. Nikel veya teflon kaplı modeller Karadeniz için ideal." },
+      { title: "İğne Malzemesi",        desc: "Karbon çelik iğneler keskindir ama paslanır. Nikel veya teflon kaplı modeller tuzlu ve tatlı su için idealdir." },
     ],
     faqs: [
       { q: "Yeni başlayanlar için hangi yem seti?", a: "Karma bir başlangıç seti (silikon yemler + birkaç metal kaşık + canlı görünümlü swimbait) farklı denemelere imkan tanır." },
@@ -139,7 +139,7 @@ const categoryGuides: Record<string, CategoryGuide> = {
       { title: "Survival Kit",         desc: "Çakmaktaşı, ıslık, mini pusula, sargı bezi ve termal battaniye içeren kompakt setler temel ihtiyacı karşılar." },
       { title: "Pusula & GPS",         desc: "Akıllı telefon yetersiz kaldığında manyetik pusula şarj gerektirmez. Sıvı yastıklı modeller hassas okuma sağlar." },
       { title: "Yağmurluk & Termal",   desc: "Su geçirmez kalitesini değil; nefes alma kapasitesini de kontrol edin (örn: Gore-Tex)." },
-      { title: "Eldiven & Şapka",      desc: "Karadeniz dağında ısı 5-10°C ani düşebilir. Termal eldiven ve fes hep çantanızda olsun." },
+      { title: "Eldiven & Şapka",      desc: "Toros dağında ısı 5-10°C ani düşebilir. Termal eldiven ve fes hep çantanızda olsun." },
       { title: "Su Filtresi",          desc: "Uzun trekkinglerde mikro-filtreli su şişeleri / pipetleri ağır su taşımaktan kurtarır." },
     ],
     faqs: [
@@ -169,7 +169,7 @@ export default function CategoryInfo() {
     <div className="min-h-screen bg-background">
       <SEO
         title={`${meta.heroTitle} Rehberi — Doğru Seçim İpuçları`}
-        description={`${meta.heroTitle} kategorisinde nelere dikkat etmeli? Karadeniz koşullarına uygun seçim ipuçları, sık sorulan sorular ve uzman tavsiyeleri.`}
+        description={`${meta.heroTitle} kategorisinde nelere dikkat etmeli? Adana ve Toros koşullarına uygun seçim ipuçları, sık sorulan sorular ve uzman tavsiyeleri.`}
         url={`/kategori/${slug}`}
         keywords={meta.keywords.join(", ")}
       />

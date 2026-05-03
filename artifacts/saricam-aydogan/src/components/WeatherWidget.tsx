@@ -6,10 +6,10 @@ import { fetchWeather, recommendGear, type WeatherSnapshot } from "@/lib/weather
 import { cn } from "@/lib/utils";
 
 const PRESETS = [
-  { name: "Trabzon Merkez", lat: 40.992, lon: 39.7202 },
-  { name: "Uzungöl", lat: 40.6189, lon: 40.2972 },
-  { name: "Ayder Yaylası", lat: 40.9472, lon: 41.0878 },
-  { name: "Pokut Yaylası", lat: 40.9047, lon: 41.0231 },
+  { name: "Adana Sarıçam", lat: 37.0167, lon: 35.4500 },
+  { name: "Pozantı (Toros)", lat: 37.4244, lon: 34.8853 },
+  { name: "Seyhan Barajı", lat: 37.1017, lon: 35.3017 },
+  { name: "Tufanbeyli", lat: 38.2706, lon: 36.8256 },
 ];
 
 export function WeatherWidget({ className }: { className?: string }) {

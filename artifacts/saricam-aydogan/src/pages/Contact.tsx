@@ -35,10 +35,10 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="İletişim — Trabzon Kamp & Balık Mağazası"
-        description="Sarıçam Aydoğan'a Trabzon merkezde mağaza adresimizden, telefondan veya WhatsApp üzerinden ulaşabilirsiniz. Çalışma saatleri, harita ve yol tarifi."
+        title="İletişim — Adana Sarıçam Kamp & Balık Mağazası"
+        description="Aydoğan Kampçılık'a Adana Sarıçam'daki mağaza adresimizden, telefondan veya WhatsApp üzerinden ulaşabilirsiniz. Çalışma saatleri, harita ve yol tarifi."
         url="/iletisim"
-        keywords="Sarıçam Aydoğan iletişim, Trabzon kamp mağazası adres, balık malzemeleri Trabzon telefon, WhatsApp sipariş"
+        keywords="Aydoğan Kampçılık iletişim, Adana kamp mağazası adres, balık malzemeleri Adana telefon, WhatsApp sipariş"
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(buildLocalBusinessSchema())}</script>
@@ -127,7 +127,7 @@ export default function Contact() {
         <div className="container px-6">
           <SectionHeading
             eyebrow="Mağazamız"
-            title="Trabzon'da bizi"
+            title="Adana Sarıçam'da bizi"
             italicAccent="ziyaret edin."
             subtitle="Mağazamızda ürünleri inceleyebilir, yıllarca dayanacak doğru ekipman seçimi için danışabilirsiniz."
             align="center"
@@ -137,7 +137,7 @@ export default function Contact() {
             {/* Map */}
             <div className="lg:col-span-3 overflow-hidden border border-foreground/15">
               <iframe
-                title="Sarıçam Aydoğan Mağaza Konumu — Trabzon"
+                title="Aydoğan Kampçılık Mağaza Konumu — Adana"
                 src={mapSrc}
                 className="w-full h-[420px] lg:h-full border-0"
                 loading="lazy"
@@ -175,7 +175,7 @@ export default function Contact() {
                   <ul className="space-y-2 font-serif font-light text-lg text-foreground/80 leading-snug">
                     <li>— Ürünleri elden inceleyin</li>
                     <li>— Av ve kamp planınız için danışın</li>
-                    <li>— Karadeniz'e özgü tavsiyeler alın</li>
+                    <li>— Adana ve Toros'a özgü tavsiyeler alın</li>
                   </ul>
                 </div>
               </div>

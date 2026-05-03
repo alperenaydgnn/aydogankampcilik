@@ -13,12 +13,12 @@ interface SEOProps {
 }
 
 const DEFAULT_DESCRIPTION =
-  "Trabzon'da kamp malzemeleri, balık malzemeleri ve outdoor ekipmanları. " +
+  "Adana Sarıçam'da kamp malzemeleri, balık malzemeleri ve outdoor ekipmanları. " +
   "Kamp çadırı, olta takımı, kamp feneri ve balıkçı malzemeleri. WhatsApp ile hızlı sipariş.";
 const DEFAULT_IMAGE = "/mock/hero.jpg";
 const DEFAULT_KEYWORDS =
   "kamp malzemeleri, balık malzemeleri, olta ekipmanları, kamp çadırı, " +
-  "balıkçı malzemeleri, outdoor ekipmanları, kamp ekipmanları, Trabzon";
+  "balıkçı malzemeleri, outdoor ekipmanları, kamp ekipmanları, Adana, Sarıçam, Toros";
 
 export function SEO({
   title,
@@ -30,7 +30,7 @@ export function SEO({
   noindex    = false,
   canonical,
 }: SEOProps) {
-  const siteTitle      = title ? `${title} | Sarıçam Aydoğan` : SITE_NAME;
+  const siteTitle      = title ? `${title} | Aydoğan Kampçılık` : SITE_NAME;
   const metaDescription = description || DEFAULT_DESCRIPTION;
   const metaImage      = image
     ? (image.startsWith("http") ? image : `${SITE_URL}${image}`)
@@ -58,7 +58,7 @@ export function SEO({
       <meta property="og:image:width"  content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:locale"      content="tr_TR" />
-      <meta property="og:site_name"   content="Sarıçam Aydoğan" />
+      <meta property="og:site_name"   content="Aydoğan Kampçılık" />
 
       <meta name="twitter:card"        content="summary_large_image" />
       <meta name="twitter:url"         content={canonicalHref} />

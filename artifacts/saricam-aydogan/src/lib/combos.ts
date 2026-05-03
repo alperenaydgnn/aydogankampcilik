@@ -39,7 +39,7 @@ export const COMBOS: Combo[] = [
   {
     id: "combo-olta-avci",
     name: "Olta Avcısı Paketi",
-    tagline: "Karadeniz levrek avı için",
+    tagline: "Adana ve Akdeniz levrek avı için",
     description: "Fırtına Karbon Olta Kamışı + Levrek Pro Jigging Seti — birlikte alana %12 indirim.",
     productSlugs: [
       "firtina-karbon-spin-olta-kamisi-270cm",

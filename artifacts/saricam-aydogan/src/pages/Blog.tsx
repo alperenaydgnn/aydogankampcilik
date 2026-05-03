@@ -41,8 +41,8 @@ export default function Blog() {
   return (
     <>
       <SEO
-        title="Kampçılık Rehberi — Sarıçam Aydoğan Blog"
-        description="Karadeniz kamp ve balıkçılık rehberi. Yayla rotaları, ekipman önerileri, mevsim takvimleri ve uzman tavsiyeleri."
+        title="Kampçılık Rehberi — Aydoğan Kampçılık Blog"
+        description="Adana, Sarıçam ve Toros kamp ve balıkçılık rehberi. Kamp rotaları, ekipman önerileri, mevsim takvimleri ve uzman tavsiyeleri."
       />
 
       {/* Hero */}
@@ -57,7 +57,7 @@ export default function Blog() {
             <em className="italic font-light text-foreground/65">sözlüğü.</em>
           </h1>
           <p className="text-foreground/65 leading-relaxed font-light text-base md:text-lg max-w-2xl mt-6">
-            Karadeniz coğrafyasından somut, denenmiş bilgi. Yayla rotaları, balıkçılık püf noktaları,
+            Adana Sarıçam ve Toros coğrafyasından somut, denenmiş bilgi. Kamp rotaları, balıkçılık püf noktaları,
             ekipman seçim rehberleri ve mevsim takvimleri.
           </p>
         </div>

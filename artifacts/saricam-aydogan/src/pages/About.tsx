@@ -13,10 +13,10 @@ export default function About() {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Hakkımızda — Trabzon Kamp & Balık Malzemeleri Mağazası"
-        description="Sarıçam Aydoğan, 1995'ten beri Trabzon'da kamp malzemeleri, balık malzemeleri ve outdoor ekipmanları satışı yapan güvenilir mağazanızdır. Karadeniz tecrübesi, kişisel danışmanlık."
+        title="Hakkımızda — Adana Sarıçam Kamp & Balık Malzemeleri Mağazası"
+        description="Aydoğan Kampçılık, 1995'ten beri Adana Sarıçam'da kamp malzemeleri, balık malzemeleri ve outdoor ekipmanları satışı yapan güvenilir mağazanızdır. Toros tecrübesi, kişisel danışmanlık."
         url="/hakkimizda"
-        keywords="Sarıçam Aydoğan, Trabzon kamp malzemeleri, Trabzon balık malzemeleri, kamp mağazası Trabzon, outdoor ekipmanları Trabzon"
+        keywords="Aydoğan Kampçılık, Adana kamp malzemeleri, Sarıçam balık malzemeleri, kamp mağazası Adana, outdoor ekipmanları Adana"
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(buildLocalBusinessSchema())}</script>
@@ -26,7 +26,7 @@ export default function About() {
         eyebrow="Hakkımızda"
         title="Doğaya duyulan saygı,"
         italicAccent="yılların tecrübesi."
-        subtitle="1995'ten beri Karadeniz'in hırçın doğasında denediğimiz, güvendiğimiz ekipmanları sizlerle buluşturuyoruz."
+        subtitle="1995'ten beri Toros eteklerinde denediğimiz, güvendiğimiz ekipmanları sizlerle buluşturuyoruz."
         breadcrumbs={[{ label: "Anasayfa", href: "/" }, { label: "Hakkımızda" }]}
       />
 
@@ -43,7 +43,7 @@ export default function About() {
               </p>
               <p className="text-foreground/65 text-lg leading-relaxed font-light">
                 O zamanlar kaliteli malzeme bulmak zordu, iyi bir olta veya rüzgara
-                dayanan bir çadır için aylarca beklediğimiz olurdu. Sarıçam Aydoğan
+                dayanan bir çadır için aylarca beklediğimiz olurdu. Aydoğan Kampçılık
                 olarak hikayemiz, bu eksikliği kendi tecrübemizle doldurma kararı
                 almamızla şekillendi.
               </p>
@@ -69,7 +69,7 @@ export default function About() {
           <div className="aspect-[16/8] overflow-hidden bg-foreground/5">
             <BlurImage
               src={`${baseUrl}/mock/hero.jpg`}
-              alt="Karadeniz doğası"
+              alt="Adana Sarıçam doğası"
               wrapperClassName="w-full h-full"
               className="w-full h-full object-cover"
               loading="lazy"
@@ -92,7 +92,7 @@ export default function About() {
             {[
               { num: "01", title: "Dürüstlük", desc: "İhtiyacınız olmayan veya işinize yaramayacak hiçbir ürünü size tavsiye etmeyiz. Güven, her şeyden önemlidir." },
               { num: "02", title: "Aile Ortamı", desc: "Kapımızdan giren herkes bir müşteri değil, doğayı bizim kadar seven bir dosttur." },
-              { num: "03", title: "Yerel Tecrübe", desc: "Karadeniz'in sert lodosunu da, yayla ayazını da iyi biliriz. Tavsiyelerimiz yaşanmışlıklardan gelir." },
+              { num: "03", title: "Yerel Tecrübe", desc: "Toros'un sert rüzgarını da, yaz sıcağını da iyi biliriz. Tavsiyelerimiz yaşanmışlıklardan gelir." },
             ].map((val, idx) => (
               <motion.div
                 key={idx}
@@ -135,7 +135,7 @@ export default function About() {
               <div>
                 <span className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-white/45">Adres</span>
                 <p className="mt-4 font-light text-white/85 leading-relaxed">
-                  {settings.address ?? "Cumhuriyet Mah. Sahil Cd. No:42, Merkez / Trabzon"}
+                  {settings.address ?? "Sarıçam Mah. Atatürk Cd. No:18, Sarıçam / Adana"}
                 </p>
               </div>
               <div>
@@ -153,7 +153,7 @@ export default function About() {
               <div>
                 <span className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-white/45">E-posta</span>
                 <p className="mt-4 font-light text-white/85 leading-relaxed">
-                  {settings.email ?? "info@saricamaydogan.com"}
+                  {settings.email ?? "info@aydogankampcilik.com"}
                 </p>
               </div>
             </div>

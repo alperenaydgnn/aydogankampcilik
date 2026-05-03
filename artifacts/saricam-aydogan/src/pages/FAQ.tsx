@@ -60,8 +60,8 @@ const faqSections: FAQSection[] = [
         a: "Kargo ücreti ürünün hacmine, ağırlığına ve gönderildiği şehre göre değişir. Sipariş sırasında size net tutarı bildiriyoruz. Mağazadan teslim alımda kargo ücreti yoktur.",
       },
       {
-        q: "Trabzon içinde aynı gün teslim mümkün mü?",
-        a: "Trabzon şehir merkezindeyseniz mağazadan elden teslim alabilir veya aynı gün motokurye ile gönderim için bizimle WhatsApp'tan iletişime geçebilirsiniz.",
+        q: "Adana'da aynı gün teslim mümkün mü?",
+        a: "Adana şehir merkezindeyseniz mağazadan elden teslim alabilir veya aynı gün motokurye ile gönderim için bizimle WhatsApp'tan iletişime geçebilirsiniz.",
       },
     ],
   },
@@ -79,7 +79,7 @@ const faqSections: FAQSection[] = [
       },
       {
         q: "Hangi ürünü almam gerektiğine emin değilim, yardımcı olur musunuz?",
-        a: "Tabii. WhatsApp'tan ne için kullanacağınızı anlatmanız yeterli. Karadeniz koşullarına uygun, bütçenize ve kullanım amacınıza en yakın ürünü birlikte belirleriz.",
+        a: "Tabii. WhatsApp'tan ne için kullanacağınızı anlatmanız yeterli. Adana ve Toros koşullarına uygun, bütçenize ve kullanım amacınıza en yakın ürünü birlikte belirleriz.",
       },
     ],
   },
@@ -107,7 +107,7 @@ const faqSections: FAQSection[] = [
     items: [
       {
         q: "Mağazanız nerede?",
-        a: "Mağazamız Trabzon merkezde, Cumhuriyet Mahallesi'nde yer alıyor. Yol tarifi için İletişim sayfamızdaki haritayı kullanabilirsiniz.",
+        a: "Mağazamız Adana Sarıçam ilçesinde yer alıyor. Yol tarifi için İletişim sayfamızdaki haritayı kullanabilirsiniz.",
       },
       {
         q: "Çalışma saatleriniz nedir?",
@@ -115,7 +115,7 @@ const faqSections: FAQSection[] = [
       },
       {
         q: "Kaç yıldır faaliyettesiniz?",
-        a: "1995'ten bu yana Trabzon'da kamp ve balık malzemeleri satışı yapıyoruz. Tecrübemiz, hem ürün seçimimize hem de tavsiyelerimize yansır.",
+        a: "1995'ten bu yana Adana Sarıçam'da kamp ve balık malzemeleri satışı yapıyoruz. Tecrübemiz, hem ürün seçimimize hem de tavsiyelerimize yansır.",
       },
     ],
   },
@@ -131,9 +131,9 @@ export default function FAQ() {
     <div className="min-h-screen bg-background">
       <SEO
         title="Sık Sorulan Sorular — Sipariş, Kargo, Ödeme"
-        description="Sarıçam Aydoğan'a en çok sorulan sorular: sipariş, kargo, ödeme, iade, garanti ve mağaza ile ilgili tüm cevaplar tek sayfada."
+        description="Aydoğan Kampçılık'a en çok sorulan sorular: sipariş, kargo, ödeme, iade, garanti ve mağaza ile ilgili tüm cevaplar tek sayfada."
         url="/sss"
-        keywords="sık sorulan sorular, kamp malzemeleri sipariş, kargo, iade, ödeme, Sarıçam Aydoğan SSS"
+        keywords="sık sorulan sorular, kamp malzemeleri sipariş, kargo, iade, ödeme, Aydoğan Kampçılık SSS"
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(buildFAQSchema(allFaqs))}</script>

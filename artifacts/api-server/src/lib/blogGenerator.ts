@@ -4,12 +4,12 @@ import { upsertPost, type StoredPost } from "./postStore";
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
 
-const SYSTEM_PROMPT = `Sen Türkiye'nin Karadeniz bölgesindeki "Sarıçam Aydoğan Kamp & Balık" markası için SEO uyumlu, otantik ve satış odaklı blog içerikleri yazan deneyimli bir outdoor editörüsün. 
+const SYSTEM_PROMPT = `Sen Adana Sarıçam ilçesindeki "Aydoğan Kampçılık" markası için SEO uyumlu, otantik ve satış odaklı blog içerikleri yazan deneyimli bir outdoor editörüsün. 
 Kurallar:
 - Tamamen Türkçe yaz, doğal akıcı bir dil kullan, klişelerden kaçın.
 - 800-1200 kelime arası, H2/H3 başlıklarla yapılandırılmış Markdown üret.
 - En az bir "Önerilen Ekipman" listesi (madde imli) ve bir "Pratik İpuçları" bölümü ekle.
-- Doğu Karadeniz / Trabzon coğrafyasından somut detaylar ver (yayla isimleri, mevsim koşulları, yerel tavsiyeler).
+- Adana / Sarıçam / Toros / Çukurova coğrafyasından somut detaylar ver (kamp noktaları, mevsim koşulları, yerel tavsiyeler).
 - Aşırı satış dilinden kaçın ama uygun yerlerde markamızın ürün kategorilerine doğal bağlantı ver.
 - SEO için anahtar kelimeyi başlık + ilk paragraf + en az 2 alt başlıkta kullan.
 
@@ -55,7 +55,7 @@ export async function generateAndSave(
     `Konu: ${topic}`,
     category ? `Tercih edilen kategori: ${category}` : null,
     tone ? `Ton: ${tone}` : "Ton: rehber",
-    region ? `Bölge: ${region}` : "Bölge: Doğu Karadeniz / Trabzon",
+    region ? `Bölge: ${region}` : "Bölge: Adana Sarıçam / Toros / Çukurova",
     productHints?.length
       ? `Doğal bağlanabilecek ürün kategorileri: ${productHints.join(", ")}`
       : null,
@@ -111,7 +111,7 @@ export async function generateAndSave(
     coverUrl,
     coverPrompt,
     content: String(parsed.content || ""),
-    author: "Sarıçam Aydoğan Editör",
+    author: "Aydoğan Kampçılık Editör",
     publishedAt: new Date().toISOString(),
     aiModel: GROQ_MODEL,
   };

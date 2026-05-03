@@ -47,7 +47,7 @@ export default function AdminLogin() {
             <Trees className="w-10 h-10 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-serif text-2xl font-bold">Sarıçam Aydoğan</h1>
+            <h1 className="font-serif text-2xl font-bold">Aydoğan Kampçılık</h1>
             <p className="text-muted-foreground text-sm mt-1">Admin Paneli</p>
           </div>
         </div>
@@ -81,7 +81,7 @@ export default function AdminLogin() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="admin@saricamaydogan.com"
+                      placeholder="admin@aydogankampcilik.com"
                       autoComplete="email"
                       autoFocus
                       required

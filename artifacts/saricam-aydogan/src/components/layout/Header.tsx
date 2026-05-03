@@ -196,7 +196,7 @@ export function Header() {
               onDark ? "text-white" : "text-primary"
             )}
           >
-            Sarıçam Aydoğan<span className="italic text-secondary">.</span>
+            Aydoğan Kampçılık<span className="italic text-secondary">.</span>
           </span>
         </Link>
 

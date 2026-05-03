@@ -80,7 +80,7 @@ type FAQ = { q: string; a: string };
 const CATEGORY_FAQS: Record<string, FAQ[]> = {
   "c-1": [
     { q: "Çadır kurulumu zor mu?", a: "Çadırlarımızın büyük çoğunluğu tek kişinin 5-10 dakikada kurabileceği sisteme sahiptir. Ürün sayfasındaki teknik özelliklere bakarak kurulum tipi hakkında bilgi edinebilir, detaylar için WhatsApp'tan bize ulaşabilirsiniz." },
-    { q: "Su geçirmezlik kolon değeri ne anlama geliyor?", a: "Su geçirmezlik (mm cinsinden kolon değeri) tentin ne kadar su basıncına dayanabileceğini gösterir. 1500mm hafif yağmur için yeterliyken, Karadeniz iklimine uygun çadırlar için 3000mm ve üzeri önerilir." },
+    { q: "Su geçirmezlik kolon değeri ne anlama geliyor?", a: "Su geçirmezlik (mm cinsinden kolon değeri) tentin ne kadar su basıncına dayanabileceğini gösterir. 1500mm hafif yağmur için yeterliyken, Toros ve genel kamp kullanımı için 3000mm ve üzeri önerilir." },
     { q: "Kış koşullarında kullanılabilir mi?", a: "4 mevsim olarak etiketlenen çadırlarımız kar ve kuvvetli rüzgara karşı tasarlanmıştır. 3 mevsim modeller ise ilkbahar-yaz-sonbahar kullanımı için uygundur. Soğuk hava kullanımı için bize danışmanızı öneririz." },
   ],
   "c-2": [
@@ -113,7 +113,7 @@ const GENERAL_FAQS: FAQ[] = [
   { q: "Nasıl sipariş verebilirim?", a: "Sipariş vermek için 'WhatsApp ile Sipariş' butonuna basın. WhatsApp'ta ürün bilgisi otomatik gelir, biz de size stok durumu ve fiyatı teyit ederek kargo veya mağaza teslimi seçeneklerini bildiririz." },
   { q: "Türkiye genelinde kargo yapıyor musunuz?", a: "Evet! Türkiye'nin tüm illerine MNG Kargo ve Aras Kargo ile gönderim yapıyoruz. Siparişiniz saat 14:00'a kadar verildiğinde aynı iş günü kargoya verilir. Kargo ücreti ürün ve konuma göre değişir." },
   { q: "Ürünlerin garantisi var mı?", a: "Tüm ürünlerimiz orijinal ve üretici garantisi kapsamındadır. Garanti belgesi ürünle birlikte kargoya eklenir. Arıza veya garanti durumlarında bize WhatsApp'tan ulaşabilirsiniz." },
-  { q: "Mağazadan teslim alabilir miyim?", a: "Evet, Trabzon'daki mağazamızı ziyaret ederek ürünleri yerinde inceleyip satın alabilirsiniz. Mağaza adresimiz ve çalışma saatlerimiz için WhatsApp'tan bilgi alın." },
+  { q: "Mağazadan teslim alabilir miyim?", a: "Evet, Adana Sarıçam'daki mağazamızı ziyaret ederek ürünleri yerinde inceleyip satın alabilirsiniz. Mağaza adresimiz ve çalışma saatlerimiz için WhatsApp'tan bilgi alın." },
 ];
 
 function getFaqs(categoryId: string): FAQ[] {
@@ -424,7 +424,7 @@ export default function ProductDetail() {
     image: product.images,
     sku: product.id,
     category: category.name,
-    brand: { "@type": "Brand", name: "Sarıçam Aydoğan" },
+    brand: { "@type": "Brand", name: "Aydoğan Kampçılık" },
     offers: {
       "@type": "Offer",
       url: productUrl,
@@ -682,7 +682,7 @@ export default function ProductDetail() {
                 {[
                   { title: "Orijinal Ürün",   sub: "Üretici garantili" },
                   { title: "Aynı Gün Kargo",  sub: "Saat 14:00'a kadar" },
-                  { title: "Mağazadan Teslim",sub: "Trabzon merkez" },
+                  { title: "Mağazadan Teslim",sub: "Adana Sarıçam" },
                   { title: "7 Gün İade",       sub: "Hasar/arıza için" },
                 ].map((p) => (
                   <div key={p.title} className="flex flex-col">
@@ -746,7 +746,7 @@ export default function ProductDetail() {
                     num: "02",
                     title: "Mağazadan Teslim",
                     items: [
-                      "Trabzon'daki mağazamızdan ürünü bizzat teslim alabilirsiniz.",
+                      "Adana Sarıçam'daki mağazamızdan ürünü bizzat teslim alabilirsiniz.",
                       "Ziyaret öncesi WhatsApp'tan randevu almanızı öneririz.",
                       "Bazı ürünlerin demo modelleri mağazada incelenebilir.",
                     ],

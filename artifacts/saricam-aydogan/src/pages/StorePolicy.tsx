@@ -16,9 +16,9 @@ export default function StorePolicy() {
     <div className="min-h-screen bg-background">
       <SEO
         title="Mağaza Politikası — İade, Değişim, Garanti"
-        description="Sarıçam Aydoğan mağaza politikası: iade ve değişim koşulları, garanti kapsamı ve müşteri memnuniyeti taahhüdümüz. Şeffaf ve güven veren süreç."
+        description="Aydoğan Kampçılık mağaza politikası: iade ve değişim koşulları, garanti kapsamı ve müşteri memnuniyeti taahhüdümüz. Şeffaf ve güven veren süreç."
         url="/magaza-politikasi"
-        keywords="iade politikası, değişim, garanti, mağaza politikası, müşteri memnuniyeti, Sarıçam Aydoğan"
+        keywords="iade politikası, değişim, garanti, mağaza politikası, müşteri memnuniyeti, Aydoğan Kampçılık"
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(

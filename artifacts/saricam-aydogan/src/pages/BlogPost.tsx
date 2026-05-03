@@ -33,7 +33,7 @@ export default function BlogPostPage() {
   return (
     <>
       <SEO
-        title={`${post.title} — Sarıçam Aydoğan Blog`}
+        title={`${post.title} — Aydoğan Kampçılık Blog`}
         description={post.excerpt}
         image={post.coverUrl}
       />

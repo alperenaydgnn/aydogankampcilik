@@ -19,102 +19,102 @@ export type BlogPost = {
   aiModel?: string;
 };
 
-const STORAGE_KEY = "saricam.blog.posts.v1";
+const STORAGE_KEY = "aydogan.blog.posts.v1";
 
 /* ── Mock seed posts (always available) ─────────────────── */
 const seedPosts: BlogPost[] = [
   {
-    id: "kackar-yaylalarinda-yaz-kampi",
-    slug: "kackar-yaylalarinda-yaz-kampi",
-    title: "Kaçkar Yaylalarında Yaz Kampı: Tam Rehber",
+    id: "adana-sariçam-toros-kamp-rotalari",
+    slug: "adana-saricam-toros-kamp-rotalari",
+    title: "Adana Sarıçam'dan Toros'a Kamp Rotaları: Tam Rehber",
     excerpt:
-      "Kaçkar Dağları'nın yaylalarında haftalık bir kamp planı: Pokut, Sal, Ayder. Hangi ekipman, hangi rota, hangi mevsim — yerel tavsiyelerle.",
+      "Adana ve Toros eteklerinde kamp rotaları: Pozantı, Tufanbeyli, Aladağlar. Hangi ekipman, hangi rota, hangi mevsim — yerel tavsiyelerle.",
     category: "rehber",
-    tags: ["kaçkar", "yayla", "yaz kampı", "trekking"],
-    keywords: ["kaçkar yayla kampı", "pokut yaylası kamp", "sal yaylası", "rize yayla rehberi"],
+    tags: ["toros", "adana", "yaz kampı", "pozantı", "aladağlar"],
+    keywords: ["adana kamp rotaları", "toros kamp", "pozantı yayla kamp", "aladağlar kamp rehberi"],
     readingMinutes: 8,
     coverUrl:
-      "https://image.pollinations.ai/prompt/Kackar%20mountains%20yayla%20camping%20tent%20at%20golden%20hour%2C%20misty%20pine%20forest%2C%20cinematic%20photography?width=1280&height=720&nologo=true&seed=101",
-    content: `## Neden Kaçkar?
+      "https://image.pollinations.ai/prompt/Taurus%20mountains%20camping%20tent%20at%20golden%20hour%2C%20pine%20forest%20Adana%20Turkey%2C%20cinematic%20photography?width=1280&height=720&nologo=true&seed=101",
+    content: `## Neden Toros?
 
-Kaçkar Yaylaları yaz aylarında Türkiye'nin en güzel kamp coğrafyalarından biridir. Pokut, Sal ve Ayder hattında haftalık bir kamp planı kurmak; deneyimli bir kampçıyı bile heyecanlandırır.
+Adana'nın hemen kuzeyinde yükselen Toros dağları, yaz kampçılığı için Türkiye'nin en erişilebilir vahşi coğrafyalarından birini sunar. Sarıçam'dan hareket ederek 1-2 saat içinde serin yaylalara ulaşmak mümkün.
 
-### Pokut Yaylası
+### Pozantı Yaylası
 
-Çamlıhemşin'in üst kısmındaki Pokut, sis denizinin üzerinde yüzer gibi durur. Geceleri sıcaklık temmuz ortasında bile 8-10°C'ye düşebilir; bu yüzden konfor sıcaklığı 5°C ve altı bir uyku tulumu önerilir.
+Adana'ya 70 km mesafedeki Pozantı, Torosların ilk serin durağı. Yaz ortasında bile 20-22°C olan bu yayla, aile kampı ve doğa yürüyüşleri için idealdir.
 
-### Sal Yaylası
+### Tufanbeyli Yaylası
 
-Sal, Pokut'a 1.5 saatlik bir trek mesafesinde. Yamaçlardaki yayla evleri arasında düz alan bulmak kolay; ancak rüzgar koruması için 4 mevsim çadır şart.
+Adana'nın kuzeyinde, deniz seviyesinden 1500 m yükseklikte yer alan Tufanbeyli; şehir gürültüsünden uzak, sakin bir kamp deneyimi sunar. Geceleri 12-15°C'ye inen sıcaklık için uyku tulumu şarttır.
 
 ## Önerilen Ekipman
 
-- 4 mevsim çadır (rüzgâr direnci yüksek)
-- Konfor sıcaklığı 0/5°C uyku tulumu
-- Sıcak yalıtımlı mat (R-değeri ≥ 4)
-- Yağmurluk + softshell katman sistemi
-- Su arıtma tableti veya gravite filtre
-- Far + yedek pil
-- Trekking ayakkabısı (sırılsıklam çamuru olabilir)
+- 3 mevsim çadır (havalandırmalı, yaz dostu)
+- Konfor sıcaklığı +5°C uyku tulumu
+- Hafif şişme mat (R-değeri ≥ 3)
+- Güneş kremi + şapka (Adana yazında zorunlu)
+- Su arıtma tableti veya filtre
+- Kafa lambası + yedek pil
+- Trekking ayakkabısı
 
 ## Pratik İpuçları
 
-1. Yaylalara çıkmadan önce hava durumunu son ana kadar takip edin.
-2. Çadırı yaylanın kuzey tarafına kurmayın — sabah güneşi alamaz, soğuk olur.
-3. Yaylada market yok; en yakın bakkal Çamlıhemşin'de.
-4. Yangın yasak — sadece tarama gaz ocağı kullanın.
+1. Adana yaz sıcağından kaçmak için Haziran-Eylül arası yaylaya çıkın.
+2. Çadırı sabah güneşini alacak konuma kurun — sabah serinliği hızlı geçer.
+3. Pozantı'da market mevcut; uzak noktalara yeterli erzak taşıyın.
+4. Yangın yasak — taşınabilir gaz ocağı kullanın.
 
 ## Rota Önerisi
 
-3 günlük rota: 1. gün Pokut'ta yerleşim, 2. gün Sal'a trek + dönüş, 3. gün Hazindağ etekleri ve Ayder iniş.
+3 günlük rota: 1. gün Pozantı'da yerleşim, 2. gün Toros yürüyüş yollarında trek, 3. gün Aladağlar vadisine uzanma.
 
-> Yaylalara saygı her şeyden önce gelir — çöplerinizi mutlaka geri taşıyın.`,
-    author: "Sarıçam Aydoğan Editör",
+> Doğaya saygı her şeyden önce — çöplerinizi mutlaka geri taşıyın.`,
+    author: "Aydoğan Kampçılık Editör",
     publishedAt: new Date(Date.now() - 12 * 86400000).toISOString(),
   },
   {
-    id: "karadenizde-alabalik-tutma",
-    slug: "karadenizde-alabalik-tutma",
-    title: "Karadeniz'de Alabalık Tutmanın Püf Noktaları",
+    id: "seyhan-barajinda-sazan-avcilik",
+    slug: "seyhan-barajinda-sazan-avcilik",
+    title: "Seyhan Barajı'nda Sazan Avcılığının Püf Noktaları",
     excerpt:
-      "Doğu Karadeniz derelerinde alabalık avı için doğru sezon, doğru takım ve yerel teknikler. Trabzon ve Rize derelerinde test edildi.",
+      "Adana Seyhan Barajı'nda sazan ve yayın avcılığı için doğru sezon, doğru takım ve yerel teknikler. Adana balıkçılarının sırları.",
     category: "balık",
-    tags: ["alabalık", "fly fishing", "spinning", "dere balıkçılığı"],
-    keywords: ["alabalık tutma", "karadeniz alabalık", "spinning takım", "dere balıkçılığı"],
+    tags: ["sazan", "yayın", "baraj balıkçılığı", "adana", "seyhan"],
+    keywords: ["seyhan barajı balık", "adana sazan avcılığı", "yayın balığı", "baraj balıkçılığı"],
     readingMinutes: 6,
     coverUrl:
-      "https://image.pollinations.ai/prompt/Mountain%20stream%20trout%20fishing%20in%20Karadeniz%20Turkey%2C%20fly%20rod%2C%20clear%20water%2C%20misty%20morning?width=1280&height=720&nologo=true&seed=202",
+      "https://image.pollinations.ai/prompt/Carp%20fishing%20at%20reservoir%20Adana%20Turkey%2C%20golden%20hour%2C%20calm%20water%2C%20cinematic?width=1280&height=720&nologo=true&seed=202",
     content: `## Sezon
 
-Doğu Karadeniz derelerinde alabalık sezonu nisan başında açılır, ekim ortasında biter. En verimli aylar mayıs-haziran ve eylül.
+Seyhan Barajı'nda sazan avcılığı yıl boyunca yapılabilir. En verimli aylar nisan-mayıs (üreme öncesi) ve eylül-ekim (sonbahar beslenme dönemi).
 
 ## Takım Önerisi
 
-### Spinning
-- 6-7 ft, ultra-light/light aksiyonlu kamış
-- 1000-2500 makara, 0.18-0.22 mm misina
-- 2-7 g spinner ve mikro jig
+### Sazan
+- 3-3.6 m, medium heavy aksiyonlu kamış
+- 4000-6000 makara, 0.30-0.35 mm monofilament
+- Boilies, mısır ve hamur yemler
 
-### Fly
-- 7'6" 3-4 wt kamış, FLOAT tip line
-- Klasik elk hair caddis ve woolly bugger nymphs
+### Yayın
+- Ağır jigging veya canlı yem takımı
+- Güçlü olta makinesi, 0.40 mm misina
 
 ## Lokasyonlar
 
-- **Solaklı Vadisi (Of/Trabzon)**: Akarsu yatakları geniş, alabalık popülasyonu sağlıklı.
-- **Fırtına Vadisi (Çamlıhemşin)**: Nisan-mayıs dönüşleri muhteşem.
-- **Hemşin Deresi**: Yerel rehberle daha verimli.
+- **Seyhan Barajı Kıyısı**: Adana merkeze 15 dakika, geniş kıyı şeridi.
+- **Çatalan Barajı**: Sazan ve yayın avcılığı için ideal, daha az kalabalık.
+- **Ceyhan Nehri**: Nehir kenarı avcılığı, yerel rehberle daha verimli.
 
 ## Yasal Boy ve Kota
 
-İçsular Yönetmeliği gereği alabalık için minimum 25 cm boy şartı vardır; günlük kota 5 adettir. Yasaklı dönemleri Tarım Bakanlığı sayfasından doğrulayın.
+İçsular Yönetmeliği gereği sazan için minimum 20 cm boy şartı vardır. Güncel yasakları Tarım Bakanlığı'ndan doğrulayın.
 
 ## Pratik İpuçları
 
-- Akıntının orta hızlı olduğu kuyu girişlerini hedefleyin.
-- Yağmurdan sonraki bulanık günler avantajlıdır.
-- Sabah ilk ışık ve akşam son ışık en verimli zamandır.`,
-    author: "Sarıçam Aydoğan Editör",
+- Sabah erken saatler (05:00-09:00) ve akşamları (17:00-20:00) en verimli zaman.
+- Yazın baraj suyu ısındığında sazanlar derine çekilir — derin bölgeleri hedefleyin.
+- Adana sıcağında buz dolu soğutucu şarttır — avlanan balığı taze tutun.`,
+    author: "Aydoğan Kampçılık Editör",
     publishedAt: new Date(Date.now() - 5 * 86400000).toISOString(),
   },
   {
@@ -178,7 +178,7 @@ Geldiğinde ne kadar temizdiyse, gittiğinde de o kadar temiz olsun. Hiçbir şe
 - Tarama gaz ocağı + 1 kartuş
 - Çakı veya çok amaçlı alet
 - 5 L su bidonu`,
-    author: "Sarıçam Aydoğan Editör",
+    author: "Aydoğan Kampçılık Editör",
     publishedAt: new Date(Date.now() - 2 * 86400000).toISOString(),
   },
 ];
@@ -316,7 +316,7 @@ function mapDbPost(row: any): BlogPost {
     readingMinutes: row.reading_minutes ?? 6,
     coverUrl: row.cover_url ?? "",
     content: row.content ?? "",
-    author: row.author ?? "Sarıçam Aydoğan Editör",
+    author: row.author ?? "Aydoğan Kampçılık Editör",
     publishedAt: row.published_at ?? new Date().toISOString(),
     aiModel: row.ai_model,
   };

@@ -137,7 +137,7 @@ export function CheckoutWizard() {
     lines.push(`Telefon: ${form.phone}`);
     lines.push("", "*🚚 Teslimat:*");
     if (form.delivery === "magaza") {
-      lines.push("Mağazadan teslim almak istiyorum (Trabzon).");
+      lines.push("Mağazadan teslim almak istiyorum (Adana Sarıçam).");
     } else {
       lines.push("Kargo ile teslimat istiyorum.");
       lines.push(`Şehir: ${form.city}`);
@@ -294,7 +294,7 @@ export function CheckoutWizard() {
                               {m === "kargo" ? "Kargo" : "Mağazadan Teslim"}
                             </p>
                             <p className="text-xs text-foreground/55 font-light mt-1">
-                              {m === "kargo" ? "Tüm Türkiye, MNG/Aras" : "Trabzon merkez mağaza"}
+                              {m === "kargo" ? "Tüm Türkiye, MNG/Aras" : "Adana Sarıçam mağaza"}
                             </p>
                           </button>
                         ))}
@@ -309,7 +309,7 @@ export function CheckoutWizard() {
                               type="text"
                               value={form.city}
                               onChange={e => update("city", e.target.value)}
-                              placeholder="Ör. Trabzon"
+                              placeholder="Ör. Adana"
                               className="checkout-input"
                             />
                           </Field>

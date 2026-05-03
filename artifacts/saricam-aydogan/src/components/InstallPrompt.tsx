@@ -57,7 +57,7 @@ export function InstallPrompt() {
                   Uygulama Olarak Yükle
                 </span>
                 <h3 id="install-title" className="font-serif text-lg leading-tight text-foreground mb-1">
-                  Sarıçam Aydoğan'ı <em className="italic text-secondary">telefonunuza</em> ekleyin
+                  Aydoğan Kampçılık'ı <em className="italic text-secondary">telefonunuza</em> ekleyin
                 </h3>
                 <p className="text-xs text-foreground/60 leading-relaxed">
                   Tek dokunuşla ulaşın, çevrimdışı gezin.

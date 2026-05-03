@@ -59,7 +59,7 @@ export function ComboBanner() {
               Birlikte aldıkça <em className="italic text-secondary">kazanın.</em>
             </h2>
             <p className="text-foreground/60 font-light leading-relaxed mt-5 max-w-lg">
-              Karadeniz'de denenmiş kombolar — paket olarak alınca ekstra indirim sepete otomatik düşer.
+              Adana ve Toros'ta denenmiş kombolar — paket olarak alınca ekstra indirim sepete otomatik düşer.
             </p>
           </div>
         </div>

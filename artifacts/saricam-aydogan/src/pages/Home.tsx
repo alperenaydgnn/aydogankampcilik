@@ -45,10 +45,10 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <SEO
-        title="Kamp, Balık & Outdoor Malzemeleri — Trabzon"
-        description="Trabzon'un güvenilir kamp malzemeleri, balık malzemeleri, av malzemeleri ve outdoor ekipmanları mağazası. Karadeniz'in zorlu doğasına uygun, kaliteli ve uygun fiyatlı ekipmanlar. WhatsApp ile hızlı sipariş."
+        title="Kamp, Balık & Outdoor Malzemeleri — Adana Sarıçam"
+        description="Adana Sarıçam'ın güvenilir kamp malzemeleri, balık malzemeleri ve outdoor ekipmanları mağazası. Toros'un zorlu doğasına uygun, kaliteli ve uygun fiyatlı ekipmanlar. WhatsApp ile hızlı sipariş."
         url="/"
-        keywords="kamp malzemeleri, balık malzemeleri, olta ekipmanları, kamp çadırı, balıkçı malzemeleri, outdoor ekipmanları, kamp ekipmanları, Trabzon, Karadeniz"
+        keywords="kamp malzemeleri, balık malzemeleri, olta ekipmanları, kamp çadırı, balıkçı malzemeleri, outdoor ekipmanları, Adana, Sarıçam, Toros"
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(buildLocalBusinessSchema())}</script>
@@ -89,7 +89,7 @@ export default function Home() {
               className="inline-flex items-center gap-3 mb-10 text-[0.7rem] font-bold uppercase tracking-[0.25em] text-secondary"
             >
               <span className="w-8 h-px bg-secondary" />
-              Trabzon — Doğanın Kalbinde
+              Adana Sarıçam — Doğanın Kapısı
             </motion.span>
 
             {/* H1 — Fraunces light + italic accent */}
@@ -100,7 +100,7 @@ export default function Home() {
               className="font-serif font-light text-white leading-[1.02] tracking-tight"
               style={{ fontSize: "clamp(2.8rem, 8vw, 7rem)" }}
             >
-              Karadeniz'in vahşi doğasına.<br />
+              Torosların eteklerinden doğaya.<br />
               <em className="italic font-light text-white/75">Hazır mıyız.</em>
             </motion.h1>
 
@@ -157,7 +157,7 @@ export default function Home() {
             </div>
             <div className="md:col-span-9">
               <p className="font-serif font-light text-2xl md:text-4xl lg:text-5xl text-primary leading-[1.15] tracking-tight">
-                Sarıçam Aydoğan, Karadeniz'in hırçın doğasında <em className="italic text-secondary">test edilmiş</em> ekipmanları sizinle buluşturuyor.
+                Aydoğan Kampçılık, Toros dağlarının eteklerinde <em className="italic text-secondary">test edilmiş</em> ekipmanları sizinle buluşturuyor.
                 Yağmurda su almayan, soğukta sıcak tutan, rüzgarda savrulmayan ürünler.
               </p>
             </div>
@@ -209,7 +209,7 @@ export default function Home() {
             <div className="max-w-2xl">
               <span className="eyebrow">/ 03 — Öne Çıkanlar</span>
               <h2 id="products-heading" className="editorial-heading text-4xl md:text-6xl">
-                Karadeniz'de denenmiş, <em className="italic text-secondary">tercih edilen.</em>
+                Adana ve Toros'ta denenmiş, <em className="italic text-secondary">tercih edilen.</em>
               </h2>
             </div>
             <Link href="/urunler" className="link-hairline self-start md:self-end">
@@ -253,7 +253,7 @@ export default function Home() {
               <div className="aspect-[5/6] overflow-hidden bg-foreground/5">
                 <BlurImage
                   src={`${base}/mock/hero.jpg`}
-                  alt="Karadeniz doğası"
+                  alt="Adana Sarıçam doğası"
                   wrapperClassName="w-full h-full"
                   className="w-full h-full object-cover"
                   loading="lazy"
@@ -279,14 +279,14 @@ export default function Home() {
             >
               <span className="eyebrow">/ 04 — Hikayemiz</span>
               <h2 id="story-heading" className="editorial-heading text-4xl md:text-5xl mb-8">
-                Trabzon'dan Türkiye'ye <em className="italic text-secondary">doğanın ekipmanı.</em>
+                Adana'dan Türkiye'ye <em className="italic text-secondary">doğanın ekipmanı.</em>
               </h2>
               <div className="space-y-5 text-foreground/65 leading-relaxed font-light">
                 <p>
-                  Sarıçam Aydoğan, Trabzon'da kamp malzemeleri, balık malzemeleri ve
-                  outdoor ekipmanları alanında hizmet vermektedir. Karadeniz'in eşsiz
-                  doğasında geçirdiğimiz deneyimler, her ürünümüzü bizzat test etmemizi
-                  sağlamıştır.
+                  Aydoğan Kampçılık, Adana Sarıçam ilçesinde kamp malzemeleri, balık
+                  malzemeleri ve outdoor ekipmanları alanında hizmet vermektedir. Toros
+                  dağlarının eteklerinde geçirdiğimiz deneyimler, her ürünümüzü bizzat
+                  test etmemizi sağlamıştır.
                 </p>
                 <p>
                   Kamp çadırından olta takımına, av malzemelerinden aydınlatma
@@ -327,7 +327,7 @@ export default function Home() {
         <div className="container mx-auto px-6 md:px-10">
           <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-foreground/10">
             {[
-              { num: "01", title: "Tecrübe", desc: "Karadeniz'de yılların getirdiği derin deneyim, doğru ekipman tavsiyeleri." },
+              { num: "01", title: "Tecrübe", desc: "Adana ve Toros bölgesinde yılların getirdiği derin deneyim, doğru ekipman tavsiyeleri." },
               { num: "02", title: "Garanti",  desc: "Yalnızca güvenilir markaların kaliteli ürünleri. Satış öncesi kontrol." },
               { num: "03", title: "Danışman", desc: "Müşteri değil dost olarak. WhatsApp'tan 7/24 sorularınızı yanıtlıyoruz." },
             ].map((v, i) => (

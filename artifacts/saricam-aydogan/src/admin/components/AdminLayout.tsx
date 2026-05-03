@@ -56,7 +56,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         <div className="flex items-center gap-2 px-6 py-5 border-b border-border">
           <Trees className="w-7 h-7 text-primary" />
           <div className="min-w-0">
-            <p className="font-serif font-bold text-sm leading-tight truncate">Sarıçam Aydoğan</p>
+            <p className="font-serif font-bold text-sm leading-tight truncate">Aydoğan Kampçılık</p>
             <p className="text-xs text-muted-foreground">Admin Paneli</p>
           </div>
         </div>

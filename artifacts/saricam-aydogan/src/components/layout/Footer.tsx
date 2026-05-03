@@ -28,7 +28,7 @@ export function Footer() {
         <div className="max-w-5xl">
           <span className="inline-flex items-center gap-2.5 mb-8 text-[0.7rem] font-bold uppercase tracking-[0.22em] text-secondary">
             <span className="w-6 h-px bg-secondary" />
-            Sarıçam Aydoğan
+            Aydoğan Kampçılık
           </span>
           <h2 className="font-serif font-light text-4xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight">
             {t("footer.brandLine")}<br />
@@ -141,7 +141,7 @@ export function Footer() {
       <div className="container mx-auto px-6 md:px-10">
         <div className="h-px bg-white/12" />
         <div className="py-8 flex flex-col md:flex-row items-center justify-between gap-3 text-[0.7rem] uppercase tracking-[0.2em] text-white/35">
-          <p>© {new Date().getFullYear()} Sarıçam Aydoğan</p>
+          <p>© {new Date().getFullYear()} Aydoğan Kampçılık</p>
           <p className="italic normal-case tracking-normal text-white/40 font-serif text-sm">{t("footer.copyright")}</p>
         </div>
       </div>
