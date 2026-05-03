@@ -1,146 +1,193 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+>
 
-  <!-- Ana Sayfa -->
+  <!-- ─── ANA SAYFA ─────────────────────────────────────────── -->
   <url>
-    <loc>https://saricamaydogan.com/</loc>
+    <loc>https://aydogankampcilik.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <lastmod>2026-05-01</lastmod>
+    <lastmod>2026-05-03</lastmod>
   </url>
 
-  <!-- Tüm Ürünler -->
+  <!-- ─── ÜRÜN KATALOĞU ─────────────────────────────────────── -->
   <url>
-    <loc>https://saricamaydogan.com/urunler</loc>
+    <loc>https://aydogankampcilik.com/urunler</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+
+  <!-- ─── KATEGORİ KATALOĞU SAYFALAR ───────────────────────── -->
+  <url>
+    <loc>https://aydogankampcilik.com/urunler/cadirlar</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-    <lastmod>2026-05-01</lastmod>
+    <priority>0.90</priority>
+    <lastmod>2026-05-03</lastmod>
   </url>
-
-  <!-- Kategori Listeleri -->
   <url>
-    <loc>https://saricamaydogan.com/urunler/cadirlar</loc>
+    <loc>https://aydogankampcilik.com/urunler/olta-ve-makine</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+  <url>
+    <loc>https://aydogankampcilik.com/urunler/kamp-aksesuarlari</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.88</priority>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+  <url>
+    <loc>https://aydogankampcilik.com/urunler/aydinlatma</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
-    <lastmod>2026-05-01</lastmod>
+    <lastmod>2026-05-03</lastmod>
   </url>
   <url>
-    <loc>https://saricamaydogan.com/urunler/olta-ve-makine</loc>
+    <loc>https://aydogankampcilik.com/urunler/termos-ve-sogutucu</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
-    <lastmod>2026-05-01</lastmod>
+    <lastmod>2026-05-03</lastmod>
   </url>
   <url>
-    <loc>https://saricamaydogan.com/urunler/kamp-aksesuarlari</loc>
+    <loc>https://aydogankampcilik.com/urunler/olta-aksesuarlari</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
-    <lastmod>2026-05-01</lastmod>
+    <lastmod>2026-05-03</lastmod>
   </url>
   <url>
-    <loc>https://saricamaydogan.com/urunler/aydinlatma</loc>
+    <loc>https://aydogankampcilik.com/urunler/outdoor-aksesuarlari</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-    <lastmod>2026-05-01</lastmod>
+    <priority>0.85</priority>
+    <lastmod>2026-05-03</lastmod>
   </url>
   <url>
-    <loc>https://saricamaydogan.com/urunler/termos-ve-sogutucu</loc>
+    <loc>https://aydogankampcilik.com/urunler/cakmak-ve-ates</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-    <lastmod>2026-05-01</lastmod>
-  </url>
-  <url>
-    <loc>https://saricamaydogan.com/urunler/olta-aksesuarlari</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-    <lastmod>2026-05-01</lastmod>
-  </url>
-  <url>
-    <loc>https://saricamaydogan.com/urunler/outdoor-aksesuarlari</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-    <lastmod>2026-05-01</lastmod>
+    <priority>0.82</priority>
+    <lastmod>2026-05-03</lastmod>
   </url>
 
-  <!-- Kategori Rehber Sayfaları -->
+  <!-- ─── KATEGORİ ALIM REHBERİ SAYFALAR ───────────────────── -->
   <url>
-    <loc>https://saricamaydogan.com/kategori/cadirlar</loc>
+    <loc>https://aydogankampcilik.com/kategori/cadirlar</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <lastmod>2026-05-01</lastmod>
+    <priority>0.78</priority>
+    <lastmod>2026-05-03</lastmod>
   </url>
   <url>
-    <loc>https://saricamaydogan.com/kategori/olta-ve-makine</loc>
+    <loc>https://aydogankampcilik.com/kategori/olta-ve-makine</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <lastmod>2026-05-01</lastmod>
+    <priority>0.78</priority>
+    <lastmod>2026-05-03</lastmod>
   </url>
   <url>
-    <loc>https://saricamaydogan.com/kategori/kamp-aksesuarlari</loc>
+    <loc>https://aydogankampcilik.com/kategori/kamp-aksesuarlari</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <lastmod>2026-05-01</lastmod>
+    <priority>0.76</priority>
+    <lastmod>2026-05-03</lastmod>
   </url>
   <url>
-    <loc>https://saricamaydogan.com/kategori/aydinlatma</loc>
+    <loc>https://aydogankampcilik.com/kategori/aydinlatma</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.73</priority>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+  <url>
+    <loc>https://aydogankampcilik.com/kategori/termos-ve-sogutucu</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.73</priority>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+  <url>
+    <loc>https://aydogankampcilik.com/kategori/olta-aksesuarlari</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.73</priority>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+  <url>
+    <loc>https://aydogankampcilik.com/kategori/outdoor-aksesuarlari</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.73</priority>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+  <url>
+    <loc>https://aydogankampcilik.com/kategori/cakmak-ve-ates</loc>
     <changefreq>monthly</changefreq>
     <priority>0.70</priority>
-    <lastmod>2026-05-01</lastmod>
-  </url>
-  <url>
-    <loc>https://saricamaydogan.com/kategori/termos-ve-sogutucu</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.70</priority>
-    <lastmod>2026-05-01</lastmod>
-  </url>
-  <url>
-    <loc>https://saricamaydogan.com/kategori/olta-aksesuarlari</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.70</priority>
-    <lastmod>2026-05-01</lastmod>
-  </url>
-  <url>
-    <loc>https://saricamaydogan.com/kategori/outdoor-aksesuarlari</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.70</priority>
-    <lastmod>2026-05-01</lastmod>
+    <lastmod>2026-05-03</lastmod>
   </url>
 
-  <!-- Kurumsal Sayfalar -->
+  <!-- ─── İÇERİK SAYFALAR ───────────────────────────────────── -->
   <url>
-    <loc>https://saricamaydogan.com/hakkimizda</loc>
+    <loc>https://aydogankampcilik.com/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+  <url>
+    <loc>https://aydogankampcilik.com/akademi</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+  <url>
+    <loc>https://aydogankampcilik.com/etkinlikler</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.72</priority>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+  <url>
+    <loc>https://aydogankampcilik.com/harita</loc>
     <changefreq>monthly</changefreq>
     <priority>0.70</priority>
-    <lastmod>2026-05-01</lastmod>
+    <lastmod>2026-05-03</lastmod>
   </url>
+
+  <!-- ─── KURUMSAL SAYFALAR ─────────────────────────────────── -->
   <url>
-    <loc>https://saricamaydogan.com/iletisim</loc>
+    <loc>https://aydogankampcilik.com/hakkimizda</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.80</priority>
-    <lastmod>2026-05-01</lastmod>
+    <priority>0.72</priority>
+    <lastmod>2026-05-03</lastmod>
   </url>
   <url>
-    <loc>https://saricamaydogan.com/sss</loc>
+    <loc>https://aydogankampcilik.com/iletisim</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.82</priority>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+  <url>
+    <loc>https://aydogankampcilik.com/sss</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+  <url>
+    <loc>https://aydogankampcilik.com/teslimat</loc>
     <changefreq>monthly</changefreq>
     <priority>0.65</priority>
-    <lastmod>2026-05-01</lastmod>
+    <lastmod>2026-05-03</lastmod>
   </url>
   <url>
-    <loc>https://saricamaydogan.com/teslimat</loc>
+    <loc>https://aydogankampcilik.com/magaza-politikasi</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.65</priority>
-    <lastmod>2026-05-01</lastmod>
+    <priority>0.58</priority>
+    <lastmod>2026-05-03</lastmod>
   </url>
   <url>
-    <loc>https://saricamaydogan.com/magaza-politikasi</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.55</priority>
-    <lastmod>2026-05-01</lastmod>
-  </url>
-  <url>
-    <loc>https://saricamaydogan.com/kvkk</loc>
+    <loc>https://aydogankampcilik.com/kvkk</loc>
     <changefreq>yearly</changefreq>
     <priority>0.40</priority>
-    <lastmod>2026-05-01</lastmod>
+    <lastmod>2026-05-03</lastmod>
+  </url>
+  <url>
+    <loc>https://aydogankampcilik.com/gizlilik</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.40</priority>
+    <lastmod>2026-05-03</lastmod>
   </url>
 
 </urlset>

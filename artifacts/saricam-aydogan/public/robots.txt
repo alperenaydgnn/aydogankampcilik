@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /admin/
 
 # Sitemap
-Sitemap: https://saricamaydogan.com/sitemap.xml
+Sitemap: https://aydogankampcilik.com/sitemap.xml

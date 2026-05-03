@@ -21,16 +21,29 @@ export const SITE_ADDRESS_FULL =
 export const SITE_PRICE_RANGE  = "₺₺";
 export const SITE_HERO_IMAGE   = `${SITE_URL}/mock/hero.jpg`;
 
+const SITE_SOCIAL = [
+  "https://instagram.com/aydogankampcilik",
+  "https://facebook.com/aydogankampcilik",
+];
+
+const SITE_KEYWORDS =
+  "kamp malzemeleri, balık malzemeleri, olta ekipmanları, kamp çadırı, " +
+  "balıkçı malzemeleri, outdoor ekipmanları, kamp ekipmanları, uyku tulumu, " +
+  "kamp feneri, kafa lambası, termos, soğutucu, Adana, Sarıçam, Toros, " +
+  "Seyhan barajı balıkçılık, Toros kamp";
+
 /* ── LocalBusiness (+ Store) ─────────────────────────────────── */
 export function buildLocalBusinessSchema() {
   return {
     "@context": "https://schema.org",
-    "@type": ["LocalBusiness", "Store"],
+    "@type": ["LocalBusiness", "Store", "SportingGoodsStore"],
     "@id": `${SITE_URL}/#business`,
     name: SITE_NAME,
+    alternateName: "Aydoğan Kampçılık",
     description:
       "Adana Sarıçam'da kamp malzemeleri, balık malzemeleri ve outdoor ekipmanları mağazası. " +
-      "Kamp çadırı, olta takımı, kamp feneri ve balıkçı malzemelerinde 15 yıllık tecrübe.",
+      "Kamp çadırı, olta takımı, kamp feneri ve balıkçı malzemelerinde 15 yıllık tecrübe. " +
+      "Toros ve Seyhan havzası için uzman ekipman tavsiyesi. WhatsApp ile hızlı sipariş.",
     url: SITE_URL,
     telephone: SITE_PHONE,
     email: SITE_EMAIL,
@@ -59,9 +72,13 @@ export function buildLocalBusinessSchema() {
       },
     ],
     currenciesAccepted: "TRY",
-    paymentAccepted:    "Nakit, Kredi Kartı, WhatsApp Sipariş",
+    paymentAccepted:    "Nakit, Kredi Kartı, EFT/Havale, WhatsApp Sipariş",
     priceRange:  SITE_PRICE_RANGE,
-    areaServed:  { "@type": "Country", name: "Turkey" },
+    areaServed:  [
+      { "@type": "City", name: "Adana" },
+      { "@type": "State", name: "Adana" },
+      { "@type": "Country", name: "Turkey" },
+    ],
     image:  SITE_HERO_IMAGE,
     logo: {
       "@type": "ImageObject",
@@ -70,10 +87,22 @@ export function buildLocalBusinessSchema() {
       height: 512,
     },
     hasMap: "https://maps.app.goo.gl/aydogankampcilik",
-    keywords:
-      "kamp malzemeleri, balık malzemeleri, olta ekipmanları, kamp çadırı, " +
-      "balıkçı malzemeleri, outdoor ekipmanları, Adana, Sarıçam, Toros",
-    sameAs: [],
+    keywords: SITE_KEYWORDS,
+    sameAs: SITE_SOCIAL,
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Kamp & Balık Malzemeleri Kataloğu",
+      itemListElement: [
+        { "@type": "OfferCatalog", name: "Kamp Çadırları",       url: `${SITE_URL}/urunler/cadirlar` },
+        { "@type": "OfferCatalog", name: "Olta & Balık Makinesi",url: `${SITE_URL}/urunler/olta-ve-makine` },
+        { "@type": "OfferCatalog", name: "Kamp Ekipmanları",     url: `${SITE_URL}/urunler/kamp-aksesuarlari` },
+        { "@type": "OfferCatalog", name: "Aydınlatma",           url: `${SITE_URL}/urunler/aydinlatma` },
+        { "@type": "OfferCatalog", name: "Termos & Soğutucu",    url: `${SITE_URL}/urunler/termos-ve-sogutucu` },
+        { "@type": "OfferCatalog", name: "Olta Aksesuarları",    url: `${SITE_URL}/urunler/olta-aksesuarlari` },
+        { "@type": "OfferCatalog", name: "Outdoor & Trekking",   url: `${SITE_URL}/urunler/outdoor-aksesuarlari` },
+        { "@type": "OfferCatalog", name: "Çakmak & Ateş",       url: `${SITE_URL}/urunler/cakmak-ve-ates` },
+      ],
+    },
   };
 }
 
@@ -97,7 +126,14 @@ export function buildOrganizationSchema() {
       contactType:        "customer service",
       availableLanguage:  "Turkish",
       areaServed:         "TR",
+      hoursAvailable: {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+        opens:  "09:00",
+        closes: "19:00",
+      },
     },
+    sameAs: SITE_SOCIAL,
   };
 }
 
@@ -174,4 +210,84 @@ export function buildItemListSchema(
       ...(p.image ? { image: p.image } : {}),
     })),
   };
+}
+
+/* ── Product (product detail pages) ─────────────────────────── */
+export function buildProductSchema(product: {
+  name:         string;
+  slug:         string;
+  description:  string;
+  image?:       string;
+  price?:       number | null;
+  oldPrice?:    number | null;
+  priceLabel?:  string | null;
+  inStock?:     boolean;
+  category?:    string;
+  sku?:         string;
+}) {
+  const url = `${SITE_URL}/urun/${product.slug}`;
+  const availability = product.inStock === false
+    ? "https://schema.org/OutOfStock"
+    : "https://schema.org/InStock";
+
+  const schema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": `${url}#product`,
+    name:        product.name,
+    description: product.description,
+    url,
+    image:       product.image ?? SITE_HERO_IMAGE,
+    brand: {
+      "@type": "Brand",
+      name: "Aydoğan Kampçılık",
+    },
+    seller: {
+      "@type": "Organization",
+      name:    SITE_NAME,
+      url:     SITE_URL,
+    },
+  };
+
+  if (product.sku) schema.sku = product.sku;
+  if (product.category) schema.category = product.category;
+
+  if (product.price) {
+    schema.offers = {
+      "@type":         "Offer",
+      url,
+      priceCurrency:   "TRY",
+      price:           product.price.toFixed(2),
+      priceValidUntil: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
+      availability,
+      seller: {
+        "@type": "Organization",
+        name:    SITE_NAME,
+        url:     SITE_URL,
+      },
+      ...(product.oldPrice
+        ? { priceSpecification: {
+              "@type":         "PriceSpecification",
+              price:            product.oldPrice.toFixed(2),
+              priceCurrency:    "TRY",
+            },
+          }
+        : {}),
+    };
+  } else {
+    schema.offers = {
+      "@type":       "Offer",
+      url,
+      availability,
+      priceCurrency: "TRY",
+      description:   product.priceLabel ?? "Fiyat için iletişime geçin",
+      seller: {
+        "@type": "Organization",
+        name:    SITE_NAME,
+        url:     SITE_URL,
+      },
+    };
+  }
+
+  return schema;
 }
