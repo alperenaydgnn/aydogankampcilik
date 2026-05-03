@@ -105,7 +105,9 @@ function ProductDetailComboCard({ product }: { product: Product }) {
   const others = items.filter(p => p.slug !== product.slug);
 
   const addAll = () => {
-    items.forEach(p => add(p, 1));
+    const available = items.filter(p => p.stock_status !== "out_of_stock");
+    if (available.length === 0) return;
+    add(available, undefined);
     trackEvent({
       event: "combo_add",
       source: "product_detail_combo_card",

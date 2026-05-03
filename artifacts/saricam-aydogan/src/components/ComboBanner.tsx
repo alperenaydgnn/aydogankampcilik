@@ -126,8 +126,10 @@ export function ComboBanner() {
                   </div>
                   <button
                     onClick={() => {
-                      items.forEach(p => add(p));
-                      trackEvent({ event: "combo_add", source: "combo_banner", combo_id: combo.id, item_count: items.length });
+                      const available = items.filter(p => p.stock_status !== "out_of_stock");
+                      if (available.length === 0) return;
+                      add(available, undefined);
+                      trackEvent({ event: "combo_add", source: "combo_banner", combo_id: combo.id, item_count: available.length });
                     }}
                     className={cn(
                       "inline-flex items-center gap-1.5 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-secondary border-b border-secondary/40 hover:border-secondary pb-1 transition"

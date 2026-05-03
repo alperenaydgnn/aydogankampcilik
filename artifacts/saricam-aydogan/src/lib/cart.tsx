@@ -56,7 +56,7 @@ export interface AddedToast {
 
 interface CartContextValue {
   items: CartItem[];
-  add: (product: Product, qty?: number) => void;
+  add: (product: Product | Product[], qty?: number) => void;
   remove: (id: string) => void;
   setQty: (id: string, qty: number) => void;
   clear: () => void;
@@ -132,24 +132,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(t);
   }, [toast]);
 
-  const add = useCallback((product: Product, qty: number = 1) => {
-    if (product.stock_status === "out_of_stock") return;
-    const item: CartItem = {
-      id: product.id,
-      slug: product.slug,
-      name: product.name,
-      image: product.images[0] || "",
-      price_numeric: product.price_numeric,
-      price_label: product.price_label,
-      qty,
-      stock_status: product.stock_status,
-      category_id: product.category_id,
-    };
-    dispatch({ type: "add", item });
-    // Compute next count for accurate toast (state hasn't updated yet)
-    const exists = items.find(i => i.id === item.id);
-    const nextCount = items.reduce((s, i) => s + i.qty, 0) + (exists ? qty : qty);
-    setToast({ item, totalCount: nextCount, at: Date.now() });
+  const add = useCallback((product: Product | Product[], qty: number = 1) => {
+    const products = Array.isArray(product) ? product : [product];
+    const eligible = products.filter(p => p.stock_status !== "out_of_stock");
+    if (eligible.length === 0) return;
+    const addedQty = qty;
+    const newItems: CartItem[] = eligible.map(p => ({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      image: p.images[0] || "",
+      price_numeric: p.price_numeric,
+      price_label: p.price_label,
+      qty: addedQty,
+      stock_status: p.stock_status,
+      category_id: p.category_id,
+    }));
+    newItems.forEach(item => dispatch({ type: "add", item }));
+    const currentCount = items.reduce((s, i) => s + i.qty, 0);
+    const nextCount = currentCount + eligible.length * addedQty;
+    setToast({ item: newItems[newItems.length - 1], totalCount: nextCount, at: Date.now() });
   }, [items]);
 
   const remove = useCallback((id: string) => {
