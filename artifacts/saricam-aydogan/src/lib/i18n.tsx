@@ -9,7 +9,11 @@ type I18nContextValue = {
   t: (key: TranslationKey) => string;
 };
 
-const I18nContext = createContext<I18nContextValue | null>(null);
+const _g = globalThis as Record<string, unknown>;
+if (!_g.__aydogan_i18n_ctx__) {
+  _g.__aydogan_i18n_ctx__ = createContext<I18nContextValue | null>(null);
+}
+const I18nContext = _g.__aydogan_i18n_ctx__ as ReturnType<typeof createContext<I18nContextValue | null>>;
 
 function detectInitialLang(): Lang {
   if (typeof window === "undefined") return "tr";

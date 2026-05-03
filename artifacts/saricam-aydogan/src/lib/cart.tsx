@@ -83,7 +83,13 @@ interface CartContextValue {
   hasNumericPrices: boolean;
 }
 
-const CartContext = createContext<CartContextValue | null>(null);
+// Persist the context object across Vite HMR reloads so Provider↔consumer
+// references never break during development hot-updates.
+const _g = globalThis as Record<string, unknown>;
+if (!_g.__aydogan_cart_ctx__) {
+  _g.__aydogan_cart_ctx__ = createContext<CartContextValue | null>(null);
+}
+const CartContext = _g.__aydogan_cart_ctx__ as ReturnType<typeof createContext<CartContextValue | null>>;
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, dispatch] = useReducer(reducer, []);

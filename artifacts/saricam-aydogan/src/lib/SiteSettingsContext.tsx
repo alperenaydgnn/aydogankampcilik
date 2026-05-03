@@ -2,7 +2,11 @@ import { createContext, useEffect, useState, ReactNode } from "react";
 import { getSiteSettings } from "./data";
 import { mockSiteSettings, SiteSettings } from "./mockData";
 
-export const SiteSettingsCtx = createContext<SiteSettings>(mockSiteSettings);
+const _g = globalThis as Record<string, unknown>;
+if (!_g.__aydogan_settings_ctx__) {
+  _g.__aydogan_settings_ctx__ = createContext<SiteSettings>(mockSiteSettings);
+}
+export const SiteSettingsCtx = _g.__aydogan_settings_ctx__ as ReturnType<typeof createContext<SiteSettings>>;
 
 export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<SiteSettings>(mockSiteSettings);
