@@ -163,7 +163,7 @@ export function Header() {
 
         {/* Left — Mobile Menu Toggle on small, Nav on desktop */}
         <nav className="hidden lg:flex items-center gap-5">
-          {navLinks.slice(0, 3).map((link) => {
+          {navLinks.slice(0, 4).map((link) => {
             const isActive = location === link.href || (link.href === "/urunler" && location.startsWith("/urunler"));
             return (
               <Link
