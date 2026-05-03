@@ -176,23 +176,6 @@ export function WeatherWidget({ className }: { className?: string }) {
               </AnimatePresence>
             </div>
 
-            {/* Preset chips */}
-            <div className="flex flex-wrap gap-1.5 mb-6">
-              {PRESETS.map((p) => (
-                <button
-                  key={p.name}
-                  onClick={() => loadPreset(p)}
-                  className={cn(
-                    "px-2.5 py-1 text-[0.6rem] uppercase tracking-[0.14em] font-bold border transition-colors",
-                    snap?.location === p.name
-                      ? "border-secondary text-secondary bg-secondary/5"
-                      : "border-foreground/15 text-foreground/55 hover:border-secondary/50 hover:text-secondary",
-                  )}
-                >
-                  {p.name}
-                </button>
-              ))}
-            </div>
 
             {/* Loading / Error / Data */}
             {loading && (
