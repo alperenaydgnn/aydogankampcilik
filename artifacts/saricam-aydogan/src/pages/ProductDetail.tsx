@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import {
   ChevronDown, ChevronRight, Sparkles, Star, ShoppingBag, Plus, Check,
+  Heart, GitCompare,
 } from "lucide-react";
 import { getProductBySlug, getRelatedProducts, getProducts } from "@/lib/data";
 import { Product, Category, StockStatus, formatPriceLabel } from "@/lib/mockData";
@@ -11,13 +12,66 @@ import { SEO } from "@/lib/seo";
 import { buildBreadcrumbSchema, SITE_URL, SITE_NAME, SITE_PHONE } from "@/lib/schemas";
 import { ImageGallery } from "@/components/ImageGallery";
 import { ProductCard } from "@/components/ProductCard";
+import { RecommendationStrip } from "@/components/RecommendationStrip";
 import { WhatsAppButton, OutOfStockButton } from "@/components/WhatsAppButton";
 import { buildProductMessage, buildStockNotifyMessage } from "@/lib/whatsapp";
 import { useCart } from "@/lib/cart";
+import { useWishlist } from "@/lib/wishlist";
+import { useCompare, COMPARE_MAX } from "@/lib/compare";
+import { trackView, useRecentlyViewed, clearRecentlyViewed } from "@/lib/recentlyViewed";
 import { COMBOS } from "@/lib/combos";
 import { trackEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import NotFound from "./not-found";
+
+function WishlistCompareActions({ product }: { product: Product }) {
+  const wl = useWishlist();
+  const cmp = useCompare();
+  const liked = wl.has(product.slug);
+  const compared = cmp.has(product.slug);
+  return (
+    <div className="flex items-center gap-3 pt-1">
+      <button
+        type="button"
+        onClick={() => {
+          const added = wl.toggle(product);
+          trackEvent({ event: added ? "wishlist_add" : "wishlist_remove", source: "product_detail", product_id: product.id, product_name: product.name });
+        }}
+        aria-pressed={liked}
+        className={cn(
+          "inline-flex items-center gap-2 px-4 py-2.5 border text-[0.7rem] font-bold uppercase tracking-[0.2em] transition-colors",
+          liked
+            ? "border-secondary text-secondary bg-secondary/5"
+            : "border-foreground/20 text-foreground/70 hover:border-secondary hover:text-secondary",
+        )}
+      >
+        <Heart className={cn("w-3.5 h-3.5", liked && "fill-secondary")} strokeWidth={liked ? 2 : 1.75} />
+        {liked ? "Favorilerde" : "Favorilere Ekle"}
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          const r = cmp.toggle(product);
+          if (r.reason === "max") return;
+          trackEvent({ event: r.added ? "compare_add" : "compare_remove", source: "product_detail", product_id: product.id, product_name: product.name });
+        }}
+        disabled={!compared && cmp.isFull}
+        title={!compared && cmp.isFull ? `En fazla ${COMPARE_MAX} ürün` : undefined}
+        aria-pressed={compared}
+        className={cn(
+          "inline-flex items-center gap-2 px-4 py-2.5 border text-[0.7rem] font-bold uppercase tracking-[0.2em] transition-colors",
+          compared
+            ? "border-secondary text-secondary bg-secondary/5"
+            : "border-foreground/20 text-foreground/70 hover:border-secondary hover:text-secondary",
+          !compared && cmp.isFull && "opacity-40 cursor-not-allowed hover:border-foreground/20 hover:text-foreground/70",
+        )}
+      >
+        <GitCompare className="w-3.5 h-3.5" strokeWidth={compared ? 2.2 : 1.75} />
+        {compared ? "Karşılaştırmada" : "Karşılaştır"}
+      </button>
+    </div>
+  );
+}
 
 /* ── FAQ data by category ────────────────────────────── */
 type FAQ = { q: string; a: string };
@@ -250,9 +304,41 @@ export default function ProductDetail() {
       setLoading(false);
       if (res) {
         getRelatedProducts(res.product, 3).then(setRelated);
+        trackView({
+          slug: res.product.slug,
+          name: res.product.name,
+          image: res.product.images[0] || "",
+          price_label: res.product.price_label,
+          category_id: res.product.category_id,
+        });
       }
     });
   }, [slug]);
+
+  /* Cross-sell: products from same combo and "viewers also" same-category */
+  const [crossSell, setCrossSell] = useState<Product[]>([]);
+  const [alsoViewed, setAlsoViewed] = useState<Product[]>([]);
+  useEffect(() => {
+    if (!data) return;
+    const { product } = data;
+    getProducts({ limit: 500 }).then(all => {
+      const combo = COMBOS.find(c => c.productSlugs.includes(product.slug));
+      const comboItems = combo
+        ? combo.productSlugs.filter(s => s !== product.slug).map(s => all.find(p => p.slug === s)).filter(Boolean) as Product[]
+        : [];
+      const sameCat = all.filter(p =>
+        p.category_id === product.category_id && p.slug !== product.slug
+        && !comboItems.some(c => c.slug === p.slug)
+      );
+      // shuffle deterministic by slug hash
+      const seed = product.slug.length;
+      const shuffled = [...sameCat].sort((a, b) => ((a.id.charCodeAt(0) + seed) % 7) - ((b.id.charCodeAt(0) + seed) % 7));
+      const cross = comboItems.length > 0 ? comboItems : sameCat.slice(0, 6);
+      setCrossSell(cross.slice(0, 8));
+      setAlsoViewed(shuffled.slice(0, 8));
+    });
+  }, [data]);
+  const recentlyViewed = useRecentlyViewed(slug);
 
   /* Sticky CTA visibility */
   useEffect(() => {
@@ -588,6 +674,8 @@ export default function ProductDetail() {
                 )}
               </div>
 
+              <WishlistCompareActions product={product} />
+
               {/* Trust pillars — minimal hairline grid */}
               <div className="grid grid-cols-2 gap-x-6 gap-y-5 border-t border-foreground/15 pt-6">
                 {[
@@ -702,6 +790,41 @@ export default function ProductDetail() {
               />
               <FAQAccordion items={faqs} />
             </motion.section>
+
+            {/* Cross-sell strips */}
+            {crossSell.length > 0 && (
+              <RecommendationStrip
+                eyebrow="Birlikte Alınanlar"
+                title="Bu ürünle"
+                italicAccent="genelde."
+                products={crossSell}
+              />
+            )}
+
+            {alsoViewed.length > 0 && (
+              <RecommendationStrip
+                eyebrow="Öneri"
+                title="Bunu görenler"
+                italicAccent="şunlara baktı."
+                products={alsoViewed}
+              />
+            )}
+
+            {recentlyViewed.length > 0 && (
+              <RecommendationStrip
+                eyebrow="Geçmiş"
+                title="Son"
+                italicAccent="görüntülenenler."
+                products={recentlyViewed.map(r => ({
+                  id: r.slug, slug: r.slug, name: r.name, images: [r.image],
+                  price_label: r.price_label, price_numeric: undefined,
+                  category_id: r.category_id || "", description: "", short_description: undefined,
+                  featured: false, is_new: false, stock_status: "in_stock", stock: undefined,
+                  specs: {}, tags: [],
+                } as unknown as Product))}
+                onClear={clearRecentlyViewed}
+              />
+            )}
 
             {/* Related products */}
             {related.length > 0 && (

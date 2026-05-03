@@ -75,6 +75,48 @@ export function buildSearchMessage(query: string, categoryName?: string): string
   return lines.join("\n");
 }
 
+export interface WishlistShareItem {
+  name: string;
+  slug: string;
+  price_label: string;
+}
+
+export function buildWishlistShareMessage(items: WishlistShareItem[]): string {
+  const lines: string[] = [
+    "Merhaba! 👋",
+    "",
+    `🤍 İstek listemdeki ${items.length} ürün hakkında bilgi almak istiyorum:`,
+    "",
+  ];
+  items.forEach((it, i) => {
+    lines.push(`${i + 1}. *${it.name}* — ${it.price_label}`);
+    lines.push(`   ${SITE_URL}/urun/${it.slug}`);
+  });
+  lines.push("", "Stok ve kargo bilgisi alabilir miyim?");
+  return lines.join("\n");
+}
+
+export interface CompareShareItem {
+  name: string;
+  slug: string;
+  price_label: string;
+}
+
+export function buildCompareShareMessage(items: CompareShareItem[]): string {
+  const lines: string[] = [
+    "Merhaba! 👋",
+    "",
+    `🔍 Aşağıdaki ${items.length} ürünü karşılaştırıyorum, tavsiye alabilir miyim?`,
+    "",
+  ];
+  items.forEach((it, i) => {
+    lines.push(`${i + 1}. *${it.name}* — ${it.price_label}`);
+    lines.push(`   ${SITE_URL}/urun/${it.slug}`);
+  });
+  lines.push("", "Hangisi benim için daha uygun olur?");
+  return lines.join("\n");
+}
+
 export function buildStockNotifyMessage(productName: string): string {
   return [
     "Merhaba! 👋",

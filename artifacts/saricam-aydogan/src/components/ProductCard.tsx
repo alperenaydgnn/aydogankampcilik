@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { motion, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
-import { AlertTriangle, XCircle, ArrowUpRight, Plus, Check } from "lucide-react";
+import { AlertTriangle, XCircle, ArrowUpRight, Plus, Check, Heart, GitCompare } from "lucide-react";
 import { Product, Category, StockStatus } from "@/lib/mockData";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { BlurImage } from "@/components/BlurImage";
@@ -10,8 +10,66 @@ import { buildProductMessage } from "@/lib/whatsapp";
 import { WhatsAppButton, OutOfStockButton } from "@/components/WhatsAppButton";
 import { useTilt } from "@/lib/useTilt";
 import { useCart } from "@/lib/cart";
+import { useWishlist } from "@/lib/wishlist";
+import { useCompare, COMPARE_MAX } from "@/lib/compare";
 import { trackEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+
+function CardOverlayActions({ product }: { product: Product }) {
+  const wishlist = useWishlist();
+  const compare = useCompare();
+  const liked = wishlist.has(product.slug);
+  const compared = compare.has(product.slug);
+
+  const onLike = (e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    const added = wishlist.toggle(product);
+    trackEvent({ event: added ? "wishlist_add" : "wishlist_remove", source: "product_card", product_id: product.id, product_name: product.name });
+  };
+  const onCompare = (e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    const r = compare.toggle(product);
+    if (r.reason === "max") {
+      trackEvent({ event: "compare_limit", source: "product_card", product_id: product.id });
+      return;
+    }
+    trackEvent({ event: r.added ? "compare_add" : "compare_remove", source: "product_card", product_id: product.id, product_name: product.name });
+  };
+
+  return (
+    <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5">
+      <button
+        onClick={onLike}
+        aria-label={liked ? "Favorilerden çıkar" : "Favorilere ekle"}
+        aria-pressed={liked}
+        className={cn(
+          "w-8 h-8 rounded-full bg-white/95 backdrop-blur-sm border border-foreground/8 flex items-center justify-center shadow-sm transition-all duration-300",
+          liked ? "text-secondary" : "text-foreground/60 hover:text-secondary",
+          !liked && "opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0",
+          liked && "opacity-100",
+        )}
+      >
+        <Heart className={cn("w-3.5 h-3.5", liked && "fill-secondary")} strokeWidth={liked ? 2 : 1.75} />
+      </button>
+      <button
+        onClick={onCompare}
+        aria-label={compared ? "Karşılaştırmadan çıkar" : "Karşılaştırmaya ekle"}
+        aria-pressed={compared}
+        disabled={!compared && compare.isFull}
+        title={!compared && compare.isFull ? `En fazla ${COMPARE_MAX} ürün` : undefined}
+        className={cn(
+          "w-8 h-8 rounded-full bg-white/95 backdrop-blur-sm border border-foreground/8 flex items-center justify-center shadow-sm transition-all duration-300",
+          compared ? "text-secondary" : "text-foreground/60 hover:text-secondary",
+          !compared && "opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0",
+          compared && "opacity-100",
+          !compared && compare.isFull && "opacity-30 hover:text-foreground/60",
+        )}
+      >
+        <GitCompare className="w-3.5 h-3.5" strokeWidth={compared ? 2.2 : 1.75} />
+      </button>
+    </div>
+  );
+}
 
 /* ── Inline "Add to cart" pill ─────────────────────── */
 function AddToCartPill({ product, category, compact, fullWidth }: {
@@ -135,6 +193,7 @@ export function ProductCard({ product, index = 0, compact = false }: { product: 
         {/* Editorial bare image */}
         <Link href={`/urun/${product.slug}`} tabIndex={-1} aria-hidden className="block">
           <div className="product-card-image relative overflow-hidden bg-foreground/5 transition-transform duration-500 ease-out group-hover:-translate-y-2">
+            <CardOverlayActions product={product} />
             {/* Out of stock overlay */}
             {isOOS && (
               <div className="absolute inset-0 z-30 bg-background/70 flex items-center justify-center">

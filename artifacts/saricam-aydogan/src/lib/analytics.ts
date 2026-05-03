@@ -8,6 +8,8 @@ export type WhatsAppEventType =
   | 'product_inquiry'     // asking about a specific product
   | 'catalog_inquiry'     // general category inquiry
   | 'search_inquiry'      // triggered from search hint
+  | 'wishlist_share'      // share wishlist via WhatsApp
+  | 'compare_share'       // share compare table via WhatsApp
   | 'general_inquiry';    // catch-all (FAB, footer, etc.)
 
 export type WhatsAppEventSource =
@@ -21,6 +23,8 @@ export type WhatsAppEventSource =
   | 'catalog_strip'
   | 'home_hero'
   | 'home_strip'
+  | 'favorites_page'
+  | 'compare_page'
   | 'fab';
 
 export interface WhatsAppTrackingData {
@@ -33,6 +37,7 @@ export interface WhatsAppTrackingData {
   category_name?: string;
   price_numeric?: number;
   search_query?: string;
+  item_count?: number;
 }
 
 export function trackWhatsAppClick(data: WhatsAppTrackingData): void {
@@ -88,7 +93,18 @@ export type FunnelEventType =
   | 'exit_intent_shown'
   | 'exit_intent_cta'
   | 'combo_view'
-  | 'combo_add';
+  | 'combo_add'
+  | 'wishlist_add'
+  | 'wishlist_remove'
+  | 'wishlist_open'
+  | 'wishlist_share'
+  | 'compare_add'
+  | 'compare_remove'
+  | 'compare_limit'
+  | 'compare_share'
+  | 'search_open'
+  | 'search_query'
+  | 'search_inquiry';
 
 export interface FunnelEventData {
   event: FunnelEventType;
@@ -108,6 +124,7 @@ export interface FunnelEventData {
   has_combo?: boolean;
   time_window?: string;
   price_numeric?: number;
+  search_query?: string;
 }
 
 export function trackEvent(data: FunnelEventData): void {

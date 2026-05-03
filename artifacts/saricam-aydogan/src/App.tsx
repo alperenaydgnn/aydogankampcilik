@@ -27,6 +27,11 @@ import NotFound from "@/pages/not-found";
 import { AdminAuthProvider, useAdminAuth } from "@/admin/context/AdminAuthContext";
 import { SiteSettingsProvider } from "@/lib/SiteSettingsContext";
 import { CartProvider } from "@/lib/cart";
+import { WishlistProvider } from "@/lib/wishlist";
+import { CompareProvider } from "@/lib/compare";
+import { CompareBar } from "@/components/CompareBar";
+import Compare from "@/pages/Compare";
+import Favorites from "@/pages/Favorites";
 import { CartDrawer } from "@/components/CartDrawer";
 import { CartToast } from "@/components/CartToast";
 import { CheckoutWizard } from "@/components/CheckoutWizard";
@@ -112,6 +117,8 @@ function AnimatedRoutes() {
           <Route path="/urunler" component={Catalog} />
           <Route path="/urunler/:kategori" component={Catalog} />
           <Route path="/urun/:slug" component={ProductDetail} />
+          <Route path="/karsilastir" component={Compare} />
+          <Route path="/favoriler" component={Favorites} />
           <Route path="/kategori/:slug" component={CategoryInfo} />
           <Route path="/hakkimizda" component={About} />
           <Route path="/iletisim" component={Contact} />
@@ -143,6 +150,7 @@ function StoreFront() {
       <CheckoutWizard />
       <CartToast />
       <ExitIntentModal />
+      <CompareBar />
     </div>
   );
 }
@@ -160,9 +168,13 @@ function App() {
         <TooltipProvider>
           <SiteSettingsProvider>
             <CartProvider>
-              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                <Router />
-              </WouterRouter>
+              <WishlistProvider>
+                <CompareProvider>
+                  <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                    <Router />
+                  </WouterRouter>
+                </CompareProvider>
+              </WishlistProvider>
             </CartProvider>
           </SiteSettingsProvider>
           <Toaster />

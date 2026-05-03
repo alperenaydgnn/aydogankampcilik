@@ -4,7 +4,7 @@ import {
   Search, Filter, SlidersHorizontal, LayoutGrid, List,
   ChevronLeft, ChevronRight, ArrowRight,
   X, ChevronDown, ChevronUp, Star, Sparkles, ArrowUpDown,
-  AlertTriangle, MessageCircle, ShoppingBag,
+  AlertTriangle, MessageCircle, ShoppingBag, Check,
 } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { trackEvent } from "@/lib/analytics";
@@ -15,6 +15,7 @@ import { Category, Product, StockStatus } from "@/lib/mockData";
 import { getCategoryMeta } from "@/lib/categoryMeta";
 import { buildBreadcrumbSchema, buildItemListSchema } from "@/lib/schemas";
 import { ProductCard } from "@/components/ProductCard";
+import { RecommendationStrip } from "@/components/RecommendationStrip";
 import { SEO } from "@/lib/seo";
 import { buildSearchMessage, buildProductMessage } from "@/lib/whatsapp";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
@@ -22,6 +23,11 @@ import { Slider } from "@/components/ui/slider";
 import { formatPriceLabel } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import {
+  buildDoc, smartSearch,
+  extractBrands, getProductBrand, getProductWeightKg, getProductCapacity, getProductSeason, getWaterproofMm,
+} from "@/lib/search";
+import { useRecentlyViewed } from "@/lib/recentlyViewed";
 
 const PRICE_SLIDER_MIN = 0;
 const PRICE_SLIDER_MAX = 10000;
@@ -44,17 +50,21 @@ interface Params {
   price_max: number | null;
   stock: StockFilter;
   feat: boolean;
+  brands: string[];
+  season: string;
+  weight_max: number | null;
+  capacity: number | null;
+  waterproof_min: number | null;
 }
 
 function readParams(s: string): Params {
   const sp = new URLSearchParams(s);
-  const minRaw = sp.get("price_min");
-  const maxRaw = sp.get("price_max");
   const parseNum = (v: string | null) => {
     if (v == null) return null;
-    const n = parseInt(v, 10);
+    const n = parseFloat(v);
     return Number.isFinite(n) ? n : null;
   };
+  const brandsRaw = sp.get("brands");
   return {
     view:  (sp.get("view") === "list" ? "list" : "grid") as ViewMode,
     page:  Math.max(1, parseInt(sp.get("page") || "1", 10) || 1),
@@ -63,11 +73,16 @@ function readParams(s: string): Params {
               ? sp.get("sort") : "featured") as SortKey,
     price: (["all","low","mid","high","premium"].includes(sp.get("price") || "")
               ? sp.get("price") : "all") as PriceRange,
-    price_min: parseNum(minRaw),
-    price_max: parseNum(maxRaw),
+    price_min: parseNum(sp.get("price_min")),
+    price_max: parseNum(sp.get("price_max")),
     stock: (["all","in_stock","low_stock"].includes(sp.get("stock") || "")
               ? sp.get("stock") : "all") as StockFilter,
     feat:  sp.get("feat") === "1",
+    brands: brandsRaw ? brandsRaw.split(",").map(s => s.trim()).filter(Boolean) : [],
+    season: sp.get("season") || "",
+    weight_max: parseNum(sp.get("weight_max")),
+    capacity: parseNum(sp.get("capacity")),
+    waterproof_min: parseNum(sp.get("waterproof_min")),
   };
 }
 
@@ -90,6 +105,55 @@ const SORT_LABELS: Record<SortKey, string> = {
 /* ── Filtering + sorting (client-side) ───────────────── */
 function applyFilters(products: Product[], params: Params): Product[] {
   let list = [...products];
+
+  if (params.q.trim()) {
+    const docs = list.map(p => buildDoc(p));
+    const results = smartSearch(params.q, docs);
+    const order = new Map(results.map((r, i) => [r.product.slug, i] as [string, number]));
+    list = list.filter(p => order.has(p.slug));
+    list.sort((a, b) => (order.get(a.slug) ?? 0) - (order.get(b.slug) ?? 0));
+  }
+
+  if (params.brands.length) {
+    const set = new Set(params.brands.map(b => b.toLowerCase()));
+    list = list.filter(p => {
+      const b = getProductBrand(p);
+      return b ? set.has(b.toLowerCase()) : false;
+    });
+  }
+
+  if (params.season) {
+    const wanted = params.season.toLowerCase();
+    list = list.filter(p => {
+      const s = getProductSeason(p)?.toLowerCase();
+      if (!s) return false;
+      if (wanted === "4") return s.includes("4");
+      if (wanted === "3") return s.includes("3") || s.includes("yaz") || s.includes("ilkbahar");
+      if (wanted === "kis") return s.includes("kış") || s.includes("kis") || s.includes("4");
+      return s.includes(wanted);
+    });
+  }
+
+  if (params.weight_max != null) {
+    list = list.filter(p => {
+      const w = getProductWeightKg(p);
+      return w != null && w <= (params.weight_max as number);
+    });
+  }
+
+  if (params.capacity != null) {
+    list = list.filter(p => {
+      const c = getProductCapacity(p);
+      return c != null && c >= (params.capacity as number);
+    });
+  }
+
+  if (params.waterproof_min != null) {
+    list = list.filter(p => {
+      const w = getWaterproofMm(p);
+      return w != null && w >= (params.waterproof_min as number);
+    });
+  }
 
   if (params.feat) list = list.filter(p => p.featured);
 
@@ -119,6 +183,9 @@ function applyFilters(products: Product[], params: Params): Product[] {
       return true;
     });
   }
+
+  // Skip resorting when smart search has produced its own relevance order
+  if (params.q.trim() && params.sort === "featured") return list;
 
   switch (params.sort) {
     case "featured":
@@ -382,6 +449,50 @@ interface FilterSectionsProps {
   pushParams: (patch: Partial<Record<string, string | number | boolean | undefined>>) => void;
   hasActiveFilters: boolean;
   clearAllFilters: () => void;
+  allProducts: Product[];
+}
+
+const SEASON_OPTIONS: { value: string; label: string }[] = [
+  { value: "",    label: "Tümü" },
+  { value: "4",   label: "4 Mevsim / Kış" },
+  { value: "3",   label: "3 Mevsim" },
+  { value: "yaz", label: "Yazlık" },
+];
+const WEIGHT_OPTIONS: { value: number | null; label: string }[] = [
+  { value: null, label: "Tümü" },
+  { value: 1.5,  label: "≤ 1.5 kg" },
+  { value: 3,    label: "≤ 3 kg" },
+  { value: 5,    label: "≤ 5 kg" },
+];
+const CAPACITY_OPTIONS: { value: number | null; label: string }[] = [
+  { value: null, label: "Tümü" },
+  { value: 1, label: "1+ Kişi" },
+  { value: 2, label: "2+ Kişi" },
+  { value: 4, label: "4+ Kişi" },
+  { value: 6, label: "6+ Kişi" },
+];
+const WATERPROOF_OPTIONS: { value: number | null; label: string }[] = [
+  { value: null, label: "Tümü" },
+  { value: 1500, label: "≥ 1.500 mm" },
+  { value: 3000, label: "≥ 3.000 mm" },
+  { value: 5000, label: "≥ 5.000 mm" },
+];
+
+function CollapsibleFilter({ label, children, defaultOpen = true }: { label: string; children: React.ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between text-left mb-2"
+      >
+        <span className="eyebrow text-foreground/70">{label}</span>
+        <ChevronDown className={cn("w-3 h-3 text-foreground/50 transition-transform", open && "rotate-180")} />
+      </button>
+      {open && <div className="flex flex-col gap-0">{children}</div>}
+    </div>
+  );
 }
 
 function PriceSlider({ p, pushParams }: { p: Params; pushParams: FilterSectionsProps["pushParams"] }) {
@@ -438,7 +549,13 @@ function PriceSlider({ p, pushParams }: { p: Params; pushParams: FilterSectionsP
   );
 }
 
-function FilterSections({ p, pushParams, hasActiveFilters, clearAllFilters }: FilterSectionsProps) {
+function FilterSections({ p, pushParams, hasActiveFilters, clearAllFilters, allProducts }: FilterSectionsProps) {
+  const brands = useMemo(() => extractBrands(allProducts), [allProducts]);
+  const toggleBrand = (b: string) => {
+    const set = new Set(p.brands);
+    if (set.has(b)) set.delete(b); else set.add(b);
+    pushParams({ brands: set.size ? Array.from(set).join(",") : undefined, page: 1 });
+  };
   return (
     <>
       {/* Sort */}
@@ -547,6 +664,113 @@ function FilterSections({ p, pushParams, hasActiveFilters, clearAllFilters }: Fi
         </button>
       </div>
 
+      {/* Brand */}
+      {brands.length > 0 && (
+        <CollapsibleFilter label="Marka">
+          {brands.map(b => {
+            const checked = p.brands.includes(b);
+            return (
+              <button
+                key={b}
+                type="button"
+                onClick={() => toggleBrand(b)}
+                aria-pressed={checked}
+                className={cn(
+                  "flex items-center justify-between py-2 text-left text-sm cursor-pointer border-b border-foreground/10 last:border-0 transition-colors",
+                  checked ? "text-secondary font-serif italic" : "text-foreground/65 hover:text-foreground",
+                )}
+              >
+                <span className="inline-flex items-center gap-2.5">
+                  <span className={cn(
+                    "w-3.5 h-3.5 border flex items-center justify-center transition-colors shrink-0",
+                    checked ? "border-secondary bg-secondary" : "border-foreground/30",
+                  )}>
+                    {checked && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
+                  </span>
+                  {b}
+                </span>
+              </button>
+            );
+          })}
+        </CollapsibleFilter>
+      )}
+
+      {/* Season */}
+      <CollapsibleFilter label="Mevsim">
+        {SEASON_OPTIONS.map(opt => (
+          <button
+            key={opt.value || "all"}
+            onClick={() => pushParams({ season: opt.value || undefined, page: 1 })}
+            className={cn(
+              "flex items-center justify-between py-2 text-left text-sm transition-colors border-b border-foreground/10 last:border-0",
+              p.season === opt.value
+                ? "text-secondary font-serif italic"
+                : "text-foreground/65 hover:text-foreground",
+            )}
+          >
+            <span>{opt.label}</span>
+            {p.season === opt.value && <span className="w-1.5 h-1.5 rounded-full bg-secondary" />}
+          </button>
+        ))}
+      </CollapsibleFilter>
+
+      {/* Weight */}
+      <CollapsibleFilter label="Ağırlık">
+        {WEIGHT_OPTIONS.map(opt => (
+          <button
+            key={String(opt.value)}
+            onClick={() => pushParams({ weight_max: opt.value ?? undefined, page: 1 })}
+            className={cn(
+              "flex items-center justify-between py-2 text-left text-sm transition-colors border-b border-foreground/10 last:border-0",
+              p.weight_max === opt.value
+                ? "text-secondary font-serif italic"
+                : "text-foreground/65 hover:text-foreground",
+            )}
+          >
+            <span>{opt.label}</span>
+            {p.weight_max === opt.value && <span className="w-1.5 h-1.5 rounded-full bg-secondary" />}
+          </button>
+        ))}
+      </CollapsibleFilter>
+
+      {/* Capacity */}
+      <CollapsibleFilter label="Kişi Sayısı">
+        {CAPACITY_OPTIONS.map(opt => (
+          <button
+            key={String(opt.value)}
+            onClick={() => pushParams({ capacity: opt.value ?? undefined, page: 1 })}
+            className={cn(
+              "flex items-center justify-between py-2 text-left text-sm transition-colors border-b border-foreground/10 last:border-0",
+              p.capacity === opt.value
+                ? "text-secondary font-serif italic"
+                : "text-foreground/65 hover:text-foreground",
+            )}
+          >
+            <span>{opt.label}</span>
+            {p.capacity === opt.value && <span className="w-1.5 h-1.5 rounded-full bg-secondary" />}
+          </button>
+        ))}
+      </CollapsibleFilter>
+
+      {/* Waterproof */}
+      <CollapsibleFilter label="Su Geçirmezlik">
+        {WATERPROOF_OPTIONS.map(opt => (
+          <button
+            key={String(opt.value)}
+            onClick={() => pushParams({ waterproof_min: opt.value ?? undefined, page: 1 })}
+            className={cn(
+              "flex items-center justify-between py-2 text-left text-sm transition-colors border-b border-foreground/10 last:border-0",
+              p.waterproof_min === opt.value
+                ? "text-secondary font-serif italic"
+                : "text-foreground/65 hover:text-foreground",
+            )}
+          >
+            <span>{opt.label}</span>
+            {p.waterproof_min === opt.value && <span className="w-1.5 h-1.5 rounded-full bg-secondary" />}
+          </button>
+        ))}
+      </CollapsibleFilter>
+
       {/* Clear all filters */}
       {hasActiveFilters && (
         <button
@@ -597,11 +821,12 @@ export default function Catalog() {
 
   useEffect(() => {
     setLoading(true);
-    getProducts({ categorySlug, search: p.q }).then(data => {
+    // Fetch full category list — smartSearch (Levenshtein + synonyms) runs in applyFilters
+    getProducts({ categorySlug, limit: 500 }).then(data => {
       setAllProducts(data);
       setLoading(false);
     });
-  }, [categorySlug, p.q]);
+  }, [categorySlug]);
 
   /* ── Push URL params ───────────────────────────────── */
   function pushParams(patch: Partial<Record<string, string | number | boolean | undefined>>) {
@@ -628,6 +853,15 @@ export default function Catalog() {
   /* ── Apply filters client-side ─────────────────────── */
   const filtered = useMemo(() => applyFilters(allProducts, p), [allProducts, p]);
 
+  /* Recently viewed strip */
+  const recentlyViewed = useRecentlyViewed();
+  const recentlyViewedProducts = useMemo(() => {
+    if (!recentlyViewed.length || !allProducts.length) return [];
+    return recentlyViewed
+      .map(rv => allProducts.find(p => p.slug === rv.slug))
+      .filter(Boolean) as Product[];
+  }, [recentlyViewed, allProducts]);
+
   /* ── Pagination ────────────────────────────────────── */
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(p.page, totalPages);
@@ -648,6 +882,14 @@ export default function Catalog() {
     clearKey: "stock",
   });
   if (p.feat)                activeFilters.push({ label: "Öne Çıkanlar", clearKey: "feat" });
+  if (p.brands.length)       activeFilters.push({ label: `Marka: ${p.brands.join(", ")}`, clearKey: "brands" });
+  if (p.season) {
+    const lbl = SEASON_OPTIONS.find(o => o.value === p.season)?.label ?? p.season;
+    activeFilters.push({ label: lbl, clearKey: "season" });
+  }
+  if (p.weight_max != null)    activeFilters.push({ label: `≤ ${p.weight_max} kg`, clearKey: "weight_max" });
+  if (p.capacity != null)      activeFilters.push({ label: `${p.capacity}+ Kişi`, clearKey: "capacity" });
+  if (p.waterproof_min != null) activeFilters.push({ label: `≥ ${p.waterproof_min.toLocaleString("tr-TR")} mm`, clearKey: "waterproof_min" });
   const hasActiveFilters = activeFilters.length > 0 || !!p.q;
 
   function clearAllFilters() {
@@ -813,7 +1055,7 @@ export default function Catalog() {
                     className="w-full pl-7 pr-4 py-3 bg-transparent border-b border-foreground/30 focus:border-secondary outline-none text-base font-serif font-light placeholder:text-foreground/40 placeholder:italic"
                   />
                 </div>
-                <FilterSections p={p} pushParams={pushParams} hasActiveFilters={hasActiveFilters} clearAllFilters={clearAllFilters} />
+                <FilterSections p={p} pushParams={pushParams} hasActiveFilters={hasActiveFilters} clearAllFilters={clearAllFilters} allProducts={allProducts} />
               </div>
             </motion.div>
           )}
@@ -874,7 +1116,7 @@ export default function Catalog() {
                 </div>
               </div>
 
-              <FilterSections p={p} pushParams={pushParams} hasActiveFilters={hasActiveFilters} clearAllFilters={clearAllFilters} />
+              <FilterSections p={p} pushParams={pushParams} hasActiveFilters={hasActiveFilters} clearAllFilters={clearAllFilters} allProducts={allProducts} />
 
               {/* WhatsApp CTA — bare hairline */}
               <div className="border-t border-foreground/15 pt-6">
@@ -905,6 +1147,18 @@ export default function Catalog() {
 
           {/* Content */}
           <main className="flex-1 min-w-0">
+
+            {/* Recently viewed strip */}
+            {recentlyViewedProducts.length >= 2 && (
+              <div className="mb-12">
+                <RecommendationStrip
+                  eyebrow="Geçmiş"
+                  title="Son"
+                  italicAccent="görüntülenenler."
+                  products={recentlyViewedProducts}
+                />
+              </div>
+            )}
 
             {/* Toolbar — minimal */}
             <div className="flex flex-wrap items-baseline justify-between gap-4 mb-12 pb-6 border-b border-foreground/15">

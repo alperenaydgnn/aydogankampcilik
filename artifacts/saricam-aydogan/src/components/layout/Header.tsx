@@ -1,11 +1,60 @@
 import { Link, useLocation } from "wouter";
-import { Menu, X, Instagram, ShoppingBag } from "lucide-react";
+import { Menu, X, Instagram, ShoppingBag, Heart, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
 import { useCart } from "@/lib/cart";
+import { useWishlist } from "@/lib/wishlist";
 import { trackEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+import { SearchOverlay } from "@/components/SearchOverlay";
+
+function IconButton({
+  onClick, ariaLabel, onDark, badge, children,
+}: { onClick: () => void; ariaLabel: string; onDark: boolean; badge?: number; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={ariaLabel}
+      className={cn(
+        "relative inline-flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-300 ease-out hover:scale-105",
+        onDark
+          ? "border-white/30 text-white/85 hover:text-white hover:border-white/70 hover:bg-white/10"
+          : "border-foreground/15 text-foreground/70 hover:text-secondary hover:border-secondary/60 hover:bg-secondary/5"
+      )}
+    >
+      {children}
+      {badge && badge > 0 ? (
+        <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-secondary text-white text-[0.6rem] font-bold flex items-center justify-center leading-none">
+          {badge > 99 ? "99+" : badge}
+        </span>
+      ) : null}
+    </button>
+  );
+}
+
+function SearchButton({ onDark, onClick }: { onDark: boolean; onClick: () => void }) {
+  return (
+    <IconButton onClick={onClick} ariaLabel="Akıllı arama" onDark={onDark}>
+      <Search className="w-[18px] h-[18px]" strokeWidth={1.75} />
+    </IconButton>
+  );
+}
+
+function WishlistButton({ onDark }: { onDark: boolean }) {
+  const { count } = useWishlist();
+  const [, setLocation] = useLocation();
+  return (
+    <IconButton
+      onClick={() => { setLocation("/favoriler"); trackEvent({ event: "wishlist_open", source: "header", item_count: count }); }}
+      ariaLabel={`Favoriler (${count})`}
+      onDark={onDark}
+      badge={count}
+    >
+      <Heart className={cn("w-[18px] h-[18px]", count > 0 && "fill-secondary text-secondary")} strokeWidth={1.75} />
+    </IconButton>
+  );
+}
 
 function CartButton({ onDark }: { onDark: boolean }) {
   const { count, open } = useCart();
@@ -62,7 +111,24 @@ export function Header() {
   const [location] = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const buildWhatsAppLink = useBuildWhatsAppLink();
+
+  useEffect(() => {
+    const onOpen = () => setSearchOpen(true);
+    document.addEventListener("open-search", onOpen);
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("open-search", onOpen);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, []);
 
   // Most pages besides Home have a dark hero, so default to dark-overlay header.
   // Home overrides via scroll only.
@@ -171,11 +237,15 @@ export function Header() {
             <Instagram className="w-[18px] h-[18px]" strokeWidth={1.75} />
           </a>
 
+          <SearchButton onDark={onDark} onClick={() => setSearchOpen(true)} />
+          <WishlistButton onDark={onDark} />
           <CartButton onDark={onDark} />
         </div>
 
         {/* Mobile right cluster — cart + menu toggle */}
-        <div className="flex items-center gap-3 justify-self-end lg:hidden">
+        <div className="flex items-center gap-2 justify-self-end lg:hidden">
+          <SearchButton onDark={onDark} onClick={() => setSearchOpen(true)} />
+          <WishlistButton onDark={onDark} />
           <CartButton onDark={onDark} />
         <button
           className={cn(
@@ -267,6 +337,7 @@ export function Header() {
           )}
         </AnimatePresence>
       </div>
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
 }
