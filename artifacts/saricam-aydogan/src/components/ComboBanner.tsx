@@ -15,7 +15,7 @@ export function ComboBanner() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    getProducts({ limit: 50 }).then(setProducts);
+    getProducts({ limit: 500 }).then(setProducts);
   }, []);
 
   useEffect(() => {

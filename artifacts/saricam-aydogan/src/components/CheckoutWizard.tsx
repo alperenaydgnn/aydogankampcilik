@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, ChevronLeft, ChevronRight, ShoppingBag, User, Truck, CreditCard, Send } from "lucide-react";
 import { useCart } from "@/lib/cart";
@@ -65,12 +65,30 @@ export function CheckoutWizard() {
     try { localStorage.setItem(FORM_STORAGE, JSON.stringify(form)); } catch { /* ignore */ }
   }, [form]);
 
-  // ESC to close
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // ESC + focus trap
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { onClose(); return; }
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const f = dialogRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (f.length === 0) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    const t = setTimeout(() => dialogRef.current?.focus(), 50);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      clearTimeout(t);
+      previouslyFocused?.focus?.();
+    };
   }, [open, onClose]);
 
   useEffect(() => {
@@ -178,8 +196,11 @@ export function CheckoutWizard() {
             className="fixed inset-0 z-[81] flex items-center justify-center p-4 pointer-events-none"
           >
             <div
-              className="bg-background w-full max-w-xl max-h-[92vh] flex flex-col pointer-events-auto shadow-2xl"
+              ref={dialogRef}
+              tabIndex={-1}
+              className="bg-background w-full max-w-xl max-h-[92vh] flex flex-col pointer-events-auto shadow-2xl outline-none"
               role="dialog"
+              aria-modal="true"
               aria-label="Siparişi tamamla"
             >
               {/* Header */}

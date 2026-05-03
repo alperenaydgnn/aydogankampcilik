@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShoppingBag, ArrowRight } from "lucide-react";
 import { useCart } from "@/lib/cart";
@@ -49,11 +49,29 @@ export function ExitIntentModal() {
 
   const close = () => setOpen(false);
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setOpen(false); return; }
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const f = dialogRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (f.length === 0) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    const t = setTimeout(() => dialogRef.current?.focus(), 50);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      clearTimeout(t);
+      previouslyFocused?.focus?.();
+    };
   }, [open]);
 
   const goCheckout = () => {
@@ -79,7 +97,14 @@ export function ExitIntentModal() {
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 z-[91] flex items-center justify-center p-4 pointer-events-none"
           >
-            <div className="bg-background w-full max-w-lg pointer-events-auto shadow-2xl relative overflow-hidden">
+            <div
+              ref={dialogRef}
+              tabIndex={-1}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Sepetinizi tamamlayın"
+              className="bg-background w-full max-w-lg pointer-events-auto shadow-2xl relative overflow-hidden outline-none"
+            >
               <button
                 onClick={close}
                 aria-label="Kapat"

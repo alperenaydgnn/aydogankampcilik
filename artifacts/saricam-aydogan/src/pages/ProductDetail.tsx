@@ -85,7 +85,7 @@ function ProductDetailComboCard({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
-    getProducts({ limit: 50 }).then(setAllProducts);
+    getProducts({ limit: 500 }).then(setAllProducts);
   }, []);
 
   const matchingCombo = COMBOS.find(c => c.productSlugs.includes(product.slug));

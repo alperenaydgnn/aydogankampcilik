@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, X, Check } from "lucide-react";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
@@ -30,11 +30,27 @@ export function CallbackFab() {
     setHidden(false);
   }, []);
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setOpen(false); return; }
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const f = dialogRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (f.length === 0) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      previouslyFocused?.focus?.();
+    };
   }, [open]);
 
   const valid = name.trim().length >= 2 && /^[0-9+\s()-]{10,}$/.test(phone.trim());
@@ -117,7 +133,14 @@ export function CallbackFab() {
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               className="fixed inset-0 z-[81] flex items-center justify-center p-4 pointer-events-none"
             >
-              <div className="bg-background w-full max-w-md pointer-events-auto shadow-2xl">
+              <div
+                ref={dialogRef}
+                tabIndex={-1}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Geri arama talep et"
+                className="bg-background w-full max-w-md pointer-events-auto shadow-2xl outline-none"
+              >
                 <header className="flex items-center justify-between px-6 py-5 border-b border-foreground/10">
                   <div>
                     <span className="eyebrow !mb-0">Geri Arama</span>
