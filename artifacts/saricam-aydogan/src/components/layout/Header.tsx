@@ -1,9 +1,55 @@
 import { Link, useLocation } from "wouter";
-import { Menu, X, Instagram } from "lucide-react";
+import { Menu, X, Instagram, ShoppingBag } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
+import { useCart } from "@/lib/cart";
+import { trackEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+
+function CartButton({ onDark }: { onDark: boolean }) {
+  const { count, open } = useCart();
+  const [bump, setBump] = useState(0);
+  useEffect(() => {
+    if (count === 0) return;
+    setBump(b => b + 1);
+  }, [count]);
+  return (
+    <button
+      onClick={() => { open(); trackEvent({ event: "cart_open", source: "header", item_count: count }); }}
+      aria-label={`Sepet (${count} ürün)`}
+      className={cn(
+        "relative inline-flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-300 ease-out hover:scale-105",
+        onDark
+          ? "border-white/30 text-white/85 hover:text-white hover:border-white/70 hover:bg-white/10"
+          : "border-foreground/15 text-foreground/70 hover:text-secondary hover:border-secondary/60 hover:bg-secondary/5"
+      )}
+    >
+      <motion.span
+        key={bump}
+        initial={{ scale: 1 }}
+        animate={{ scale: bump > 0 ? [1, 1.25, 1] : 1 }}
+        transition={{ duration: 0.4 }}
+        className="inline-flex"
+      >
+        <ShoppingBag className="w-[18px] h-[18px]" strokeWidth={1.75} />
+      </motion.span>
+      <AnimatePresence>
+        {count > 0 && (
+          <motion.span
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 280, damping: 18 }}
+            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-secondary text-white text-[0.6rem] font-bold flex items-center justify-center leading-none"
+          >
+            {count > 99 ? "99+" : count}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </button>
+  );
+}
 
 const navLinks = [
   { name: "Anasayfa", href: "/" },
@@ -124,12 +170,16 @@ export function Header() {
           >
             <Instagram className="w-[18px] h-[18px]" strokeWidth={1.75} />
           </a>
+
+          <CartButton onDark={onDark} />
         </div>
 
-        {/* Mobile toggle */}
+        {/* Mobile right cluster — cart + menu toggle */}
+        <div className="flex items-center gap-3 justify-self-end lg:hidden">
+          <CartButton onDark={onDark} />
         <button
           className={cn(
-            "relative z-50 lg:hidden p-2 -mr-2 transition-colors justify-self-end",
+            "relative z-50 p-2 -mr-2 transition-colors",
             onDark ? "text-white" : "text-foreground"
           )}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -147,6 +197,7 @@ export function Header() {
             )}
           </AnimatePresence>
         </button>
+        </div>
 
         {/* Mobile overlay */}
         <AnimatePresence>

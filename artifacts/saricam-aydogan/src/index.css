@@ -882,3 +882,23 @@
     transform: none !important;
   }
 }
+
+/* ─── Checkout/callback form inputs ─────────────────────────────── */
+.checkout-input {
+  width: 100%;
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--foreground) / 0.18);
+  padding: 0.7rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: hsl(var(--foreground));
+  border-radius: 0;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  outline: none;
+  font-family: inherit;
+}
+.checkout-input::placeholder { color: hsl(var(--foreground) / 0.4); }
+.checkout-input:focus {
+  border-color: hsl(var(--secondary));
+  box-shadow: 0 0 0 3px hsl(var(--secondary) / 0.12);
+}

@@ -12,6 +12,7 @@ import {
 import { getProducts, getCategories } from "@/lib/data";
 import { Product, Category } from "@/lib/mockData";
 import { ProductCard } from "@/components/ProductCard";
+import { ComboBanner } from "@/components/ComboBanner";
 import { CategoryCard } from "@/components/CategoryCard";
 import { BlurImage } from "@/components/BlurImage";
 import { HeroSlider } from "@/components/HeroSlider";
@@ -227,6 +228,11 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* ════════════════════════════════════════
+          § COMBO BUNDLES — Sales upsell
+      ════════════════════════════════════════ */}
+      <ComboBanner />
 
       {/* ════════════════════════════════════════
           § BRAND STORY — Split editorial

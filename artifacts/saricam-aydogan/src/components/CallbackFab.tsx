@@ -1,0 +1,178 @@
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Phone, X, Check } from "lucide-react";
+import { useBuildWhatsAppLink } from "@/lib/whatsapp";
+import { trackEvent } from "@/lib/analytics";
+import { cn } from "@/lib/utils";
+
+const DISMISS_KEY = "saricam-callback-dismissed";
+
+export function CallbackFab() {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [time, setTime] = useState("Hemen");
+  const [submitted, setSubmitted] = useState(false);
+  const [hidden, setHidden] = useState(true);
+  const buildWA = useBuildWhatsAppLink();
+
+  useEffect(() => {
+    if (sessionStorage.getItem(DISMISS_KEY) === "1") return;
+    const t = setTimeout(() => setHidden(false), 8000);
+    return () => clearTimeout(t);
+  }, []);
+
+  const valid = name.trim().length >= 2 && /^[0-9+\s()-]{10,}$/.test(phone.trim());
+
+  const submit = () => {
+    if (!valid) return;
+    const msg = [
+      "Merhaba! 👋 Geri arama talep ediyorum.",
+      "",
+      `Ad Soyad: ${name.trim()}`,
+      `Telefon: ${phone.trim()}`,
+      `Tercih edilen zaman: ${time}`,
+      "",
+      "Lütfen müsait olduğunuzda iletişime geçer misiniz? Teşekkürler.",
+    ].join("\n");
+    trackEvent({ event: "callback_request", source: "callback_fab", time_window: time });
+    window.open(buildWA(msg), "_blank", "noopener,noreferrer");
+    setSubmitted(true);
+    setTimeout(() => {
+      setOpen(false);
+      setSubmitted(false);
+      setName(""); setPhone(""); setTime("Hemen");
+    }, 1800);
+  };
+
+  const dismissChip = () => {
+    sessionStorage.setItem(DISMISS_KEY, "1");
+    setHidden(true);
+  };
+
+  if (hidden && !open) return null;
+
+  return (
+    <>
+      {/* Floating chip — bottom-left */}
+      <AnimatePresence>
+        {!open && !hidden && (
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ type: "spring", stiffness: 220, damping: 22 }}
+            className="fixed bottom-6 left-6 z-[60] flex items-center gap-2"
+          >
+            <button
+              onClick={() => { setOpen(true); trackEvent({ event: "callback_open", source: "callback_fab" }); }}
+              className="inline-flex items-center gap-2.5 pl-3 pr-5 py-2.5 bg-primary text-white shadow-xl rounded-full text-[0.7rem] font-bold uppercase tracking-[0.18em] hover:bg-primary/90 transition group"
+              aria-label="Geri arama talep et"
+            >
+              <span className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center group-hover:scale-110 transition">
+                <Phone className="w-3.5 h-3.5" strokeWidth={2.2} />
+              </span>
+              Beni Ara
+            </button>
+            <button
+              onClick={dismissChip}
+              aria-label="Geri arama önerisini kapat"
+              className="w-6 h-6 rounded-full bg-background/80 backdrop-blur-sm border border-foreground/15 flex items-center justify-center text-foreground/55 hover:text-foreground hover:bg-background transition"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 z-[80] bg-foreground/55 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.96 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed inset-0 z-[81] flex items-center justify-center p-4 pointer-events-none"
+            >
+              <div className="bg-background w-full max-w-md pointer-events-auto shadow-2xl">
+                <header className="flex items-center justify-between px-6 py-5 border-b border-foreground/10">
+                  <div>
+                    <span className="eyebrow !mb-0">Geri Arama</span>
+                    <h3 className="font-serif font-light text-xl text-primary tracking-tight mt-1">
+                      Sizi <em className="italic text-secondary">arayalım.</em>
+                    </h3>
+                  </div>
+                  <button onClick={() => setOpen(false)} className="p-2 -mr-2 text-foreground/55 hover:text-foreground" aria-label="Kapat">
+                    <X className="w-5 h-5" />
+                  </button>
+                </header>
+
+                <div className="px-6 py-6 space-y-4">
+                  {submitted ? (
+                    <div className="text-center py-6">
+                      <div className="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-4">
+                        <Check className="w-7 h-7 text-emerald-600" strokeWidth={2.2} />
+                      </div>
+                      <p className="font-serif text-lg text-primary">Talebiniz alındı!</p>
+                      <p className="text-sm text-foreground/55 font-light mt-2">WhatsApp'tan ekibimize iletildi.</p>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-xs text-foreground/55 font-light leading-relaxed">
+                        Bilgilerinizi bırakın, en kısa sürede sizi WhatsApp veya telefon ile arayalım.
+                      </p>
+                      <label className="block">
+                        <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-foreground/70 mb-1.5 block">Adınız</span>
+                        <input
+                          type="text" value={name} onChange={e => setName(e.target.value)}
+                          placeholder="Ör. Ahmet Yılmaz" autoFocus
+                          className="checkout-input"
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-foreground/70 mb-1.5 block">Telefon</span>
+                        <input
+                          type="tel" value={phone} onChange={e => setPhone(e.target.value)}
+                          placeholder="0555 123 45 67"
+                          className="checkout-input"
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-foreground/70 mb-1.5 block">Tercih Edilen Zaman</span>
+                        <select value={time} onChange={e => setTime(e.target.value)} className="checkout-input">
+                          <option>Hemen</option>
+                          <option>Bugün öğleden sonra</option>
+                          <option>Yarın sabah</option>
+                          <option>Yarın öğleden sonra</option>
+                          <option>Hafta sonu</option>
+                        </select>
+                      </label>
+                      <button
+                        onClick={submit}
+                        disabled={!valid}
+                        className={cn(
+                          "btn-cta-amber btn-cta w-full justify-center !text-[0.7rem] !font-bold !uppercase !tracking-[0.2em]",
+                          !valid && "opacity-50 pointer-events-none"
+                        )}
+                      >
+                        Beni Geri Arayın
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}

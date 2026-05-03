@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { motion, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
-import { AlertTriangle, XCircle, ArrowUpRight } from "lucide-react";
+import { AlertTriangle, XCircle, ArrowUpRight, Plus, Check } from "lucide-react";
 import { Product, Category, StockStatus } from "@/lib/mockData";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { BlurImage } from "@/components/BlurImage";
@@ -9,7 +9,49 @@ import { getCategories } from "@/lib/data";
 import { buildProductMessage } from "@/lib/whatsapp";
 import { WhatsAppButton, OutOfStockButton } from "@/components/WhatsAppButton";
 import { useTilt } from "@/lib/useTilt";
+import { useCart } from "@/lib/cart";
+import { trackEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+
+/* ── Inline "Add to cart" pill ─────────────────────── */
+function AddToCartPill({ product, category, compact, fullWidth }: {
+  product: Product; category?: Category; compact?: boolean; fullWidth?: boolean;
+}) {
+  const { add } = useCart();
+  const [added, setAdded] = useState(false);
+  const handle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    add(product);
+    trackEvent({
+      event: "cart_add",
+      source: compact ? "product_card_compact" : "product_card",
+      product_id: product.id,
+      product_name: product.name,
+      category_name: category?.name,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1400);
+  };
+  return (
+    <button
+      type="button"
+      onClick={handle}
+      aria-label={`${product.name} sepete ekle`}
+      className={cn(
+        "inline-flex items-center justify-center gap-1.5 border transition-all duration-200 font-bold uppercase tracking-[0.18em]",
+        compact ? "text-[0.6rem] px-2.5 py-1.5" : "text-[0.7rem] px-4 py-2.5",
+        fullWidth && "w-full",
+        added
+          ? "border-emerald-600 bg-emerald-50 text-emerald-700"
+          : "border-foreground/20 text-foreground/75 hover:border-secondary hover:text-secondary hover:bg-secondary/5"
+      )}
+    >
+      {added ? <Check className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} /> : <Plus className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} />}
+      {added ? "Eklendi" : "Sepete Ekle"}
+    </button>
+  );
+}
 
 /* ── Shared category cache ────────────────────────────── */
 let _cache: Category[] | null = null;
@@ -38,14 +80,18 @@ const stockConfig: Record<StockStatus, { label: string; cls: string; icon: typeo
   out_of_stock:{ label: "Tükendi",     cls: "text-red-600",      icon: XCircle },
 };
 
-function StockBadge({ status }: { status: StockStatus }) {
+function StockBadge({ status, stock }: { status: StockStatus; stock?: number }) {
   const cfg = stockConfig[status];
   if (status === "in_stock") return null;
   const Icon = cfg.icon;
+  const label =
+    status === "low_stock" && stock && stock > 0 && stock <= 10
+      ? `Son ${stock} adet`
+      : cfg.label;
   return (
     <span className={cn("inline-flex items-center gap-1 text-[0.65rem] font-bold uppercase tracking-[0.15em]", cfg.cls)}>
       {Icon && <Icon className="w-2.5 h-2.5" />}
-      {cfg.label}
+      {label}
     </span>
   );
 }
@@ -178,13 +224,16 @@ export function ProductCard({ product, index = 0, compact = false }: { product: 
               {product.price_label}
             </span>
             {!compact && (product.stock_status && product.stock_status !== "in_stock" ? (
-              <StockBadge status={product.stock_status} />
+              <StockBadge status={product.stock_status} stock={product.stock} />
             ) : (
               <span className="inline-flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.18em] text-emerald-700">
                 <span className="w-1 h-1 rounded-full bg-emerald-600 animate-pulse-soft" />
                 Stokta
               </span>
             ))}
+            {compact && product.stock_status === "low_stock" && (
+              <StockBadge status={product.stock_status} stock={product.stock} />
+            )}
           </div>
 
           {/* Hairline that grows on hover */}
@@ -195,30 +244,38 @@ export function ProductCard({ product, index = 0, compact = false }: { product: 
             </div>
           )}
 
-          {/* CTA — hidden in compact (arrow chip on image acts as CTA) */}
+          {/* CTAs */}
           {!compact && (
-            <div className="pt-1">
+            <div className="pt-1 flex flex-col gap-2">
               {isOOS ? (
                 <OutOfStockButton size="sm" fullWidth />
               ) : (
-                <WhatsAppButton
-                  message={waMessage}
-                  tracking={{
-                    event: "product_order",
-                    source: "product_card",
-                    product_id: product.id,
-                    product_name: product.name,
-                    product_slug: product.slug,
-                    category_id: product.category_id,
-                    category_name: category?.name,
-                    price_numeric: product.price_numeric ?? undefined,
-                  }}
-                  size="sm"
-                  fullWidth
-                  label="WhatsApp ile Sipariş"
-                  onClick={e => e.stopPropagation()}
-                />
+                <>
+                  <WhatsAppButton
+                    message={waMessage}
+                    tracking={{
+                      event: "product_order",
+                      source: "product_card",
+                      product_id: product.id,
+                      product_name: product.name,
+                      product_slug: product.slug,
+                      category_id: product.category_id,
+                      category_name: category?.name,
+                      price_numeric: product.price_numeric ?? undefined,
+                    }}
+                    size="sm"
+                    fullWidth
+                    label="WhatsApp ile Sipariş"
+                    onClick={e => e.stopPropagation()}
+                  />
+                  <AddToCartPill product={product} category={category} fullWidth />
+                </>
               )}
+            </div>
+          )}
+          {compact && !isOOS && (
+            <div className="pt-1.5">
+              <AddToCartPill product={product} category={category} compact fullWidth />
             </div>
           )}
         </div>

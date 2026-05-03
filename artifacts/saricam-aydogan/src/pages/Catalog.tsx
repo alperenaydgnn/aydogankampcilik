@@ -16,8 +16,14 @@ import { ProductCard } from "@/components/ProductCard";
 import { SEO } from "@/lib/seo";
 import { buildSearchMessage, buildProductMessage } from "@/lib/whatsapp";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { Slider } from "@/components/ui/slider";
+import { formatPriceLabel } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+
+const PRICE_SLIDER_MIN = 0;
+const PRICE_SLIDER_MAX = 10000;
+const PRICE_SLIDER_STEP = 50;
 
 const PAGE_SIZE = 9;
 type ViewMode = "grid" | "list";
@@ -32,12 +38,21 @@ interface Params {
   q: string;
   sort: SortKey;
   price: PriceRange;
+  price_min: number | null;
+  price_max: number | null;
   stock: StockFilter;
   feat: boolean;
 }
 
 function readParams(s: string): Params {
   const sp = new URLSearchParams(s);
+  const minRaw = sp.get("price_min");
+  const maxRaw = sp.get("price_max");
+  const parseNum = (v: string | null) => {
+    if (v == null) return null;
+    const n = parseInt(v, 10);
+    return Number.isFinite(n) ? n : null;
+  };
   return {
     view:  (sp.get("view") === "list" ? "list" : "grid") as ViewMode,
     page:  Math.max(1, parseInt(sp.get("page") || "1", 10) || 1),
@@ -46,6 +61,8 @@ function readParams(s: string): Params {
               ? sp.get("sort") : "featured") as SortKey,
     price: (["all","low","mid","high","premium"].includes(sp.get("price") || "")
               ? sp.get("price") : "all") as PriceRange,
+    price_min: parseNum(minRaw),
+    price_max: parseNum(maxRaw),
     stock: (["all","in_stock","low_stock"].includes(sp.get("stock") || "")
               ? sp.get("stock") : "all") as StockFilter,
     feat:  sp.get("feat") === "1",
@@ -84,6 +101,16 @@ function applyFilters(products: Product[], params: Params): Product[] {
     list = list.filter(p => {
       if (!p.price_numeric) return false;
       return p.price_numeric >= pr.min && p.price_numeric < pr.max;
+    });
+  }
+
+  // Slider range — overrides preset bounds when provided
+  if (params.price_min != null || params.price_max != null) {
+    const lo = params.price_min ?? PRICE_SLIDER_MIN;
+    const hi = params.price_max ?? PRICE_SLIDER_MAX;
+    list = list.filter(p => {
+      if (!p.price_numeric) return false;
+      return p.price_numeric >= lo && p.price_numeric <= hi;
     });
   }
 
@@ -326,6 +353,60 @@ interface FilterSectionsProps {
   clearAllFilters: () => void;
 }
 
+function PriceSlider({ p, pushParams }: { p: Params; pushParams: FilterSectionsProps["pushParams"] }) {
+  const lo = p.price_min ?? PRICE_SLIDER_MIN;
+  const hi = p.price_max ?? PRICE_SLIDER_MAX;
+  const [val, setVal] = useState<[number, number]>([lo, hi]);
+
+  useEffect(() => {
+    setVal([p.price_min ?? PRICE_SLIDER_MIN, p.price_max ?? PRICE_SLIDER_MAX]);
+  }, [p.price_min, p.price_max]);
+
+  const commit = (v: number[]) => {
+    const [a, b] = v as [number, number];
+    pushParams({
+      price_min: a > PRICE_SLIDER_MIN ? a : undefined,
+      price_max: b < PRICE_SLIDER_MAX ? b : undefined,
+      price: "all",
+      page: 1,
+    });
+  };
+
+  const active = p.price_min != null || p.price_max != null;
+
+  return (
+    <div className="mt-4 pt-4 border-t border-foreground/10">
+      <div className="flex items-baseline justify-between mb-3">
+        <span className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-foreground/55">Özel Aralık</span>
+        {active && (
+          <button
+            onClick={() => pushParams({ price_min: undefined, price_max: undefined, page: 1 })}
+            className="text-[0.65rem] uppercase tracking-[0.18em] font-semibold text-secondary hover:text-rose-700 transition-colors"
+          >
+            Sıfırla
+          </button>
+        )}
+      </div>
+      <Slider
+        value={val}
+        min={PRICE_SLIDER_MIN}
+        max={PRICE_SLIDER_MAX}
+        step={PRICE_SLIDER_STEP}
+        onValueChange={(v) => setVal(v as [number, number])}
+        onValueCommit={commit}
+        aria-label="Fiyat aralığı"
+        className="my-3"
+      />
+      <div className="flex items-center justify-between text-xs font-light text-foreground/65 tabular-nums">
+        <span>{formatPriceLabel(val[0])}</span>
+        <span>
+          {val[1] >= PRICE_SLIDER_MAX ? `${formatPriceLabel(PRICE_SLIDER_MAX)}+` : formatPriceLabel(val[1])}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function FilterSections({ p, pushParams, hasActiveFilters, clearAllFilters }: FilterSectionsProps) {
   return (
     <>
@@ -358,7 +439,7 @@ function FilterSections({ p, pushParams, hasActiveFilters, clearAllFilters }: Fi
           {(Object.entries(PRICE_RANGES) as [PriceRange, { label: string }][]).map(([key, { label }]) => (
             <button
               key={key}
-              onClick={() => pushParams({ price: key, page: 1 })}
+              onClick={() => pushParams({ price: key, price_min: undefined, price_max: undefined, page: 1 })}
               className={cn(
                 "flex items-center justify-between py-2 text-left text-sm transition-colors border-b border-foreground/10 last:border-0",
                 p.price === key
@@ -371,6 +452,7 @@ function FilterSections({ p, pushParams, hasActiveFilters, clearAllFilters }: Fi
             </button>
           ))}
         </div>
+        <PriceSlider p={p} pushParams={pushParams} />
       </div>
 
       {/* Stock */}
@@ -494,6 +576,12 @@ export default function Catalog() {
   function pushParams(patch: Partial<Record<string, string | number | boolean | undefined>>) {
     const sp = new URLSearchParams(searchString);
     const defaults: Record<string, string> = { view: "grid", page: "1", sort: "featured", price: "all", stock: "all", feat: "" };
+    // Special composite key — clears both min and max
+    if ("price_range" in patch) {
+      sp.delete("price_min");
+      sp.delete("price_max");
+      delete (patch as Record<string, unknown>).price_range;
+    }
 
     for (const [k, v] of Object.entries(patch)) {
       if (v === undefined || v === "" || v === false || String(v) === defaults[k]) {
@@ -518,6 +606,12 @@ export default function Catalog() {
   const activeFilters: { label: string; clearKey: string }[] = [];
   if (p.sort !== "featured") activeFilters.push({ label: SORT_LABELS[p.sort], clearKey: "sort" });
   if (p.price !== "all")     activeFilters.push({ label: PRICE_RANGES[p.price].label, clearKey: "price" });
+  if (p.price_min != null || p.price_max != null) {
+    const lo = p.price_min ?? PRICE_SLIDER_MIN;
+    const hi = p.price_max ?? PRICE_SLIDER_MAX;
+    const hiLabel = hi >= PRICE_SLIDER_MAX ? `${formatPriceLabel(PRICE_SLIDER_MAX)}+` : formatPriceLabel(hi);
+    activeFilters.push({ label: `${formatPriceLabel(lo)} – ${hiLabel}`, clearKey: "price_range" });
+  }
   if (p.stock !== "all")     activeFilters.push({
     label: p.stock === "in_stock" ? "Stokta Mevcut" : "Son Stoklar",
     clearKey: "stock",

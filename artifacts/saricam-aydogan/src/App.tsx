@@ -26,6 +26,10 @@ import NotFound from "@/pages/not-found";
 
 import { AdminAuthProvider, useAdminAuth } from "@/admin/context/AdminAuthContext";
 import { SiteSettingsProvider } from "@/lib/SiteSettingsContext";
+import { CartProvider } from "@/lib/cart";
+import { CartDrawer } from "@/components/CartDrawer";
+import { CallbackFab } from "@/components/CallbackFab";
+import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { AdminLayout } from "@/admin/components/AdminLayout";
 import AdminLogin from "@/admin/pages/AdminLogin";
 import AdminProducts from "@/admin/pages/AdminProducts";
@@ -132,6 +136,9 @@ function StoreFront() {
       </main>
       <Footer />
       <WhatsAppFab />
+      <CallbackFab />
+      <CartDrawer />
+      <ExitIntentModal />
     </div>
   );
 }
@@ -148,9 +155,11 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <SiteSettingsProvider>
-            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <Router />
-            </WouterRouter>
+            <CartProvider>
+              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <Router />
+              </WouterRouter>
+            </CartProvider>
           </SiteSettingsProvider>
           <Toaster />
         </TooltipProvider>

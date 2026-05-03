@@ -71,3 +71,53 @@ export function trackWhatsAppClick(data: WhatsAppTrackingData): void {
   //   (window as any).mixpanel.track('WhatsApp Click', data);
   // }
 }
+
+/* ── Generic funnel events ─────────────────────────────────────────────
+ *  Used by: cart, checkout wizard, callback FAB, exit-intent modal.
+ *  Drop-in ready for GA4 / Pixel — same sinks as `trackWhatsAppClick`.
+ * ──────────────────────────────────────────────────────────────────── */
+export type FunnelEventType =
+  | 'cart_add'
+  | 'cart_remove'
+  | 'cart_open'
+  | 'checkout_start'
+  | 'checkout_step'
+  | 'checkout_submit'
+  | 'callback_open'
+  | 'callback_request'
+  | 'exit_intent_shown'
+  | 'exit_intent_cta'
+  | 'combo_view'
+  | 'combo_add';
+
+export interface FunnelEventData {
+  event: FunnelEventType;
+  source: string;
+  product_id?: string;
+  product_name?: string;
+  category_name?: string;
+  combo_id?: string;
+  step?: string;
+  item_count?: number;
+  subtotal?: number;
+  total?: number;
+  delivery?: string;
+  has_combo?: boolean;
+  time_window?: string;
+}
+
+export function trackEvent(data: FunnelEventData): void {
+  if (import.meta.env.DEV) {
+    console.log('[Analytics] 📊', data.event, data);
+  }
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', data.event, {
+      event_category: 'sales_funnel',
+      custom_source: data.source,
+      ...data,
+    });
+  }
+  if (typeof window !== 'undefined' && (window as any).fbq) {
+    (window as any).fbq('trackCustom', data.event, data);
+  }
+}
