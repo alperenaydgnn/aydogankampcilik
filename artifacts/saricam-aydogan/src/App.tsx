@@ -30,6 +30,7 @@ const Blog = lazy(() => import("@/pages/Blog"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
 const Events = lazy(() => import("@/pages/Events"));
 const CampMap = lazy(() => import("@/pages/CampMap"));
+const Academy = lazy(() => import("@/pages/Academy"));
 
 import { AdminAuthProvider, useAdminAuth } from "@/admin/context/AdminAuthContext";
 import { SiteSettingsProvider } from "@/lib/SiteSettingsContext";
@@ -149,6 +150,7 @@ function AnimatedRoutes() {
             <Route path="/blog/:slug" component={BlogPost} />
             <Route path="/etkinlikler" component={Events} />
             <Route path="/harita" component={CampMap} />
+            <Route path="/akademi" component={Academy} />
             <Route component={NotFound} />
           </Switch>
         </Suspense>

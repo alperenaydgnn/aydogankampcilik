@@ -10,6 +10,7 @@ export const translations = {
     "nav.products": "Ürünler",
     "nav.blog": "Blog",
     "nav.map": "Harita",
+    "nav.academy": "Akademi",
     "nav.about": "Hakkımızda",
     "nav.contact": "İletişim",
 
@@ -60,6 +61,7 @@ export const translations = {
     "nav.products": "Products",
     "nav.blog": "Blog",
     "nav.map": "Map",
+    "nav.academy": "Academy",
     "nav.about": "About",
     "nav.contact": "Contact",
 

@@ -110,6 +110,7 @@ const navLinkDefs = [
   { key: "nav.products" as const, href: "/urunler" },
   { key: "nav.blog" as const, href: "/blog" },
   { key: "nav.map" as const, href: "/harita" },
+  { key: "nav.academy" as const, href: "/akademi" },
   { key: "nav.about" as const, href: "/hakkimizda" },
   { key: "nav.contact" as const, href: "/iletisim" },
 ];
@@ -163,7 +164,7 @@ export function Header() {
 
         {/* Left — Mobile Menu Toggle on small, Nav on desktop */}
         <nav className="hidden lg:flex items-center gap-5">
-          {navLinks.slice(0, 4).map((link) => {
+          {navLinks.slice(0, 5).map((link) => {
             const isActive = location === link.href || (link.href === "/urunler" && location.startsWith("/urunler"));
             return (
               <Link
@@ -202,7 +203,7 @@ export function Header() {
 
         {/* Right — Desktop nav + CTA */}
         <div className="hidden lg:flex items-center justify-end gap-4">
-          {navLinks.slice(4).map((link) => {
+          {navLinks.slice(5).map((link) => {
             const isActive = location === link.href;
             return (
               <Link
