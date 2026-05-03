@@ -29,7 +29,7 @@ export default function Contact() {
   const hours = settings.working_hours || SITE_HOURS_HUMAN;
 
   const mapSrc = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d398.1262334465161!2d35.42229806811702!3d37.033411068169094!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1528930c59682bf9%3A0xb0bef0c68035282!2sAydo%C4%9Fan%20Kamp%20Ve%20Bal%C4%B1k%20Malzemeleri!5e0!3m2!1str!2str!4v1777825568723!5m2!1str!2str";
-  const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${SITE_GEO.lat},${SITE_GEO.lng}`;
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${SITE_GEO.lat},${SITE_GEO.lng}&destination_place_id=ChIJ-StoWQyTKBERgiUDaMDwvgs`;
 
   return (
     <div className="min-h-screen bg-background">

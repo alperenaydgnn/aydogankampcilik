@@ -14,7 +14,7 @@ export const SITE_ADDRESS = {
   country: "TR",
   postal:  "01320",
 };
-export const SITE_GEO          = { lat: 37.0167, lng: 35.4500 };
+export const SITE_GEO          = { lat: 37.033411, lng: 35.422298 };
 export const SITE_HOURS_HUMAN  = "Pzt – Cmt: 09:00 – 19:00";
 export const SITE_ADDRESS_FULL =
   "Sarıçam Mah. Atatürk Cd. No:18, Sarıçam / Adana";
