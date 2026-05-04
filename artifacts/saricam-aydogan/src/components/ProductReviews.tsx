@@ -293,7 +293,7 @@ export function ProductReviews({
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             type="button"
-            onClick={() => { haptics.medium(); setShowForm(true); }}
+            onClick={() => { haptics.tap(); setShowForm(true); }}
             className="btn-outline inline-flex items-center gap-2 shrink-0 self-start sm:self-auto"
           >
             <PenLine className="w-4 h-4" />
@@ -371,7 +371,7 @@ export function ProductReviews({
           </p>
           <button
             type="button"
-            onClick={() => { haptics.medium(); setShowForm(true); }}
+            onClick={() => { haptics.tap(); setShowForm(true); }}
             className="btn-outline inline-flex items-center gap-2 mt-2"
           >
             <PenLine className="w-4 h-4" />
