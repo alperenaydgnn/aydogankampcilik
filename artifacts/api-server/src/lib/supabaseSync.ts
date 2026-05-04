@@ -6,7 +6,9 @@ let _client: SupabaseClient | null = null;
 
 function getClient(): SupabaseClient | null {
   if (_client) return _client;
-  const url = process.env.SUPABASE_URL;
+  // Accept both SUPABASE_URL and VITE_SUPABASE_URL so adding a separate
+  // non-VITE secret is optional — only SUPABASE_SERVICE_ROLE_KEY is new.
+  const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return null;
   _client = createClient(url, key, {
@@ -96,8 +98,11 @@ export async function syncPostToSupabase(post: StoredPost): Promise<void> {
 /** Lightweight ping to keep the Supabase free-tier project alive.
  *  Uses the anon key so the service role key is not required for pings. */
 export async function pingSupabase(): Promise<void> {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_ANON_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
+  const key =
+    process.env.SUPABASE_ANON_KEY ??
+    process.env.VITE_SUPABASE_ANON_KEY ??
+    process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) {
     logger.debug("supabaseSync: ping skipped — SUPABASE_URL not set");
     return;
