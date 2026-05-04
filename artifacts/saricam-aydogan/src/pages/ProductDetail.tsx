@@ -794,8 +794,7 @@ export default function ProductDetail() {
 
             {/* Customer reviews + photo gallery */}
             <ProductReviews
-              productSlug={product.slug}
-              productImages={product.images}
+              productId={product.id}
               productName={product.name}
             />
 

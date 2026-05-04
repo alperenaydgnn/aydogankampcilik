@@ -152,6 +152,20 @@ export type Database = {
         Update: Partial<DBSiteSetting>;
         Relationships: [];
       };
+      product_reviews: {
+        Row: DBProductReview;
+        Insert: Pick<DBProductReview, "product_id" | "name" | "surname" | "rating" | "body">;
+        Update: Partial<DBProductReview>;
+        Relationships: [
+          {
+            foreignKeyName: "product_reviews_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -160,6 +174,17 @@ export type Database = {
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
+};
+
+export type DBProductReview = {
+  id: string;
+  product_id: string;
+  name: string;
+  surname: string;
+  rating: number;
+  body: string;
+  approved: boolean;
+  created_at: string;
 };
 
 export type DBProductWithRelations = DBProduct & {
