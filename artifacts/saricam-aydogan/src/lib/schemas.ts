@@ -15,7 +15,7 @@ export const SITE_ADDRESS = {
   postal:  "01320",
 };
 export const SITE_GEO          = { lat: 37.033411, lng: 35.422298 };
-export const SITE_HOURS_HUMAN  = "Pzt – Cmt: 09:00 – 19:00";
+export const SITE_HOURS_HUMAN  = "Her Gün: 09:00 – 20:00";
 export const SITE_ADDRESS_FULL =
   "Sarıçam Mah. Atatürk Cd. No:18, Sarıçam / Adana";
 export const SITE_PRICE_RANGE  = "₺₺";
@@ -65,10 +65,10 @@ export function buildLocalBusinessSchema() {
         "@type": "OpeningHoursSpecification",
         dayOfWeek: [
           "Monday", "Tuesday", "Wednesday",
-          "Thursday", "Friday", "Saturday",
+          "Thursday", "Friday", "Saturday", "Sunday",
         ],
         opens:  "09:00",
-        closes: "19:00",
+        closes: "20:00",
       },
     ],
     currenciesAccepted: "TRY",
@@ -128,9 +128,9 @@ export function buildOrganizationSchema() {
       areaServed:         "TR",
       hoursAvailable: {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+        dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
         opens:  "09:00",
-        closes: "19:00",
+        closes: "20:00",
       },
     },
     sameAs: SITE_SOCIAL,

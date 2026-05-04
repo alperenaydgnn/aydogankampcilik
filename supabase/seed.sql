@@ -257,7 +257,7 @@ insert into public.site_settings (key, value, description) values
   ('map_url',         '"https://maps.app.goo.gl/aydogan-kampcilik"'::jsonb,           'Google Maps konumu'),
   ('hero_title',      '"Adana Sarıçam''ın Doğasına Hazır Ol"'::jsonb,                'Anasayfa hero başlığı'),
   ('hero_subtitle',   '"Adana Sarıçam''da kamp ve balıkçı malzemeleri mağazası."'::jsonb, 'Anasayfa hero alt başlığı'),
-  ('working_hours',   '"Pzt–Cmt 09:00–19:00"'::jsonb,                                'Çalışma saatleri'),
+  ('working_hours',   '"Her Gün 09:00–20:00"'::jsonb,                                 'Çalışma saatleri'),
   ('social',          '{"instagram":"https://instagram.com/aydogankampcilik","facebook":"https://facebook.com/aydogankampcilik"}'::jsonb, 'Sosyal medya URL''leri')
 on conflict (key) do update set
   value       = excluded.value,

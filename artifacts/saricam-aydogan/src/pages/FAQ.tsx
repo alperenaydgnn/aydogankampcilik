@@ -111,7 +111,7 @@ const faqSections: FAQSection[] = [
       },
       {
         q: "Çalışma saatleriniz nedir?",
-        a: "Pazartesi'den Cumartesi'ye 09:00 – 19:00 arası açığız. Pazar günleri ve resmî tatillerde mağaza kapalıdır; ancak WhatsApp mesajlarınıza dönüş yapabiliriz.",
+        a: "Haftanın her günü 09:00 – 20:00 arası açığız.",
       },
       {
         q: "Kaç yıldır faaliyettesiniz?",

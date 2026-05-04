@@ -141,7 +141,7 @@ export default function About() {
               <div>
                 <span className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-white/45">Çalışma Saatleri</span>
                 <p className="mt-4 font-light text-white/85 leading-relaxed">
-                  {settings.working_hours ?? "Pzt–Cmt 09:00–19:00"}
+                  {settings.working_hours ?? "Her Gün 09:00–20:00"}
                 </p>
               </div>
               <div>

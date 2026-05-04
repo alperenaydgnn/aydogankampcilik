@@ -411,7 +411,7 @@ export const mockSiteSettings: SiteSettings = {
     asset('/mock/category-aksesuar.jpg'),
     asset('/mock/product-5.jpg'),
   ],
-  working_hours: 'Pzt–Cmt 09:00–19:00',
+  working_hours: 'Her Gün 09:00–20:00',
   social: {
     instagram: 'https://instagram.com/aydogankampcilik',
     facebook: 'https://facebook.com/aydogankampcilik',
