@@ -35,8 +35,7 @@ export default function Blog() {
 
   const filtered = filter === "tümü" ? posts : posts.filter((p) => p.category === filter);
   const isAdmin = typeof window !== "undefined" &&
-    (localStorage.getItem("admin_session") === "1" ||
-     new URLSearchParams(window.location.search).has("admin"));
+    localStorage.getItem("admin_session") === "1";
 
   return (
     <>
