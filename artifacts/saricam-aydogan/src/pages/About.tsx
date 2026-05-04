@@ -147,7 +147,7 @@ export default function About() {
               <div>
                 <span className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-white/45">Telefon & WhatsApp</span>
                 <p className="mt-4 font-light text-white/85 leading-relaxed">
-                  {settings.phone ?? "+90 555 123 45 67"}
+                  {settings.phone ?? "+90 507 644 23 50"}
                 </p>
               </div>
               <div>

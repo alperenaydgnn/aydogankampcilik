@@ -250,8 +250,8 @@ on conflict do nothing;
 -- site_settings — key/value bag for site-wide configuration
 -- ---------------------------------------------------------------------
 insert into public.site_settings (key, value, description) values
-  ('phone',           '"+90 555 123 4567"'::jsonb,                                   'Mağaza iletişim telefonu'),
-  ('whatsapp',        '"+905551234567"'::jsonb,                                       'WhatsApp numarası (uluslararası format, + ile)'),
+  ('phone',           '"+90 507 644 23 50"'::jsonb,                                  'Mağaza iletişim telefonu'),
+  ('whatsapp',        '"+905076442350"'::jsonb,                                       'WhatsApp numarası (uluslararası format, + ile)'),
   ('email',           '"info@aydogankampcilik.com"'::jsonb,                           'İletişim e-postası'),
   ('address',         '"Sarıçam, Adana"'::jsonb,                                      'Mağaza adresi'),
   ('map_url',         '"https://maps.app.goo.gl/aydogan-kampcilik"'::jsonb,           'Google Maps konumu'),

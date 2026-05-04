@@ -266,7 +266,7 @@ export function CheckoutWizard() {
                         type="tel"
                         value={form.phone}
                         onChange={e => update("phone", e.target.value)}
-                        placeholder="0555 123 45 67"
+                        placeholder="0507 644 23 50"
                         className="checkout-input"
                       />
                     </Field>

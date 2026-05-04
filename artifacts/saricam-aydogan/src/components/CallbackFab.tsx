@@ -173,7 +173,7 @@ export function CallbackFab() {
                       </label>
                       <label className="block">
                         <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-foreground/70 mb-1.5 block">Telefon</span>
-                        <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="0555 123 45 67" className="checkout-input" />
+                        <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="0507 644 23 50" className="checkout-input" />
                       </label>
                       <label className="block">
                         <span className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-foreground/70 mb-1.5 block">Konu</span>
