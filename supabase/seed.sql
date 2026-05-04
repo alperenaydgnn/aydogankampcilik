@@ -250,15 +250,15 @@ on conflict do nothing;
 -- site_settings — key/value bag for site-wide configuration
 -- ---------------------------------------------------------------------
 insert into public.site_settings (key, value, description) values
-  ('phone',           '"+90 555 123 4567"'::jsonb,                         'Mağaza iletişim telefonu'),
-  ('whatsapp',        '"+905551234567"'::jsonb,                            'WhatsApp numarası (uluslararası format, + ile)'),
-  ('email',           '"info@saricamaydogan.com"'::jsonb,                  'İletişim e-postası'),
-  ('address',         '"Cumhuriyet Mah. Sahil Cd. No:42, Trabzon"'::jsonb, 'Mağaza adresi'),
-  ('map_url',         '"https://maps.app.goo.gl/saricam-aydogan"'::jsonb,  'Google Maps konumu'),
-  ('hero_title',      '"Karadeniz''in Doğasına Hazır Ol"'::jsonb,          'Anasayfa hero başlığı'),
-  ('hero_subtitle',   '"Trabzon''un kalbinde 25 yıllık tecrübeyle kamp ve balıkçı malzemeleri."'::jsonb, 'Anasayfa hero alt başlığı'),
-  ('working_hours',   '"Pzt–Cmt 09:00–19:00"'::jsonb,                      'Çalışma saatleri'),
-  ('social',          '{"instagram":"https://instagram.com/saricamaydogan","facebook":"https://facebook.com/saricamaydogan"}'::jsonb, 'Sosyal medya URL''leri')
+  ('phone',           '"+90 555 123 4567"'::jsonb,                                   'Mağaza iletişim telefonu'),
+  ('whatsapp',        '"+905551234567"'::jsonb,                                       'WhatsApp numarası (uluslararası format, + ile)'),
+  ('email',           '"info@aydogankampcilik.com"'::jsonb,                           'İletişim e-postası'),
+  ('address',         '"Sarıçam, Adana"'::jsonb,                                      'Mağaza adresi'),
+  ('map_url',         '"https://maps.app.goo.gl/aydogan-kampcilik"'::jsonb,           'Google Maps konumu'),
+  ('hero_title',      '"Adana Sarıçam''ın Doğasına Hazır Ol"'::jsonb,                'Anasayfa hero başlığı'),
+  ('hero_subtitle',   '"Adana Sarıçam''da kamp ve balıkçı malzemeleri mağazası."'::jsonb, 'Anasayfa hero alt başlığı'),
+  ('working_hours',   '"Pzt–Cmt 09:00–19:00"'::jsonb,                                'Çalışma saatleri'),
+  ('social',          '{"instagram":"https://instagram.com/aydogankampcilik","facebook":"https://facebook.com/aydogankampcilik"}'::jsonb, 'Sosyal medya URL''leri')
 on conflict (key) do update set
   value       = excluded.value,
   description = excluded.description;

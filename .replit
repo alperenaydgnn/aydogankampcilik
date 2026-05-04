@@ -12,29 +12,16 @@ env = { "CI" = "true" }
 runButton = "Project"
 
 [[workflows.workflow]]
-name = "Project"
-mode = "parallel"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Start application"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "API Server"
-
-[[workflows.workflow]]
 name = "Start application"
 author = "agent"
-
-[workflows.workflow.metadata]
-outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "PORT=20167 BASE_PATH=/ pnpm --filter @workspace/saricam-aydogan run dev"
 waitForPort = 20167
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [[workflows.workflow]]
 name = "API Server"
@@ -47,6 +34,64 @@ waitForPort = 8080
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow]]
+name = "artifacts/saricam-aydogan: web"
+author = "agent"
+mode = "sequential"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+artifactId = "artifacts/saricam-aydogan"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/saricam-aydogan run dev"
+cwd = "./artifacts/saricam-aydogan"
+waitForPort = 20167
+router = "path"
+
+[workflows.workflow.tasks.env]
+PORT = "20167"
+BASE_PATH = "/"
+
+[[workflows.workflow]]
+name = "artifacts/mockup-sandbox: Component Preview Server"
+author = "agent"
+mode = "sequential"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+artifactId = "XegfDyZt7HqfW2Bb8Ghoy"
+isCanvasWorkflow = true
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/mockup-sandbox run dev"
+cwd = "./artifacts/mockup-sandbox"
+waitForPort = 8081
+
+[workflows.workflow.tasks.env]
+PORT = "8081"
+BASE_PATH = "/__mockup"
+
+[[workflows.workflow]]
+name = "artifacts/api-server: API Server"
+author = "agent"
+mode = "sequential"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+artifactId = "3B4_FFSkEVBkAeYMFRJ2e"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/api-server run dev"
+cwd = "./artifacts/api-server"
+waitForPort = 8080
+
+[workflows.workflow.tasks.env]
+PORT = "8080"
 
 [agent]
 stack = "PNPM_WORKSPACE"
