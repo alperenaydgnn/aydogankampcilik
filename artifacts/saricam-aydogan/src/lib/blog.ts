@@ -260,30 +260,8 @@ export function saveLocalBlogPost(post: BlogPost) {
   const cur = readStore();
   const next = [post, ...cur.filter((p) => p.slug !== post.slug)].slice(0, 50);
   writeStore(next);
-  // Best-effort Supabase insert
-  const sb = getSupabase();
-  if (sb) {
-    try {
-      void Promise.resolve(
-        sb.from("blog_posts" as any).upsert({
-          slug: post.slug,
-          title: post.title,
-          excerpt: post.excerpt,
-          category: post.category,
-          tags: post.tags,
-          keywords: post.keywords,
-          reading_minutes: post.readingMinutes,
-          cover_url: post.coverUrl,
-          content: post.content,
-          author: post.author,
-          published_at: post.publishedAt,
-          ai_model: post.aiModel,
-        }),
-      ).catch(() => {});
-    } catch {
-      /* noop */
-    }
-  }
+  // Note: Supabase sync (including cover image upload to blog-covers bucket)
+  // is handled server-side by the API server using the service role key.
 }
 
 export function deleteLocalBlogPost(slug: string) {

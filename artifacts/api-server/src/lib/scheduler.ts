@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { generateAndSave } from "./blogGenerator";
 import { loadPosts } from "./postStore";
 import { logger } from "./logger";
+import { pingSupabase } from "./supabaseSync";
 
 const TOPICS: { topic: string; category: string }[] = [
   // ── BALIKÇİLIK ──────────────────────────────────────────────────────────
@@ -144,5 +145,13 @@ export function startScheduler() {
   const tz = "Europe/Istanbul";
   cron.schedule("0 9 * * *",  () => runGeneration("09:00"), { timezone: tz });
   cron.schedule("0 18 * * *", () => runGeneration("18:00"), { timezone: tz });
-  logger.info("scheduler: blog generation scheduled at 09:00 and 18:00 (Europe/Istanbul)");
+
+  // Supabase free-tier projects pause after 7 days of inactivity.
+  // Ping every 3 days so the project never goes idle.
+  cron.schedule("0 6 */3 * *", async () => {
+    logger.info("scheduler: supabase keep-alive ping");
+    await pingSupabase();
+  }, { timezone: tz });
+
+  logger.info("scheduler: blog generation at 09:00 & 18:00, supabase keep-alive every 3 days (Europe/Istanbul)");
 }

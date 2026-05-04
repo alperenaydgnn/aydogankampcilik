@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { logger } from "./logger";
+import { syncPostToSupabase } from "./supabaseSync";
 
 export type StoredPost = {
   id: string;
@@ -52,6 +53,7 @@ export function upsertPost(post: StoredPost): void {
     const trimmed = posts.slice(0, MAX_POSTS);
     fs.writeFileSync(POSTS_FILE, JSON.stringify(trimmed, null, 2), "utf8");
     logger.info({ slug: post.slug }, "postStore: upserted post");
+    void syncPostToSupabase(post).catch(() => {});
   } catch (err) {
     logger.error({ err }, "postStore: failed to upsert post");
   }
