@@ -17,8 +17,10 @@ import { useSiteSettings } from "@/lib/useSiteSettings";
 import { useBuildWhatsAppLink } from "@/lib/whatsapp";
 import { PageHero } from "@/components/PageHero";
 import { SectionHeading } from "@/components/SectionHeading";
+import { useT } from "@/lib/i18n";
 
 export default function Contact() {
+  const t = useT();
   const settings = useSiteSettings();
   const buildWhatsAppLink = useBuildWhatsAppLink();
 
@@ -50,14 +52,14 @@ export default function Contact() {
       </Helmet>
 
       <PageHero
-        eyebrow="İletişim"
+        eyebrow={t("contact.hero.eyebrow")}
         icon={Phone}
-        title="Bize"
-        italicAccent="ulaşın."
-        subtitle="Mağazamıza uğrayın, çayımızı için ya da WhatsApp üzerinden hızlıca yazın. Doğru ürünü bulmanızda size yardımcı olalım."
+        title={t("contact.hero.title")}
+        italicAccent={t("contact.hero.titleItalic")}
+        subtitle={t("contact.hero.subtitle")}
         breadcrumbs={[
-          { label: "Ana Sayfa", href: "/" },
-          { label: "İletişim" },
+          { label: t("nav.home"), href: "/" },
+          { label: t("contact.hero.eyebrow") },
         ]}
       />
 

@@ -5,8 +5,10 @@ import { buildLocalBusinessSchema } from "@/lib/schemas";
 import { useSiteSettings } from "@/lib/useSiteSettings";
 import { PageHero } from "@/components/PageHero";
 import { BlurImage } from "@/components/BlurImage";
+import { useT } from "@/lib/i18n";
 
 export default function About() {
+  const t = useT();
   const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
   const settings = useSiteSettings();
 
@@ -14,7 +16,7 @@ export default function About() {
     <div className="min-h-screen bg-background">
       <SEO
         title="Hakkımızda — Adana Sarıçam Kamp & Balık Malzemeleri Mağazası"
-        description="Aydoğan Kampçılık, 1995'ten beri Adana Sarıçam'da kamp malzemeleri, balık malzemeleri ve outdoor ekipmanları satışı yapan güvenilir mağazanızdır. Toros tecrübesi, kişisel danışmanlık."
+        description="Aydoğan Kampçılık, 1995'ten beri Adana Sarıçam'da kamp malzemeleri, balık malzemeleri and outdoor ekipmanları satışı yapan güvenilir mağazanızdır. Toros tecrübesi, kişisel danışmanlık."
         url="/hakkimizda"
         keywords="Aydoğan Kampçılık, Adana kamp malzemeleri, Sarıçam balık malzemeleri, kamp mağazası Adana, outdoor ekipmanları Adana"
       />
@@ -23,11 +25,11 @@ export default function About() {
       </Helmet>
 
       <PageHero
-        eyebrow="Hakkımızda"
-        title="Doğaya duyulan saygı,"
-        italicAccent="yılların tecrübesi."
-        subtitle="1995'ten beri Toros eteklerinde denediğimiz, güvendiğimiz ekipmanları sizlerle buluşturuyoruz."
-        breadcrumbs={[{ label: "Anasayfa", href: "/" }, { label: "Hakkımızda" }]}
+        eyebrow={t("about.hero.eyebrow")}
+        title={t("about.hero.title")}
+        italicAccent={t("about.hero.titleItalic")}
+        subtitle={t("about.hero.subtitle")}
+        breadcrumbs={[{ label: t("nav.home"), href: "/" }, { label: t("about.hero.eyebrow") }]}
       />
 
       {/* Story — single-column editorial */}

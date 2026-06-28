@@ -6,9 +6,12 @@ import path from "path";
 const isReplit = process.env.REPL_ID !== undefined;
 const isDevServer = process.env.npm_lifecycle_event === "dev";
 
-const rawPort = process.env.PORT ?? "5173";
+const rawPort = process.env.PORT || "5173";
 const port = Number(rawPort);
-const basePath = process.env.BASE_PATH ?? "/";
+
+if (Number.isNaN(port) || port <= 0) {
+  throw new Error(`Invalid PORT value: "${rawPort}"`);
+}
 
 if (isDevServer && isReplit) {
   if (!process.env.PORT) {
@@ -18,6 +21,8 @@ if (isDevServer && isReplit) {
     throw new Error("BASE_PATH environment variable is required but was not provided.");
   }
 }
+
+const basePath = process.env.BASE_PATH || "/";
 
 export default defineConfig({
   base: basePath,

@@ -20,9 +20,11 @@ import { useBuildWhatsAppLink } from "@/lib/whatsapp";
 import { useSiteSettings } from "@/lib/useSiteSettings";
 import { mockSiteSettings } from "@/lib/mockData";
 import { WeatherWidget } from "@/components/WeatherWidget";
+import { useT } from "@/lib/i18n";
 
 /* ─── Main component (Meridian editorial) ─────────────────── */
 export default function Home() {
+  const t = useT();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,7 +103,7 @@ export default function Home() {
               className="inline-flex items-center gap-3 mb-10 text-[0.7rem] font-bold uppercase tracking-[0.25em] text-secondary"
             >
               <span className="w-8 h-px bg-secondary" />
-              Adana Sarıçam — Doğanın Kapısı
+              {t("home.hero.badge")}
             </motion.span>
 
             {/* H1 — Fraunces light + italic accent */}
@@ -116,9 +118,9 @@ export default function Home() {
               className="font-serif font-light text-white leading-[1.02] tracking-tight"
               style={{ fontSize: "clamp(2.8rem, 8vw, 7rem)" }}
             >
-              Torosların eteklerinden doğaya.
+              {t("footer.brandLine")}
               <br />
-              <em className="italic font-light text-white/75">Hazır mıyız.</em>
+              <em className="italic font-light text-white/75">{t("footer.brandLineEm")}</em>
             </motion.h1>
 
             {/* CTA row */}
@@ -134,13 +136,13 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="btn-cta-amber btn-cta !text-[0.7rem] !font-bold !uppercase !tracking-[0.2em]"
               >
-                WhatsApp'tan Sipariş
+                {t("home.hero.ctaWhatsApp")}
               </a>
               <Link
                 href="/urunler"
                 className="inline-flex items-center gap-2 text-[0.7rem] font-bold uppercase tracking-[0.22em] text-white border-b border-white/40 pb-1.5 hover:border-white transition-all"
               >
-                Tüm Ürünleri Keşfet
+                {t("home.hero.ctaCatalog")}
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             </motion.div>
@@ -172,14 +174,11 @@ export default function Home() {
         <div className="container mx-auto px-6 md:px-10">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-end">
             <div className="md:col-span-3">
-              <span className="eyebrow">/ 01 — Felsefe</span>
+              <span className="eyebrow">{t("home.section.philosophy")}</span>
             </div>
             <div className="md:col-span-9">
               <p className="font-serif font-light text-2xl md:text-4xl lg:text-5xl text-primary leading-[1.15] tracking-tight">
-                Aydoğan Kampçılık, Toros dağlarının eteklerinde{" "}
-                <em className="italic text-secondary">test edilmiş</em>{" "}
-                ekipmanları sizinle buluşturuyor. Yağmurda su almayan, soğukta
-                sıcak tutan, rüzgarda savrulmayan ürünler.
+                {t("home.philosophy.body")}
               </p>
             </div>
           </div>
@@ -197,20 +196,20 @@ export default function Home() {
           {/* Header row */}
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16 md:mb-24">
             <div className="max-w-2xl">
-              <span className="eyebrow">/ 02 — Koleksiyonlar</span>
+              <span className="eyebrow">{t("home.section.collections")}</span>
               <h2
                 id="categories-heading"
                 className="editorial-heading text-4xl md:text-6xl"
               >
-                Doğanın her köşesi için{" "}
-                <em className="italic text-secondary">ekipman.</em>
+                {t("home.collections.title")}{" "}
+                <em className="italic text-secondary">{t("home.collections.titleItalic")}</em>
               </h2>
             </div>
             <Link
               href="/urunler"
               className="link-hairline self-start md:self-end"
             >
-              Tüm Kategoriler <ArrowUpRight className="w-3 h-3" />
+              {t("home.collections.cta")} <ArrowUpRight className="w-3 h-3" />
             </Link>
           </div>
 
@@ -239,20 +238,20 @@ export default function Home() {
         <div className="container mx-auto px-6 md:px-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16 md:mb-24">
             <div className="max-w-2xl">
-              <span className="eyebrow">/ 03 — Öne Çıkanlar</span>
+              <span className="eyebrow">{t("home.section.featured")}</span>
               <h2
                 id="products-heading"
                 className="editorial-heading text-4xl md:text-6xl"
               >
-                Adana ve Toros'ta denenmiş,{" "}
-                <em className="italic text-secondary">tercih edilen.</em>
+                {t("home.featured.title")}{" "}
+                <em className="italic text-secondary">{t("home.featured.titleItalic")}</em>
               </h2>
             </div>
             <Link
               href="/urunler"
               className="link-hairline self-start md:self-end"
             >
-              Tüm Ürünler <ArrowUpRight className="w-3 h-3" />
+              {t("home.featured.cta")} <ArrowUpRight className="w-3 h-3" />
             </Link>
           </div>
 
@@ -306,12 +305,10 @@ export default function Home() {
               <div className="absolute -bottom-6 -left-6 md:-bottom-10 md:-left-10 bg-background pl-4 pt-4 md:pl-8 md:pt-8">
                 <div className="flex items-baseline gap-3">
                   <span className="font-serif font-light text-5xl md:text-7xl text-primary tracking-tight">
-                    15
+                    {t("home.story.experienceNum")}
                   </span>
-                  <span className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-foreground/60 leading-tight">
-                    Yıllık
-                    <br />
-                    Tecrübe
+                  <span className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-foreground/60 leading-tight whitespace-pre-line">
+                    {t("home.story.experience")}
                   </span>
                 </div>
               </div>
@@ -325,25 +322,20 @@ export default function Home() {
               transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
               className="lg:col-span-5"
             >
-              <span className="eyebrow">/ 04 — Hikayemiz</span>
+              <span className="eyebrow">{t("home.section.story")}</span>
               <h2
                 id="story-heading"
                 className="editorial-heading text-4xl md:text-5xl mb-8"
               >
-                Adana'dan Türkiye'ye{" "}
-                <em className="italic text-secondary">doğanın ekipmanı.</em>
+                {t("home.story.title")}{" "}
+                <em className="italic text-secondary">{t("home.story.titleItalic")}</em>
               </h2>
               <div className="space-y-5 text-foreground/65 leading-relaxed font-light">
                 <p>
-                  Aydoğan Kampçılık, Adana Sarıçam ilçesinde kamp malzemeleri,
-                  balık malzemeleri ve outdoor ekipmanları alanında hizmet
-                  vermektedir. Toros dağlarının eteklerinde geçirdiğimiz
-                  deneyimler, her ürünümüzü bizzat test etmemizi sağlamıştır.
+                  {t("home.story.body1")}
                 </p>
                 <p>
-                  Kamp çadırından olta takımına, av malzemelerinden aydınlatma
-                  ekipmanlarına kadar geniş ürün yelpazemizle outdoor
-                  tutkunlarının yanındayız.
+                  {t("home.story.body2")}
                 </p>
               </div>
               <div className="mt-10 flex flex-col sm:flex-row gap-5 items-start">
@@ -351,7 +343,7 @@ export default function Home() {
                   href="/hakkimizda"
                   className="btn-cta-amber btn-cta !text-[0.7rem] !font-bold !uppercase !tracking-[0.2em]"
                 >
-                  Hakkımızda
+                  {t("home.story.ctaAbout")}
                 </Link>
                 <a
                   href={whatsappLocation}
@@ -359,7 +351,7 @@ export default function Home() {
                   rel="noopener noreferrer"
                   className="link-hairline"
                 >
-                  Mağazaya Gel <ArrowUpRight className="w-3 h-3" />
+                  {t("home.story.ctaStore")} <ArrowUpRight className="w-3 h-3" />
                 </a>
               </div>
             </motion.div>
@@ -383,18 +375,18 @@ export default function Home() {
             {[
               {
                 num: "01",
-                title: "Tecrübe",
-                desc: "Adana ve Toros bölgesinde yılların getirdiği derin deneyim, doğru ekipman tavsiyeleri.",
+                title: t("home.value1.title"),
+                desc: t("home.value1.desc"),
               },
               {
                 num: "02",
-                title: "Garanti",
-                desc: "Yalnızca güvenilir markaların kaliteli ürünleri. Satış öncesi kontrol.",
+                title: t("home.value2.title"),
+                desc: t("home.value2.desc"),
               },
               {
                 num: "03",
-                title: "Danışman",
-                desc: "Müşteri değil dost olarak. WhatsApp'tan sorularınızı hızlıca yanıtlıyoruz.",
+                title: t("home.value3.title"),
+                desc: t("home.value3.desc"),
               },
             ].map((v, i) => (
               <motion.div
@@ -443,12 +435,12 @@ export default function Home() {
           <div className="max-w-5xl">
             <span className="inline-flex items-center gap-3 mb-10 text-[0.7rem] font-bold uppercase tracking-[0.25em] text-secondary">
               <span className="w-8 h-px bg-secondary" />
-              Sıradaki Macera
+              {t("home.final.badge")}
             </span>
             <h2 className="font-serif font-light text-white leading-[1.05] tracking-tight text-4xl md:text-6xl lg:text-7xl">
-              Doğa sizi çağırıyor.
+              {t("home.final.title")}
               <br />
-              <em className="italic text-white/70">Hazırlayalım.</em>
+              <em className="italic text-white/70">{t("home.final.titleItalic")}</em>
             </h2>
             <p className="mt-8 text-white/65 text-base md:text-lg font-light max-w-2xl leading-relaxed">
               {settings.hero_subtitle ||
@@ -461,13 +453,13 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="btn-cta-amber btn-cta !text-[0.7rem] !font-bold !uppercase !tracking-[0.2em]"
               >
-                WhatsApp'tan Yazın
+                {t("home.final.ctaWhatsApp")}
               </a>
               <Link
                 href="/iletisim"
                 className="inline-flex items-center gap-2 text-[0.7rem] font-bold uppercase tracking-[0.22em] text-white border-b border-white/40 pb-1.5 hover:border-white transition-all"
               >
-                İletişim Bilgileri
+                {t("home.final.ctaContact")}
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>

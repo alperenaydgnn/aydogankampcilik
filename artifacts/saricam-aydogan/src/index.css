@@ -128,7 +128,7 @@
 
   /* Typography */
   --app-font-sans:  'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --app-font-serif: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --app-font-serif: 'Fraunces', Georgia, serif;
   --app-font-mono:  'JetBrains Mono', Menlo, monospace;
 
   /* Base radius — bumped to 0.75rem for 2xl feel */

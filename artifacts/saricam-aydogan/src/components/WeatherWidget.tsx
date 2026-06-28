@@ -184,8 +184,8 @@ export function WeatherWidget({ className }: { className?: string }) {
               </div>
             )}
             {err && !loading && (
-              <div className="text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 font-light">
-                {err}
+              <div className="text-xs text-foreground/60 bg-foreground/[0.03] border border-foreground/10 px-4 py-3 font-light">
+                Hava durumu şu an yüklenemedi. Demo modu gösteriliyor.
               </div>
             )}
 

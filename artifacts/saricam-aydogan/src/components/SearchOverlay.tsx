@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, ArrowRight, Sparkles, Tag } from "lucide-react";
 import { getCategories, getProducts } from "@/lib/data";
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 interface Props { open: boolean; onClose: () => void; }
 
 export function SearchOverlay({ open, onClose }: Props) {
+  const [, setLocation] = useLocation();
   const [query, setQuery] = useState("");
   const [docs, setDocs] = useState<SearchableDoc[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -73,7 +74,7 @@ export function SearchOverlay({ open, onClose }: Props) {
     if (!q) return;
     trackEvent({ event: "search_inquiry", source: "search_overlay", search_query: q });
     onClose();
-    window.location.href = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/urunler?q=${encodeURIComponent(q)}`;
+    setLocation(`/urunler?q=${encodeURIComponent(q)}`);
   };
 
   return (
