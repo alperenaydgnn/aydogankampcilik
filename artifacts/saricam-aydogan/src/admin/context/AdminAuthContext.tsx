@@ -45,51 +45,13 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
     let cancelled = false;
 
-    // Helper to safely verify user and update loading/auth state
-    const verifyAndSetSession = async (session: any) => {
-      try {
-        if (session?.user) {
-          const ok = await verifyAdmin(session.user.id);
-          if (cancelled) return;
-          setIsAuthenticated(ok);
-          setEmail(ok ? session.user.email ?? null : null);
-          if (!ok) await supabase.auth.signOut();
-        } else {
-          if (cancelled) return;
-          setIsAuthenticated(false);
-          setEmail(null);
-        }
-      } catch (err) {
-        console.error("Admin verification failed:", err);
-        if (!cancelled) {
-          setIsAuthenticated(false);
-          setEmail(null);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    };
-
-    // Get initial session
-    (async () => {
-      try {
-        const { data } = await supabase.auth.getSession();
-        if (cancelled) return;
-        await verifyAndSetSession(data.session);
-      } catch (err) {
-        console.error("Failed to get initial session:", err);
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    })();
-
-    // Listen for auth state changes
+    // onAuthStateChange fires immediately with INITIAL_SESSION on mount,
+    // so we can use it as the single source of truth rather than having
+    // a separate getSession() IIFE that can race with the listener.
     const { data: sub } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (cancelled) return;
-      
+
+      // SIGNED_OUT or no session → immediately clear auth and stop loading
       if (!session?.user) {
         setIsAuthenticated(false);
         setEmail(null);
@@ -97,9 +59,25 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        setLoading(true);
-        await verifyAndSetSession(session);
+      // For all events that carry a user, verify admin role
+      try {
+        const ok = await verifyAdmin(session.user.id);
+        if (cancelled) return;
+        setIsAuthenticated(ok);
+        setEmail(ok ? session.user.email ?? null : null);
+        if (!ok) {
+          // Not an admin — sign them out silently
+          supabase.auth.signOut().catch(() => {});
+        }
+      } catch (err) {
+        console.error("Admin role verification error:", err);
+        if (cancelled) return;
+        setIsAuthenticated(false);
+        setEmail(null);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     });
 

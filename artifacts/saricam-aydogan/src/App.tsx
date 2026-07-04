@@ -80,34 +80,32 @@ function PrivateRoute({ children }: { children: ReactNode }) {
 
 function AdminRouter() {
   return (
-    <AdminAuthProvider>
-      <Suspense fallback={<RouteSpinner />}>
-        <Switch>
-          <Route path="/admin/login" component={AdminLogin} />
-          <Route path="/admin/urunler/yeni">
-            <PrivateRoute><AdminProductForm /></PrivateRoute>
-          </Route>
-          <Route path="/admin/urunler/:id/duzenle">
-            <PrivateRoute><AdminProductForm /></PrivateRoute>
-          </Route>
-          <Route path="/admin/urunler">
-            <PrivateRoute><AdminProducts /></PrivateRoute>
-          </Route>
-          <Route path="/admin/kategoriler">
-            <PrivateRoute><AdminCategories /></PrivateRoute>
-          </Route>
-          <Route path="/admin/anasayfa">
-            <PrivateRoute><AdminSiteSettings /></PrivateRoute>
-          </Route>
-          <Route path="/admin">
-            <Redirect to="/admin/urunler" />
-          </Route>
-          <Route>
-            <Redirect to="/admin/urunler" />
-          </Route>
-        </Switch>
-      </Suspense>
-    </AdminAuthProvider>
+    <Suspense fallback={<RouteSpinner />}>
+      <Switch>
+        <Route path="/admin/login" component={AdminLogin} />
+        <Route path="/admin/urunler/yeni">
+          <PrivateRoute><AdminProductForm /></PrivateRoute>
+        </Route>
+        <Route path="/admin/urunler/:id/duzenle">
+          <PrivateRoute><AdminProductForm /></PrivateRoute>
+        </Route>
+        <Route path="/admin/urunler">
+          <PrivateRoute><AdminProducts /></PrivateRoute>
+        </Route>
+        <Route path="/admin/kategoriler">
+          <PrivateRoute><AdminCategories /></PrivateRoute>
+        </Route>
+        <Route path="/admin/anasayfa">
+          <PrivateRoute><AdminSiteSettings /></PrivateRoute>
+        </Route>
+        <Route path="/admin">
+          <Redirect to="/admin/urunler" />
+        </Route>
+        <Route>
+          <Redirect to="/admin/urunler" />
+        </Route>
+      </Switch>
+    </Suspense>
   );
 }
 
@@ -188,7 +186,11 @@ function StoreFront() {
 function Router() {
   const [location] = useLocation();
   const isAdmin = location.startsWith("/admin");
-  return isAdmin ? <AdminRouter /> : <StoreFront />;
+  return (
+    <AdminAuthProvider>
+      {isAdmin ? <AdminRouter /> : <StoreFront />}
+    </AdminAuthProvider>
+  );
 }
 
 function App() {
