@@ -3,7 +3,7 @@ import { getSupabase } from "@/lib/supabase";
 
 const SESSION_KEY = "sa_admin_auth_dev";
 
-// Safe wrapper around localStorage to prevent SecurityError crashes in browsers with restricted cookie/storage settings
+// Safe wrapper around localStorage to prevent SecurityError crashes in browsers with restricted settings
 const safeLocalStorage = {
   getItem(key: string): string | null {
     try {
@@ -22,6 +22,24 @@ const safeLocalStorage = {
       localStorage.removeItem(key);
     } catch {}
   }
+};
+
+// Helper function to wrap a promise in a timeout, preventing infinite hangs
+const withTimeout = <T,>(promise: Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> => {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(errorMessage));
+    }, timeoutMs);
+    promise
+      .then((res) => {
+        clearTimeout(timer);
+        resolve(res);
+      })
+      .catch((err) => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
 };
 
 /**
@@ -69,23 +87,33 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   /** Verify the current Supabase user is registered in admin_users. */
   const verifyAdmin = useCallback(async (userId: string): Promise<boolean> => {
     if (!supabase) return false;
-    const { data, error } = await supabase
-      .from("admin_users")
-      .select("user_id")
-      .eq("user_id", userId)
-      .maybeSingle();
-    if (error) {
-      console.warn("admin verify failed:", error.message);
+    try {
+      const queryPromise = supabase
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      const { data, error } = await withTimeout(
+        queryPromise,
+        5000,
+        "Yetki kontrolü zaman aşımına uğradı (Veritabanı yanıt vermiyor)."
+      );
+
+      if (error) {
+        console.warn("admin verify failed:", error.message);
+        return false;
+      }
+      return !!data;
+    } catch (err) {
+      console.warn("admin verify error/timeout:", err);
       return false;
     }
-    return !!data;
   }, [supabase]);
 
   // ─── Bootstrap ─────────────────────────────────────────────────
   useEffect(() => {
     // ── ENV-PASSWORD MODE ──────────────────────────────────────────
-    // Fully synchronous — just read localStorage. No network calls,
-    // no loading spinner, no timeouts needed.
     if (authMode === "env") {
       setIsAuthenticated(safeLocalStorage.getItem(SESSION_KEY) === "1");
       setLoading(false);
@@ -99,7 +127,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     }
 
     // ── SUPABASE MODE ─────────────────────────────────────────────
-    if (!supabase) return; // TypeScript guard — won't happen if authMode is "supabase"
+    if (!supabase) return; // TypeScript guard
 
     let cancelled = false;
 
@@ -139,9 +167,14 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     // Primary: get cached/refreshed session
     (async () => {
       try {
-        const { data } = await supabase.auth.getSession();
+        const { data } = await withTimeout(
+          supabase.auth.getSession(),
+          3000,
+          "Oturum kontrolü zaman aşımı."
+        );
         if (!cancelled) await handleSession(data.session);
-      } catch {
+      } catch (err) {
+        console.warn("Failed to get initial session:", err);
         if (!cancelled) {
           setIsAuthenticated(false);
           setEmail(null);
@@ -183,16 +216,24 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
       // ── SUPABASE MODE ─────────────────────────────────────────────
       if (!password) return "E-posta ve şifre gerekli.";
-      const { data, error } = await supabase.auth.signInWithPassword({
+
+      const authPromise = supabase.auth.signInWithPassword({
         email: emailOrPassword,
         password,
       });
+
+      const { data, error } = await withTimeout(
+        authPromise,
+        6000,
+        "Giriş işlemi zaman aşımına uğradı. Sunucuya erişilemiyor veya Supabase projeniz duraklatılmış olabilir."
+      );
+
       if (error) return error.message;
       if (!data.user) return "Giriş başarısız oldu.";
 
       const ok = await verifyAdmin(data.user.id);
       if (!ok) {
-        await supabase.auth.signOut();
+        await supabase.auth.signOut().catch(() => {});
         return "Bu kullanıcı admin yetkisine sahip değil.";
       }
       setIsAuthenticated(true);
