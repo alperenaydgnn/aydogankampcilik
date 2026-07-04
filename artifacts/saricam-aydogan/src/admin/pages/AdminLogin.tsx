@@ -25,16 +25,23 @@ export default function AdminLogin() {
     if (!isConfigured) return;
     setError("");
     setLoading(true);
-    const err = useSupabaseLogin
-      ? await login(email, password)
-      : await login(password);
-    setLoading(false);
-    if (err) {
-      setError(err);
+    try {
+      const err = useSupabaseLogin
+        ? await login(email, password)
+        : await login(password);
+      if (err) {
+        setError(err);
+        setPassword("");
+        setLoading(false);
+        return;
+      }
+      setLocation("/admin/urunler");
+    } catch (err: any) {
+      console.error("Login submission failed:", err);
+      setError(err?.message || "Giriş işlemi sırasında bir hata oluştu.");
       setPassword("");
-      return;
+      setLoading(false);
     }
-    setLocation("/admin/urunler");
   };
 
   return (

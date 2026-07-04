@@ -1,7 +1,28 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from "react";
 import { getSupabase } from "@/lib/supabase";
 
 const SESSION_KEY = "sa_admin_auth_dev";
+
+// Safe wrapper around localStorage to prevent SecurityError crashes in browsers with restricted cookie/storage settings
+const safeLocalStorage = {
+  getItem(key: string): string | null {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  setItem(key: string, value: string): void {
+    try {
+      localStorage.setItem(key, value);
+    } catch {}
+  },
+  removeItem(key: string): void {
+    try {
+      localStorage.removeItem(key);
+    } catch {}
+  }
+};
 
 /**
  * Auth strategy decision:
@@ -40,7 +61,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   // In env-auth mode, we can read localStorage synchronously — no loading needed.
   // In supabase mode, we need to wait for session verification.
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    authMode === "env" ? localStorage.getItem(SESSION_KEY) === "1" : false
+    authMode === "env" ? safeLocalStorage.getItem(SESSION_KEY) === "1" : false
   );
   const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(authMode === "supabase");
@@ -66,7 +87,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     // Fully synchronous — just read localStorage. No network calls,
     // no loading spinner, no timeouts needed.
     if (authMode === "env") {
-      setIsAuthenticated(localStorage.getItem(SESSION_KEY) === "1");
+      setIsAuthenticated(safeLocalStorage.getItem(SESSION_KEY) === "1");
       setLoading(false);
       return;
     }
@@ -144,38 +165,43 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   // ─── Login ─────────────────────────────────────────────────────
   const login = async (emailOrPassword: string, password?: string): Promise<string | null> => {
-    // ── ENV-PASSWORD MODE ──────────────────────────────────────────
-    if (authMode === "env") {
-      if (emailOrPassword === ENV_PASSWORD) {
-        setIsAuthenticated(true);
-        localStorage.setItem(SESSION_KEY, "1");
-        return null;
+    try {
+      // ── ENV-PASSWORD MODE ──────────────────────────────────────────
+      if (authMode === "env") {
+        if (emailOrPassword === ENV_PASSWORD) {
+          setIsAuthenticated(true);
+          safeLocalStorage.setItem(SESSION_KEY, "1");
+          return null;
+        }
+        return "Yanlış şifre.";
       }
-      return "Yanlış şifre.";
-    }
 
-    // ── NO AUTH ────────────────────────────────────────────────────
-    if (authMode === "none" || !supabase) {
-      return "Admin paneli yapılandırılmamış (VITE_ADMIN_PASSWORD veya Supabase eksik).";
-    }
+      // ── NO AUTH ────────────────────────────────────────────────────
+      if (authMode === "none" || !supabase) {
+        return "Admin paneli yapılandırılmamış (VITE_ADMIN_PASSWORD veya Supabase eksik).";
+      }
 
-    // ── SUPABASE MODE ─────────────────────────────────────────────
-    if (!password) return "E-posta ve şifre gerekli.";
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: emailOrPassword,
-      password,
-    });
-    if (error) return error.message;
-    if (!data.user) return "Giriş başarısız oldu.";
+      // ── SUPABASE MODE ─────────────────────────────────────────────
+      if (!password) return "E-posta ve şifre gerekli.";
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: emailOrPassword,
+        password,
+      });
+      if (error) return error.message;
+      if (!data.user) return "Giriş başarısız oldu.";
 
-    const ok = await verifyAdmin(data.user.id);
-    if (!ok) {
-      await supabase.auth.signOut();
-      return "Bu kullanıcı admin yetkisine sahip değil.";
+      const ok = await verifyAdmin(data.user.id);
+      if (!ok) {
+        await supabase.auth.signOut();
+        return "Bu kullanıcı admin yetkisine sahip değil.";
+      }
+      setIsAuthenticated(true);
+      setEmail(data.user.email ?? null);
+      return null;
+    } catch (err: any) {
+      console.error("Login call failed:", err);
+      return err?.message || "Giriş işlemi sırasında beklenmeyen bir hata oluştu.";
     }
-    setIsAuthenticated(true);
-    setEmail(data.user.email ?? null);
-    return null;
   };
 
   // ─── Logout ────────────────────────────────────────────────────
@@ -183,7 +209,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     if (supabase) {
       try { await supabase.auth.signOut(); } catch { /* ignore */ }
     }
-    localStorage.removeItem(SESSION_KEY);
+    safeLocalStorage.removeItem(SESSION_KEY);
     setIsAuthenticated(false);
     setEmail(null);
   };
