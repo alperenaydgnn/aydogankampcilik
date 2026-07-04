@@ -44,29 +44,63 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     }
 
     let cancelled = false;
-    (async () => {
-      const { data } = await supabase.auth.getSession();
-      const session = data.session;
-      if (cancelled) return;
-      if (session?.user) {
-        const ok = await verifyAdmin(session.user.id);
-        if (cancelled) return;
-        setIsAuthenticated(ok);
-        setEmail(ok ? session.user.email ?? null : null);
-        if (!ok) await supabase.auth.signOut();
+
+    // Helper to safely verify user and update loading/auth state
+    const verifyAndSetSession = async (session: any) => {
+      try {
+        if (session?.user) {
+          const ok = await verifyAdmin(session.user.id);
+          if (cancelled) return;
+          setIsAuthenticated(ok);
+          setEmail(ok ? session.user.email ?? null : null);
+          if (!ok) await supabase.auth.signOut();
+        } else {
+          if (cancelled) return;
+          setIsAuthenticated(false);
+          setEmail(null);
+        }
+      } catch (err) {
+        console.error("Admin verification failed:", err);
+        if (!cancelled) {
+          setIsAuthenticated(false);
+          setEmail(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
-      setLoading(false);
+    };
+
+    // Get initial session
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (cancelled) return;
+        await verifyAndSetSession(data.session);
+      } catch (err) {
+        console.error("Failed to get initial session:", err);
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
     })();
 
-    const { data: sub } = supabase.auth.onAuthStateChange(async (_e, session) => {
+    // Listen for auth state changes
+    const { data: sub } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (cancelled) return;
+      
       if (!session?.user) {
         setIsAuthenticated(false);
         setEmail(null);
+        setLoading(false);
         return;
       }
-      const ok = await verifyAdmin(session.user.id);
-      setIsAuthenticated(ok);
-      setEmail(ok ? session.user.email ?? null : null);
+
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        setLoading(true);
+        await verifyAndSetSession(session);
+      }
     });
 
     return () => {
