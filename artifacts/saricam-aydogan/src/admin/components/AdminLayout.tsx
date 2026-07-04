@@ -68,12 +68,12 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="p-4 border-t border-border space-y-2">
-          <Link href="/" target="_blank">
+          <a href="/" target="_blank" rel="noopener noreferrer" className="block w-full">
             <Button variant="outline" size="sm" className="w-full justify-start gap-2 text-muted-foreground">
               <Trees className="w-4 h-4" />
               Siteyi Görüntüle
             </Button>
-          </Link>
+          </a>
           <Button
             variant="ghost"
             size="sm"

@@ -38,7 +38,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   // Bootstrap auth state
   useEffect(() => {
     if (!supabase) {
-      setIsAuthenticated(sessionStorage.getItem(SESSION_KEY) === "1");
+      setIsAuthenticated(localStorage.getItem(SESSION_KEY) === "1");
       setLoading(false);
       return;
     }
@@ -82,7 +82,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       if (!adminPassword) return "Admin paneli yapılandırılmamış (VITE_ADMIN_PASSWORD veya Supabase eksik).";
       if (emailOrPassword === adminPassword) {
         setIsAuthenticated(true);
-        sessionStorage.setItem(SESSION_KEY, "1");
+        localStorage.setItem(SESSION_KEY, "1");
         return null;
       }
       return "Yanlış şifre.";
@@ -108,7 +108,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     if (supabase) await supabase.auth.signOut();
-    sessionStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(SESSION_KEY);
     setIsAuthenticated(false);
     setEmail(null);
   };
