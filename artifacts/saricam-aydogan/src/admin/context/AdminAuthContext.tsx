@@ -1,7 +1,9 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from "react";
 import { getSupabase } from "@/lib/supabase";
 
 const SESSION_KEY = "sa_admin_auth_dev";
+/** Max time (ms) to wait for Supabase auth initialization before giving up. */
+const AUTH_TIMEOUT_MS = 4000;
 
 interface AdminAuthContextType {
   isAuthenticated: boolean;
@@ -19,6 +21,8 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(!!supabase);
+  /** Prevents setLoading(false) from being called multiple times. */
+  const resolved = useRef(false);
 
   /** Verify the current Supabase user is registered in admin_users. */
   const verifyAdmin = useCallback(async (userId: string): Promise<boolean> => {
@@ -38,35 +42,40 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   // Bootstrap auth state
   useEffect(() => {
     if (!supabase) {
+      // No Supabase — use env-password mode with localStorage
       setIsAuthenticated(localStorage.getItem(SESSION_KEY) === "1");
       setLoading(false);
       return;
     }
 
     let cancelled = false;
+    resolved.current = false;
 
-    // onAuthStateChange fires immediately with INITIAL_SESSION on mount,
-    // so we can use it as the single source of truth rather than having
-    // a separate getSession() IIFE that can race with the listener.
-    const { data: sub } = supabase.auth.onAuthStateChange(async (event, session) => {
+    /** Safely transition out of the loading state (idempotent). */
+    const finishLoading = () => {
+      if (!cancelled && !resolved.current) {
+        resolved.current = true;
+        setLoading(false);
+      }
+    };
+
+    /** Process a Supabase session (from getSession or onAuthStateChange). */
+    const handleSession = async (session: { user: { id: string; email?: string | null } } | null) => {
       if (cancelled) return;
 
-      // SIGNED_OUT or no session → immediately clear auth and stop loading
       if (!session?.user) {
         setIsAuthenticated(false);
         setEmail(null);
-        setLoading(false);
+        finishLoading();
         return;
       }
 
-      // For all events that carry a user, verify admin role
       try {
         const ok = await verifyAdmin(session.user.id);
         if (cancelled) return;
         setIsAuthenticated(ok);
         setEmail(ok ? session.user.email ?? null : null);
         if (!ok) {
-          // Not an admin — sign them out silently
           supabase.auth.signOut().catch(() => {});
         }
       } catch (err) {
@@ -75,14 +84,60 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(false);
         setEmail(null);
       } finally {
+        finishLoading();
+      }
+    };
+
+    // ── 1) Safety timeout ──────────────────────────────────────────
+    // If Supabase auth hasn't resolved within AUTH_TIMEOUT_MS (e.g.
+    // because a paused project is unreachable, or the token-refresh
+    // network request hangs), force loading to stop and send the user
+    // to the login page rather than showing an infinite spinner.
+    const timeout = setTimeout(() => {
+      if (!resolved.current && !cancelled) {
+        console.warn("Admin auth initialisation timed out – falling back to login");
+        setIsAuthenticated(false);
+        setEmail(null);
+        finishLoading();
+        // Clear potentially stale Supabase session so the next visit
+        // doesn't hang again.
+        supabase.auth.signOut().catch(() => {});
+      }
+    }, AUTH_TIMEOUT_MS);
+
+    // ── 2) Direct getSession() call ────────────────────────────────
+    // This resolves immediately if there's no stored session, and
+    // triggers a token refresh if the access-token is expired.
+    // We use this as the primary fast path.
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!cancelled && !resolved.current) {
+          await handleSession(data.session);
+        }
+      } catch (err) {
+        console.error("getSession() failed:", err);
         if (!cancelled) {
-          setLoading(false);
+          setIsAuthenticated(false);
+          setEmail(null);
+          finishLoading();
         }
       }
+    })();
+
+    // ── 3) Ongoing auth-state listener ─────────────────────────────
+    // Handles sign-in, sign-out, and token-refresh events AFTER the
+    // initial bootstrap above.
+    const { data: sub } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (cancelled) return;
+      // After the first resolution, every subsequent event should
+      // also be processed (e.g. user signs out in another tab).
+      await handleSession(session);
     });
 
     return () => {
       cancelled = true;
+      clearTimeout(timeout);
       sub.subscription.unsubscribe();
     };
   }, [supabase, verifyAdmin]);
