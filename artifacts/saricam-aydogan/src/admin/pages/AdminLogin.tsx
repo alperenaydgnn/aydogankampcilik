@@ -2,16 +2,14 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { Trees, Eye, EyeOff } from "lucide-react";
 import { useAdminAuth } from "@/admin/context/AdminAuthContext";
-import { getSupabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AdminLogin() {
-  const { login } = useAdminAuth();
+  const { login, authMode } = useAdminAuth();
   const [, setLocation] = useLocation();
-  const supabaseConfigured = !!getSupabase();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,15 +17,15 @@ export default function AdminLogin() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const envPasswordConfigured = !!import.meta.env.VITE_ADMIN_PASSWORD;
-  const isConfigured = supabaseConfigured || envPasswordConfigured;
+  const useSupabaseLogin = authMode === "supabase";
+  const isConfigured = authMode !== "none";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isConfigured) return;
     setError("");
     setLoading(true);
-    const err = supabaseConfigured
+    const err = useSupabaseLogin
       ? await login(email, password)
       : await login(password);
     setLoading(false);
@@ -56,7 +54,7 @@ export default function AdminLogin() {
           <CardHeader>
             <CardTitle>Giriş Yap</CardTitle>
             <CardDescription>
-              {supabaseConfigured
+              {useSupabaseLogin
                 ? "Yetkili admin kullanıcı bilgilerinizi girin."
                 : "Devam etmek için admin şifresini girin."}
             </CardDescription>
@@ -73,7 +71,7 @@ export default function AdminLogin() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
-                {supabaseConfigured && (
+                {useSupabaseLogin && (
                   <div className="space-y-2">
                     <Label htmlFor="email">E-posta</Label>
                     <Input
@@ -96,9 +94,9 @@ export default function AdminLogin() {
                       type={show ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder={supabaseConfigured ? "••••••••" : "Admin şifrenizi girin"}
+                      placeholder={useSupabaseLogin ? "••••••••" : "Admin şifrenizi girin"}
                       autoComplete="current-password"
-                      autoFocus={!supabaseConfigured}
+                      autoFocus={!useSupabaseLogin}
                       className="pr-10"
                       required
                     />
@@ -119,7 +117,7 @@ export default function AdminLogin() {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={loading || !password || (supabaseConfigured && !email)}
+                  disabled={loading || !password || (useSupabaseLogin && !email)}
                 >
                   {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
                 </Button>
@@ -129,7 +127,7 @@ export default function AdminLogin() {
         </Card>
 
         <p className="text-center text-xs text-muted-foreground">
-          {supabaseConfigured
+          {useSupabaseLogin
             ? "Admin yetkisi için kullanıcının admin_users tablosunda kaydı olmalıdır."
             : "Geliştirme modu — VITE_ADMIN_PASSWORD ile çalışıyor."}
         </p>

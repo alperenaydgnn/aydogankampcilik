@@ -1,14 +1,25 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { getSupabase } from "@/lib/supabase";
 
 const SESSION_KEY = "sa_admin_auth_dev";
-/** Max time (ms) to wait for Supabase auth initialization before giving up. */
-const AUTH_TIMEOUT_MS = 4000;
+
+/**
+ * Auth strategy decision:
+ * - If VITE_ADMIN_PASSWORD is set → use simple env-password mode (localStorage).
+ *   This works reliably regardless of Supabase configuration and survives
+ *   tab/browser restarts until the user explicitly logs out.
+ * - If VITE_ADMIN_PASSWORD is NOT set → use Supabase auth (requires
+ *   VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY and an admin_users table).
+ */
+const ENV_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD as string | undefined;
+const USE_ENV_AUTH = !!ENV_PASSWORD;
 
 interface AdminAuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   email: string | null;
+  /** Which auth mode is active */
+  authMode: "env" | "supabase" | "none";
   /** Returns an error message on failure, or `null` on success. */
   login: (emailOrPassword: string, password?: string) => Promise<string | null>;
   logout: () => Promise<void>;
@@ -18,11 +29,21 @@ const AdminAuthContext = createContext<AdminAuthContextType | null>(null);
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const supabase = getSupabase();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  // Determine auth mode once
+  const authMode: "env" | "supabase" | "none" = USE_ENV_AUTH
+    ? "env"
+    : supabase
+      ? "supabase"
+      : "none";
+
+  // In env-auth mode, we can read localStorage synchronously — no loading needed.
+  // In supabase mode, we need to wait for session verification.
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    authMode === "env" ? localStorage.getItem(SESSION_KEY) === "1" : false
+  );
   const [email, setEmail] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(!!supabase);
-  /** Prevents setLoading(false) from being called multiple times. */
-  const resolved = useRef(false);
+  const [loading, setLoading] = useState<boolean>(authMode === "supabase");
 
   /** Verify the current Supabase user is registered in admin_users. */
   const verifyAdmin = useCallback(async (userId: string): Promise<boolean> => {
@@ -39,99 +60,78 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     return !!data;
   }, [supabase]);
 
-  // Bootstrap auth state
+  // ─── Bootstrap ─────────────────────────────────────────────────
   useEffect(() => {
-    if (!supabase) {
-      // No Supabase — use env-password mode with localStorage
+    // ── ENV-PASSWORD MODE ──────────────────────────────────────────
+    // Fully synchronous — just read localStorage. No network calls,
+    // no loading spinner, no timeouts needed.
+    if (authMode === "env") {
       setIsAuthenticated(localStorage.getItem(SESSION_KEY) === "1");
       setLoading(false);
       return;
     }
 
+    // ── NO AUTH CONFIGURED ────────────────────────────────────────
+    if (authMode === "none") {
+      setLoading(false);
+      return;
+    }
+
+    // ── SUPABASE MODE ─────────────────────────────────────────────
+    if (!supabase) return; // TypeScript guard — won't happen if authMode is "supabase"
+
     let cancelled = false;
-    resolved.current = false;
 
-    /** Safely transition out of the loading state (idempotent). */
-    const finishLoading = () => {
-      if (!cancelled && !resolved.current) {
-        resolved.current = true;
-        setLoading(false);
-      }
-    };
-
-    /** Process a Supabase session (from getSession or onAuthStateChange). */
     const handleSession = async (session: { user: { id: string; email?: string | null } } | null) => {
       if (cancelled) return;
-
       if (!session?.user) {
         setIsAuthenticated(false);
         setEmail(null);
-        finishLoading();
+        if (!cancelled) setLoading(false);
         return;
       }
-
       try {
         const ok = await verifyAdmin(session.user.id);
         if (cancelled) return;
         setIsAuthenticated(ok);
         setEmail(ok ? session.user.email ?? null : null);
-        if (!ok) {
-          supabase.auth.signOut().catch(() => {});
-        }
-      } catch (err) {
-        console.error("Admin role verification error:", err);
+        if (!ok) supabase.auth.signOut().catch(() => {});
+      } catch {
         if (cancelled) return;
         setIsAuthenticated(false);
         setEmail(null);
       } finally {
-        finishLoading();
+        if (!cancelled) setLoading(false);
       }
     };
 
-    // ── 1) Safety timeout ──────────────────────────────────────────
-    // If Supabase auth hasn't resolved within AUTH_TIMEOUT_MS (e.g.
-    // because a paused project is unreachable, or the token-refresh
-    // network request hangs), force loading to stop and send the user
-    // to the login page rather than showing an infinite spinner.
+    // Safety timeout — if Supabase is unreachable, stop waiting after 4s
     const timeout = setTimeout(() => {
-      if (!resolved.current && !cancelled) {
-        console.warn("Admin auth initialisation timed out – falling back to login");
+      if (!cancelled) {
+        console.warn("Supabase auth timed out — redirecting to login");
         setIsAuthenticated(false);
         setEmail(null);
-        finishLoading();
-        // Clear potentially stale Supabase session so the next visit
-        // doesn't hang again.
-        supabase.auth.signOut().catch(() => {});
+        setLoading(false);
       }
-    }, AUTH_TIMEOUT_MS);
+    }, 4000);
 
-    // ── 2) Direct getSession() call ────────────────────────────────
-    // This resolves immediately if there's no stored session, and
-    // triggers a token refresh if the access-token is expired.
-    // We use this as the primary fast path.
+    // Primary: get cached/refreshed session
     (async () => {
       try {
         const { data } = await supabase.auth.getSession();
-        if (!cancelled && !resolved.current) {
-          await handleSession(data.session);
-        }
-      } catch (err) {
-        console.error("getSession() failed:", err);
+        if (!cancelled) await handleSession(data.session);
+      } catch {
         if (!cancelled) {
           setIsAuthenticated(false);
           setEmail(null);
-          finishLoading();
+          setLoading(false);
         }
       }
     })();
 
-    // ── 3) Ongoing auth-state listener ─────────────────────────────
-    // Handles sign-in, sign-out, and token-refresh events AFTER the
-    // initial bootstrap above.
+    // Ongoing listener for sign-in / sign-out / token refresh
     const { data: sub } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (cancelled) return;
-      // After the first resolution, every subsequent event should
-      // also be processed (e.g. user signs out in another tab).
       await handleSession(session);
     });
 
@@ -140,14 +140,13 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       clearTimeout(timeout);
       sub.subscription.unsubscribe();
     };
-  }, [supabase, verifyAdmin]);
+  }, [authMode, supabase, verifyAdmin]);
 
+  // ─── Login ─────────────────────────────────────────────────────
   const login = async (emailOrPassword: string, password?: string): Promise<string | null> => {
-    if (!supabase) {
-      // Env-password fallback (no Supabase configured)
-      const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
-      if (!adminPassword) return "Admin paneli yapılandırılmamış (VITE_ADMIN_PASSWORD veya Supabase eksik).";
-      if (emailOrPassword === adminPassword) {
+    // ── ENV-PASSWORD MODE ──────────────────────────────────────────
+    if (authMode === "env") {
+      if (emailOrPassword === ENV_PASSWORD) {
         setIsAuthenticated(true);
         localStorage.setItem(SESSION_KEY, "1");
         return null;
@@ -155,6 +154,12 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       return "Yanlış şifre.";
     }
 
+    // ── NO AUTH ────────────────────────────────────────────────────
+    if (authMode === "none" || !supabase) {
+      return "Admin paneli yapılandırılmamış (VITE_ADMIN_PASSWORD veya Supabase eksik).";
+    }
+
+    // ── SUPABASE MODE ─────────────────────────────────────────────
     if (!password) return "E-posta ve şifre gerekli.";
     const { data, error } = await supabase.auth.signInWithPassword({
       email: emailOrPassword,
@@ -173,15 +178,18 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     return null;
   };
 
+  // ─── Logout ────────────────────────────────────────────────────
   const logout = async () => {
-    if (supabase) await supabase.auth.signOut();
+    if (supabase) {
+      try { await supabase.auth.signOut(); } catch { /* ignore */ }
+    }
     localStorage.removeItem(SESSION_KEY);
     setIsAuthenticated(false);
     setEmail(null);
   };
 
   return (
-    <AdminAuthContext.Provider value={{ isAuthenticated, loading, email, login, logout }}>
+    <AdminAuthContext.Provider value={{ isAuthenticated, loading, email, authMode, login, logout }}>
       {children}
     </AdminAuthContext.Provider>
   );
