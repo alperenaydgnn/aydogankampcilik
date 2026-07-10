@@ -85,7 +85,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState<boolean>(authMode === "supabase");
 
   /** Verify the current Supabase user is registered in admin_users. */
-  const verifyAdmin = useCallback(async (userId: string): Promise<boolean> => {
+  const verifyAdmin = useCallback(async (userId: string): Promise<boolean | null> => {
     if (!supabase) return false;
     try {
       const queryPromise = supabase
@@ -102,12 +102,12 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.warn("admin verify failed:", error.message);
-        return false;
+        return null; // network or db error
       }
       return !!data;
     } catch (err) {
       console.warn("admin verify error/timeout:", err);
-      return false;
+      return null; // timeout
     }
   }, [supabase]);
 
@@ -140,15 +140,24 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         return;
       }
       try {
-        const ok = await verifyAdmin(session.user.id);
+        const isAdmin = await verifyAdmin(session.user.id);
         if (cancelled) return;
-        setIsAuthenticated(ok);
-        setEmail(ok ? session.user.email ?? null : null);
-        if (!ok) supabase.auth.signOut().catch(() => {});
+        
+        if (isAdmin === true) {
+          setIsAuthenticated(true);
+          setEmail(session.user.email ?? null);
+        } else if (isAdmin === false) {
+          setIsAuthenticated(false);
+          setEmail(null);
+          supabase.auth.signOut().catch(() => {});
+        } else {
+          // isAdmin === null (Network error or timeout)
+          // Keep existing state if it's a background refresh.
+          setIsAuthenticated((prev) => prev);
+        }
       } catch {
         if (cancelled) return;
-        setIsAuthenticated(false);
-        setEmail(null);
+        setIsAuthenticated((prev) => prev);
       } finally {
         if (!cancelled) setLoading(false);
       }
