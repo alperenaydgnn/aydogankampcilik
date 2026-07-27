@@ -30,7 +30,7 @@ export function ImageUpload({ onUpload, bucket = "product-images" }: ImageUpload
       return;
     }
 
-    const maxSizeMB = 5;
+    const maxSizeMB = 12;
     if (file.size > maxSizeMB * 1024 * 1024) {
       toast({ variant: "destructive", title: "Dosya çok büyük", description: `Maksimum ${maxSizeMB} MB olmalıdır.` });
       return;

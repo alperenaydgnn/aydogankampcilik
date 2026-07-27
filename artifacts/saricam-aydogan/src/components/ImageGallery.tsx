@@ -52,9 +52,9 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
   };
 
   const variants = {
-    enter: (d: number) => ({ opacity: 0, x: d > 0 ? 60 : -60 }),
+    enter: (d: number) => ({ opacity: 0, x: d > 0 ? 60 : d < 0 ? -60 : 0 }),
     center: { opacity: 1, x: 0 },
-    exit: (d: number) => ({ opacity: 0, x: d > 0 ? -60 : 60 }),
+    exit: (d: number) => ({ opacity: 0, x: d > 0 ? -60 : d < 0 ? 60 : 0 }),
   };
 
   return (
@@ -67,7 +67,7 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
           style={{ aspectRatio: "4/3" }}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          onClick={() => setLightbox(true)}
+          onClick={() => { setDirection(0); setLightbox(true); }}
         >
           <AnimatePresence custom={direction} mode="wait" initial={false}>
             <motion.img
@@ -83,7 +83,7 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
               className="absolute inset-0 w-full h-full object-cover"
               draggable={false}
               loading={current === 0 ? "eager" : "lazy"}
-              onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+              onError={e => { (e.currentTarget as HTMLImageElement).style.opacity = "0.4"; }}
             />
           </AnimatePresence>
 
@@ -102,7 +102,7 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
           {/* Lightbox trigger */}
           <button
             aria-label="Tam ekranda görüntüle"
-            onClick={e => { e.stopPropagation(); setLightbox(true); }}
+            onClick={e => { e.stopPropagation(); setDirection(0); setLightbox(true); }}
             className="absolute bottom-3 right-3 bg-black/45 backdrop-blur-sm rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-white hover:bg-black/60"
           >
             <Maximize2 className="w-4 h-4" />
@@ -196,7 +196,7 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
             </div>
 
             {/* Image */}
-            <AnimatePresence custom={direction} mode="wait" initial={false}>
+            <AnimatePresence custom={direction} mode="wait">
               <motion.img
                 key={current}
                 src={images[current]}
@@ -207,11 +207,11 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                className="max-w-[90vw] max-h-[85vh] object-contain rounded-xl shadow-2xl"
+                className="max-w-[90vw] max-h-[85vh] object-contain rounded-xl shadow-2xl z-10"
                 draggable={false}
-                loading="lazy"
+                loading="eager"
                 onClick={e => e.stopPropagation()}
-                onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                onError={e => { (e.currentTarget as HTMLImageElement).style.opacity = "0.4"; }}
               />
             </AnimatePresence>
 

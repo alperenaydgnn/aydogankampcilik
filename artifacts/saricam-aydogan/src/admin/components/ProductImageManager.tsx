@@ -27,7 +27,7 @@ export type ImagesChangeFn =
   | ((prev: ProductImageState[]) => ProductImageState[]);
 
 const BUCKET = "product-images";
-const MAX_MB = 5;
+const MAX_MB = 12;
 
 function makeKey() {
   return `img_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
