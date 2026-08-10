@@ -112,7 +112,7 @@ const CATEGORY_FAQS: Record<string, FAQ[]> = {
 const GENERAL_FAQS: FAQ[] = [
   { q: "Nasıl sipariş verebilirim?", a: "Sipariş vermek için 'WhatsApp ile Sipariş' butonuna basın. WhatsApp'ta ürün bilgisi otomatik gelir, biz de size stok durumu ve fiyatı teyit ederek kargo veya mağaza teslimi seçeneklerini bildiririz." },
   { q: "Türkiye genelinde kargo yapıyor musunuz?", a: "Evet! Türkiye'nin tüm illerine MNG Kargo ve Aras Kargo ile gönderim yapıyoruz. Siparişiniz saat 14:00'a kadar verildiğinde aynı iş günü kargoya verilir. Kargo ücreti ürün ve konuma göre değişir." },
-  { q: "Ürünlerin garantisi var mı?", a: "Tüm ürünlerimiz orijinal ve üretici garantisi kapsamındadır. Garanti belgesi ürünle birlikte kargoya eklenir. Arıza veya garanti durumlarında bize WhatsApp'tan ulaşabilirsiniz." },
+  { q: "Ürünleriniz orijinal mi?", a: "Tüm ürünlerimiz %100 orijinaldir ve faturalı olarak satılmaktadır. Adana Sarıçam mağazamızda ürünleri yerinde inceleyebilirsiniz." },
   { q: "Mağazadan teslim alabilir miyim?", a: "Evet, Adana Sarıçam'daki mağazamızı ziyaret ederek ürünleri yerinde inceleyip satın alabilirsiniz. Mağaza adresimiz ve çalışma saatlerimiz için WhatsApp'tan bilgi alın." },
 ];
 
@@ -680,10 +680,10 @@ export default function ProductDetail() {
               {/* Trust pillars — minimal hairline grid */}
               <div className="grid grid-cols-2 gap-x-6 gap-y-5 border-t border-foreground/15 pt-6">
                 {[
-                  { title: "Orijinal Ürün",   sub: "Üretici garantili" },
+                  { title: "Orijinal Ürün",   sub: "Faturalı Satış" },
                   { title: "Aynı Gün Kargo",  sub: "Saat 14:00'a kadar" },
                   { title: "Mağazadan Teslim",sub: "Adana Sarıçam" },
-                  { title: "7 Gün İade",       sub: "Hasar/arıza için" },
+                  { title: "Müşteri Desteği", sub: "WhatsApp İletişim" },
                 ].map((p) => (
                   <div key={p.title} className="flex flex-col">
                     <p className="text-xs uppercase tracking-[0.18em] font-semibold text-foreground">{p.title}</p>
@@ -718,7 +718,7 @@ export default function ProductDetail() {
           {/* ── Full-width sections ─────────────────────── */}
           <div className="mt-32 md:mt-40 space-y-32 md:space-y-40">
 
-            {/* Store / Shipping / Return — editorial three-up */}
+            {/* Store / Shipping / Support — editorial three-up */}
             <motion.section
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -753,11 +753,11 @@ export default function ProductDetail() {
                   },
                   {
                     num: "03",
-                    title: "Garanti & İade",
+                    title: "Müşteri Desteği",
                     items: [
-                      "Tüm ürünler orijinal üretici garantisi kapsamındadır.",
-                      "Hasar/arıza durumunda 7 gün içinde iade/değişim.",
-                      "Garanti belgesi ve fatura kargo ile birlikte gönderilir.",
+                      "Tüm ürünlerimiz faturalı ve %100 orijinaldir.",
+                      "Satış öncesi ve sonrası sorularınız için WhatsApp'tan ulaşabilirsiniz.",
+                      "Adana Sarıçam mağazamızı bizzat ziyaret edebilirsiniz.",
                     ],
                   },
                 ].map((item) => (

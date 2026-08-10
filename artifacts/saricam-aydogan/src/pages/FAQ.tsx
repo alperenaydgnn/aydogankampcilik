@@ -67,37 +67,19 @@ const faqSections: FAQSection[] = [
   },
   {
     title: "Ürünler ve",
-    italicAccent: "garanti.",
+    italicAccent: "kalite.",
     items: [
       {
         q: "Ürünleriniz orijinal mi?",
-        a: "Tüm ürünlerimiz orijinaldir; doğrudan üretici veya yetkili distribütörlerden tedarik edilir. Faturalı satış yapıyoruz ve marka garantisi geçerlidir.",
+        a: "Tüm ürünlerimiz %100 orijinaldir; doğrudan üretici veya yetkili distribütörlerden tedarik edilir ve faturalı olarak satılır.",
       },
       {
-        q: "Hangi marka için ne kadar garanti veriyorsunuz?",
-        a: "Garanti süresi markaya ve ürün kategorisine göre değişir; çoğu elektronikli üründe 2 yıl üretici garantisi vardır. Çadır, sırt çantası ve kamp ekipmanlarında üretici hatasına karşı koruma sağlanır. Detaylar ürün sayfasında belirtilir.",
+        q: "İade veya garanti seçeneği var mı?",
+        a: "Mağazamızda satılan ürünlerde iade, değişim veya garanti seçeneği bulunmamaktadır. Sipariş öncesinde ürün özelliklerini ve detaylarını inceleyebilir, aklınıza takılan soruları WhatsApp hattımızdan bizlere sorabilirsiniz.",
       },
       {
         q: "Hangi ürünü almam gerektiğine emin değilim, yardımcı olur musunuz?",
         a: "Tabii. WhatsApp'tan ne için kullanacağınızı anlatmanız yeterli. Adana ve Toros koşullarına uygun, bütçenize ve kullanım amacınıza en yakın ürünü birlikte belirleriz.",
-      },
-    ],
-  },
-  {
-    title: "İade ve",
-    italicAccent: "değişim.",
-    items: [
-      {
-        q: "Ürünü iade edebilir miyim?",
-        a: "Mesafeli satış mevzuatı kapsamındaki cayma hakkınız saklıdır. Kullanılmamış, ambalajı bozulmamış ürünleri teslim aldıktan sonra 14 gün içinde iade edebilirsiniz. Detaylar Mağaza Politikası sayfamızda yer alır.",
-      },
-      {
-        q: "Beden veya model değişimi yapıyor musunuz?",
-        a: "Evet. Kullanılmamış ve etiketleri sökülmemiş ürünlerde 14 gün içinde değişim yapıyoruz. Mağazadan elden değişim ücretsizdir; kargolu değişimde gidiş-dönüş kargo ücreti müşteriye aittir (üretim hatası hariç).",
-      },
-      {
-        q: "Hijyen ürünlerinde iade var mı?",
-        a: "Hijyen gereği iç çamaşırı niteliğindeki ürünler, ambalajı açılmış olta misinası gibi tek kullanımlık ürünler ve özel olarak sipariş üzerine getirtilmiş ürünler iade kapsamında değildir.",
       },
     ],
   },
@@ -133,9 +115,9 @@ export default function FAQ() {
     <div className="min-h-screen bg-background">
       <SEO
         title="Sık Sorulan Sorular — Sipariş, Kargo, Ödeme"
-        description="Aydoğan Kampçılık'a en çok sorulan sorular: sipariş, kargo, ödeme, iade, garanti ve mağaza ile ilgili tüm cevaplar tek sayfada."
+        description="Aydoğan Kampçılık'a en çok sorulan sorular: sipariş, kargo, ödeme ve mağaza ile ilgili tüm cevaplar tek sayfada."
         url="/sss"
-        keywords="sık sorulan sorular, kamp malzemeleri sipariş, kargo, iade, ödeme, Aydoğan Kampçılık SSS"
+        keywords="sık sorulan sorular, kamp malzemeleri sipariş, kargo, ödeme, Aydoğan Kampçılık SSS"
       />
       <Helmet>
         <script type="application/ld+json">
@@ -156,7 +138,7 @@ export default function FAQ() {
         icon={HelpCircle}
         title="Sık sorulan"
         italicAccent="sorular."
-        subtitle="Sipariş, kargo, ödeme ve iade hakkında en çok merak edilen konuları sizin için derledik. Aradığınızı bulamazsanız WhatsApp'tan yazmanız yeterli."
+        subtitle="Sipariş, kargo, ödeme ve ürünler hakkında en çok merak edilen konuları sizin için derledik. Aradığınızı bulamazsanız WhatsApp'tan yazmanız yeterli."
         breadcrumbs={[
           { label: "Ana Sayfa", href: "/" },
           { label: "Sık Sorulan Sorular" },

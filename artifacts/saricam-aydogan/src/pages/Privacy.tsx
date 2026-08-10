@@ -144,8 +144,8 @@ export default function Privacy() {
               <li>Siparişinizi hazırlamak ve adresinize ulaştırmak,</li>
               <li>Sorularınıza ve taleplerinize hızlı cevap verebilmek,</li>
               <li>
-                Yasal yükümlülüklerimizi yerine getirmek (fatura, vergi, garanti
-                süreçleri),
+                Yasal yükümlülüklerimizi yerine getirmek (fatura, vergi ve mevzuat
+                yükümlülükleri),
               </li>
               <li>
                 Sitemizin performansını ölçmek ve sizin için iyileştirmek.
